@@ -12,5 +12,6 @@ public class App
     { 
         SpringApplication.run(App.class, args);
         Gson gson = new Gson();
+        gson.serializeNulls();
     }
 }
