@@ -1,0 +1,358 @@
+03/03/2017 16:33:13.803 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 13814 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 16:33:13.807 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 16:33:13.955 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@5cee5251: startup date [Fri Mar 03 16:33:13 EET 2017]; root of context hierarchy
+03/03/2017 16:33:17.280 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$362ff34f] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 16:33:17.942 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 16:33:18.141 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 4191 ms
+03/03/2017 16:33:18.582 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 16:33:18.589 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 16:33:18.589 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 16:33:18.590 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 16:33:18.590 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 16:33:18.590 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 16:33:18.591 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 16:33:18.591 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 16:33:18.725 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Tomcat.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.tomcat.jdbc.pool.DataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Cannot determine embedded database driver class for database type NONE. If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+03/03/2017 16:33:18.802 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 16:33:18.812 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Cannot determine embedded database driver class for database type NONE
+
+Action:
+
+If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+
+03/03/2017 16:33:53.993 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 13859 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 16:33:53.998 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 16:33:54.179 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@20d28811: startup date [Fri Mar 03 16:33:54 EET 2017]; root of context hierarchy
+03/03/2017 16:33:56.973 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$763eb6c2] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 16:33:57.695 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 16:33:57.889 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 3724 ms
+03/03/2017 16:33:58.249 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 16:33:58.255 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 16:33:58.255 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 16:33:58.256 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 16:33:58.256 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 16:33:58.256 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 16:33:58.257 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 16:33:58.257 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 16:33:58.335 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Tomcat.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.tomcat.jdbc.pool.DataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Cannot determine embedded database driver class for database type NONE. If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+03/03/2017 16:33:58.382 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 16:33:58.388 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Cannot determine embedded database driver class for database type NONE
+
+Action:
+
+If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+
+03/03/2017 16:35:24.369 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 13945 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 16:35:24.377 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 16:35:24.500 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@20d28811: startup date [Fri Mar 03 16:35:24 EET 2017]; root of context hierarchy
+03/03/2017 16:35:27.506 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$763eb6c2] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 16:35:28.231 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 16:35:28.427 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 3935 ms
+03/03/2017 16:35:28.863 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 16:35:28.869 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 16:35:28.870 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 16:35:28.872 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 16:35:28.873 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 16:35:28.873 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 16:35:28.874 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 16:35:28.875 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 16:35:28.995 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Tomcat.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.tomcat.jdbc.pool.DataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Cannot determine embedded database driver class for database type NONE. If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+03/03/2017 16:35:29.050 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 16:35:29.063 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Cannot determine embedded database driver class for database type NONE
+
+Action:
+
+If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+
+03/03/2017 16:42:34.687 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 14345 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 16:42:34.691 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 16:42:34.846 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@20d28811: startup date [Fri Mar 03 16:42:34 EET 2017]; root of context hierarchy
+03/03/2017 16:42:36.964 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$a8848dd3] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 16:42:37.653 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 16:42:37.825 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 2984 ms
+03/03/2017 16:42:38.104 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 16:42:38.108 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 16:42:38.108 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 16:42:38.109 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 16:42:38.109 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 16:42:38.109 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 16:42:38.109 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 16:42:38.110 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 16:42:38.169 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Tomcat.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.tomcat.jdbc.pool.DataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Cannot determine embedded database driver class for database type NONE. If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+03/03/2017 16:42:38.199 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 16:42:38.204 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Cannot determine embedded database driver class for database type NONE
+
+Action:
+
+If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+
+03/03/2017 16:43:33.660 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 14393 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 16:43:33.666 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 16:43:33.789 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@20d28811: startup date [Fri Mar 03 16:43:33 EET 2017]; root of context hierarchy
+03/03/2017 16:43:36.181 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$a8848dd3] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 16:43:36.741 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 16:43:36.879 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 3093 ms
+03/03/2017 16:43:37.185 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 16:43:37.189 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 16:43:37.189 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 16:43:37.190 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 16:43:37.190 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 16:43:37.190 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 16:43:37.191 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 16:43:37.191 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 16:43:37.268 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Tomcat.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.tomcat.jdbc.pool.DataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Cannot determine embedded database driver class for database type NONE. If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+03/03/2017 16:43:37.322 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 16:43:37.330 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Cannot determine embedded database driver class for database type NONE
+
+Action:
+
+If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+
+03/03/2017 16:44:28.505 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 14437 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 16:44:28.521 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 16:44:28.615 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@20d28811: startup date [Fri Mar 03 16:44:28 EET 2017]; root of context hierarchy
+03/03/2017 16:44:30.770 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$a8848dd3] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 16:44:31.387 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 16:44:31.548 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 2937 ms
+03/03/2017 16:44:31.822 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 16:44:31.825 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 16:44:31.825 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 16:44:31.826 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 16:44:31.826 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 16:44:31.826 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 16:44:31.826 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 16:44:31.827 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 16:44:31.893 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Tomcat.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.tomcat.jdbc.pool.DataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Cannot determine embedded database driver class for database type NONE. If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+03/03/2017 16:44:31.925 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 16:44:31.930 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Cannot determine embedded database driver class for database type NONE
+
+Action:
+
+If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+
+03/03/2017 16:45:33.600 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 14535 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 16:45:33.603 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 16:45:33.685 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@20d28811: startup date [Fri Mar 03 16:45:33 EET 2017]; root of context hierarchy
+03/03/2017 16:45:36.559 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$a8848dd3] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 16:45:37.050 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 16:45:37.202 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 3520 ms
+03/03/2017 16:45:37.525 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 16:45:37.532 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 16:45:37.532 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 16:45:37.533 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 16:45:37.533 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 16:45:37.533 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 16:45:37.534 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 16:45:37.534 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 16:45:37.630 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Tomcat.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.tomcat.jdbc.pool.DataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Cannot determine embedded database driver class for database type NONE. If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+03/03/2017 16:45:37.738 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 16:45:37.758 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Cannot determine embedded database driver class for database type NONE
+
+Action:
+
+If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+
+03/03/2017 16:47:30.022 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 15091 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 16:47:30.025 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 16:47:30.148 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@20d28811: startup date [Fri Mar 03 16:47:30 EET 2017]; root of context hierarchy
+03/03/2017 16:47:32.387 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$763eb6c2] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 16:47:32.894 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 16:47:33.000 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 2866 ms
+03/03/2017 16:47:33.237 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 16:47:33.240 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 16:47:33.241 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 16:47:33.241 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 16:47:33.241 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 16:47:33.241 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 16:47:33.241 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 16:47:33.242 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 16:47:33.298 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Tomcat.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.tomcat.jdbc.pool.DataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Cannot determine embedded database driver class for database type NONE. If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+03/03/2017 16:47:33.330 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 16:47:33.335 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Cannot determine embedded database driver class for database type NONE
+
+Action:
+
+If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+
+03/03/2017 16:53:01.030 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 15541 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 16:53:01.034 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 16:53:01.134 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@6ca8564a: startup date [Fri Mar 03 16:53:01 EET 2017]; root of context hierarchy
+03/03/2017 16:53:03.563 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$ed174fa0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 16:53:04.081 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 16:53:04.217 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 3086 ms
+03/03/2017 16:53:04.482 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 16:53:04.486 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 16:53:04.487 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 16:53:04.487 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 16:53:04.487 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 16:53:04.488 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 16:53:04.488 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 16:53:04.488 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 16:53:04.547 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Tomcat.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.tomcat.jdbc.pool.DataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Cannot determine embedded database driver class for database type NONE. If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+03/03/2017 16:53:04.579 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 16:53:04.585 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Cannot determine embedded database driver class for database type NONE
+
+Action:
+
+If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+
+03/03/2017 16:58:30.038 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 15892 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 16:58:30.064 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 16:58:30.169 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@291ae: startup date [Fri Mar 03 16:58:30 EET 2017]; root of context hierarchy
+03/03/2017 16:58:32.046 [main] [] INFO  epositoryConfigurationDelegate - Line (170) Multiple Spring Data modules found, entering strict repository configuration mode!
+03/03/2017 16:58:32.165 [main] [] INFO  epositoryConfigurationDelegate - Line (170) Multiple Spring Data modules found, entering strict repository configuration mode!
+03/03/2017 16:58:32.867 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$f23ad3ba] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 16:58:33.394 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 16:58:33.577 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 3419 ms
+03/03/2017 16:58:33.956 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 16:58:33.963 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 16:58:33.963 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 16:58:33.963 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 16:58:33.964 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 16:58:33.964 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 16:58:33.965 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 16:58:33.965 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 16:58:34.057 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Tomcat.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.apache.tomcat.jdbc.pool.DataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Cannot determine embedded database driver class for database type NONE. If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+03/03/2017 16:58:34.105 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 16:58:34.113 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Cannot determine embedded database driver class for database type NONE
+
+Action:
+
+If you want an embedded database please put a supported one on the classpath. If you have database settings to be loaded from a particular profile you may need to active it (no profiles are currently active).
+
+03/03/2017 17:01:25.727 [main] [] INFO                             App - Line (48) Starting App on nickapostol-Inspiron-7737 with PID 16044 (/home/nickapostol/Desktop/maven-root/my-app/rest-api/target/classes started by nickapostol in /home/nickapostol/Desktop/maven-root/my-app/rest-api)
+03/03/2017 17:01:25.732 [main] [] INFO                             App - Line (661) No active profile set, falling back to default profiles: default
+03/03/2017 17:01:25.875 [main] [] INFO  gEmbeddedWebApplicationContext - Line (582) Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@291ae: startup date [Fri Mar 03 17:01:25 EET 2017]; root of context hierarchy
+03/03/2017 17:01:27.644 [main] [] INFO  epositoryConfigurationDelegate - Line (170) Multiple Spring Data modules found, entering strict repository configuration mode!
+03/03/2017 17:01:28.414 [main] [] INFO  egate$BeanPostProcessorChecker - Line (325) Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$e280fdc8] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+03/03/2017 17:01:29.060 [main] [] INFO  TomcatEmbeddedServletContainer - Line (87) Tomcat initialized with port(s): 8080 (http)
+03/03/2017 17:01:29.240 [localhost-startStop-1] [] INFO                   ContextLoader - Line (276) Root WebApplicationContext: initialization completed in 3371 ms
+03/03/2017 17:01:29.556 [localhost-startStop-1] [] INFO         ServletRegistrationBean - Line (190) Mapping servlet: 'dispatcherServlet' to [/]
+03/03/2017 17:01:29.560 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'metricsFilter' to: [/*]
+03/03/2017 17:01:29.560 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'characterEncodingFilter' to: [/*]
+03/03/2017 17:01:29.560 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+03/03/2017 17:01:29.561 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'httpPutFormContentFilter' to: [/*]
+03/03/2017 17:01:29.561 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'requestContextFilter' to: [/*]
+03/03/2017 17:01:29.561 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'webRequestLoggingFilter' to: [/*]
+03/03/2017 17:01:29.561 [localhost-startStop-1] [] INFO          FilterRegistrationBean - Line (258) Mapping filter: 'applicationContextIdFilter' to: [/*]
+03/03/2017 17:01:29.590 [main] [] WARN  gEmbeddedWebApplicationContext - Line (550) Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration': Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'javax.sql.DataSource' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+03/03/2017 17:01:29.620 [main] [] INFO  rationReportLoggingInitializer - Line (101) 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+03/03/2017 17:01:29.716 [main] [] ERROR LoggingFailureAnalysisReporter - Line (42) 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of constructor in org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration required a bean of type 'javax.sql.DataSource' that could not be found.
+	- Bean method 'dataSource' not loaded because @ConditionalOnProperty (spring.datasource.jndi-name) did not find property 'jndi-name'
+	- Bean method 'dataSource' not loaded because @ConditionalOnBean (types: org.springframework.boot.jta.XADataSourceWrapper; SearchStrategy: all) did not find any beans
+
+
+Action:
+
+Consider revisiting the conditions above or defining a bean of type 'javax.sql.DataSource' in your configuration.
+
