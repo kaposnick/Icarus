@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos;
+package com.ntuaece.nikosapos.entities;
 
 public class Packet {
 	private long id;

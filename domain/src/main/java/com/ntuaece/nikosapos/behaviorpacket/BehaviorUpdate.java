@@ -1,10 +1,11 @@
-package com.ntuaece.nikosapos;
+package com.ntuaece.nikosapos.behaviorpacket;
 
 
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.ntuaece.nikosapos.RequestPacket;
 
 public class BehaviorUpdate extends RequestPacket {
 	@SerializedName("nodeId") @Expose private int nodeId;
