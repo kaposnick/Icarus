@@ -1,0 +1,46 @@
+package com.ntuaece.nikosapos;
+
+public final class SimulationParameters {
+	
+	/**
+	 * Number of credits assigned to each node initially
+	 */
+	public static final int CREDITS_INITIAL = 220;
+	
+	/**
+	 * 1st threshold used to assist distance nodes
+	 */
+	public static final float DISTANT_NODES_THRESHOLD_FIRST = 1.1f;
+	
+	/**
+	 * 2nd threshold used to assist distance nodes
+	 */
+	public static final float DISTANT_NODES_THRESOLD_SECOND = 4f;
+	
+	/**
+	 * Threshold used by ICAS to determine if a node is selfish
+	 */
+	public static final int CREDITS_SELFISH_THRESHOLD = 4;
+	
+	/**
+	 * Number of packets that must be dropped before
+	 * a selfish begins cooperating
+	 */
+	public static final int IFN = 5;
+	
+	/**
+	 * Threshold used by nodes to determine if another node is 
+	 * selfish
+	 */
+	public static final float ESTIMATED_DROPPING_PROBABILITY = 0.85f;
+	
+	/**
+	 * Initial amount of credits that are given to distant nodes
+	 */
+	public static final int CREDITS_DISTANT_INITIAL = 28;
+	
+	/**
+	 * Maximum number of hops allowed per packet
+	 */
+	public static final int MAX_HOPS = 15;
+}
