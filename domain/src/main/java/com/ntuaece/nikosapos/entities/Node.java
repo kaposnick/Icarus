@@ -1,18 +1,13 @@
 package com.ntuaece.nikosapos.entities;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Node {
-	@SerializedName("id")
-	@Expose
 	private long id;
-	@SerializedName("x")
-	@Expose
-	private double x;
-	@SerializedName("y")
-	@Expose
-	private double y;
+	private int x;
+	private int y;
+	private List<Node> neighbors = new ArrayList<Node>();
 
 	public void setId(long id) {
 		this.id = id;
@@ -22,20 +17,63 @@ public class Node {
 		return id;
 	}
 
-	public void setX(double x) {
+	public void setX(int x) {
 		this.x = x;
 	}
 
-	public double getX() {
+	public int getX() {
 		return x;
 	}
 
-	public void setY(double y) {
+	public void setY(int y) {
 		this.y = y;
 	}
 
-	public double getY() {
+	public int getY() {
 		return y;
+	}
+
+	public void addNeighbor(Node node) {
+		neighbors.add(node);
+	}
+
+	public List<Node> getNeighbors() {
+		return neighbors;
+	}
+
+	public boolean isNeighborWith(long maybeNeighborID) {
+		return neighbors
+			.stream()
+			.anyMatch(n -> n.getId() == maybeNeighborID);
+	}
+
+	public static class Builder {
+		private long id;
+		private int x;
+		private int y;
+
+		public Builder setId(long id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder setX(int x) {
+			this.x = x;
+			return this;
+		}
+
+		public Builder setY(int y) {
+			this.y = y;
+			return this;
+		}
+
+		public Node build() {
+			Node node = new Node();
+			node.id = id;
+			node.x = x;
+			node.y = y;
+			return node;
+		}
 	}
 
 	@Override

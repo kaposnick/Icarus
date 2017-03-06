@@ -43,4 +43,9 @@ public final class SimulationParameters {
 	 * Maximum number of hops allowed per packet
 	 */
 	public static final int MAX_HOPS = 15;
+	
+	/**
+	 * Maximum distance for two nodes to be considered as neighbors
+	 */
+	public static final int MAX_NEIGHBOR_DISTANCE = 60;
 }

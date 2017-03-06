@@ -11,6 +11,7 @@
   <modules>
 	<module>rest-api</module>
 	<module>domain</module>
+	<module>node</module>
   </modules>
   
   <properties>

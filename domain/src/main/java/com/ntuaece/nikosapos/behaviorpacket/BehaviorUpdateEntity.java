@@ -4,14 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class BehaviorUpdateEntity {
-	@SerializedName("neighId") @Expose private int neighId;
+	@SerializedName("neighId") @Expose private long neighId;
 	@SerializedName("ratio") @Expose private float ratio;
 	
-	public void setNeighId(int id) {
+	public void setNeighId(long id) {
 		this.neighId = id;
 	}
 	
-	public int getNeighId() {
+	public long getNeighId() {
 		return neighId;
 	}
 	
