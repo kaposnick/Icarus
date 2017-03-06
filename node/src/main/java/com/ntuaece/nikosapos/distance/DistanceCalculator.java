@@ -10,9 +10,9 @@ public class DistanceCalculator {
 								node2.getY());
 	}	
 	
-	public static double calculateDistance(double x1, double y1, double x2, double y2){
-		double diff_x = x1 - x2;
-		double diff_y = y1 - y2;
+	public static double calculateDistance(int x1, int y1, int x2, int y2){
+		int diff_x = x1 - x2;
+		int diff_y = y1 - y2;
 		return Math.sqrt(Math.pow(diff_x,2) + Math.pow(diff_y, 2));
 	}
 }
