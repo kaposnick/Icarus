@@ -7,7 +7,7 @@ public class Node {
 	private long id;
 	private int x;
 	private int y;
-	private List<Node> neighbors = new ArrayList<Node>();
+	private List<Neighbor> neighbors = new ArrayList<Neighbor>();
 
 	public void setId(long id) {
 		this.id = id;
@@ -33,11 +33,11 @@ public class Node {
 		return y;
 	}
 
-	public void addNeighbor(Node node) {
+	public void addNeighbor(Neighbor node) {
 		neighbors.add(node);
 	}
 
-	public List<Node> getNeighbors() {
+	public List<Neighbor> getNeighbors() {
 		return neighbors;
 	}
 
