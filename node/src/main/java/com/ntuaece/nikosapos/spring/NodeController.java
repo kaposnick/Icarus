@@ -14,6 +14,7 @@ import com.ntuaece.nikosapos.discover.DiscoverPacket;
 import com.ntuaece.nikosapos.discover.DiscoverResponse;
 import com.ntuaece.nikosapos.distance.NeighborValidator;
 import com.ntuaece.nikosapos.distance.NeighborValidatorImpl;
+import com.ntuaece.nikosapos.entities.Neighbor;
 import com.ntuaece.nikosapos.entities.Node;
 import com.ntuaece.nikosapos.node.NodeList;
 
@@ -46,7 +47,7 @@ public class NodeController {
 
 		if (neighborValidator.areNeighbors(sourceNode, targetNode)) {
 			if (!targetNode.isNeighborWith(sourceNode.getId())) {
-				targetNode.addNeighbor(sourceNode);
+				targetNode.addNeighbor(Neighbor.FromNode(sourceNode));
 			}
 			DiscoverResponse response = new DiscoverResponse();
 			response.setSourceID(targetNode.getId());
