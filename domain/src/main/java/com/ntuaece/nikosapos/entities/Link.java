@@ -6,11 +6,9 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Link {
-	private final static int FIBER_LIGHT_SPEED = 3000;
 
 	private final long id;
 	private final static AtomicLong linkCounter = new AtomicLong();
@@ -41,7 +39,7 @@ public class Link {
 		timer = new Timer(true);
 	}
 
-	public void addPacketToLink(Node n, Packet p) {
+	public void addPacketToUpLink(Node n, Packet p) {
 		if (willDrop()) {
 			return;
 		}
@@ -55,7 +53,7 @@ public class Link {
 			throw new IllegalArgumentException("Node " + n.getId() + " is not an endpoint of Link " + id);
 	}
 
-	public Optional<Packet> removePacketFromLink(Node n) {
+	public Optional<Packet> removePacketFromDownLink(Node n) {
 		if (n.equals(firstEndPoint))
 			return Optional.ofNullable(firstEndPointDownLink.poll());
 		else if (n.equals(secondEndPoint))
@@ -69,9 +67,23 @@ public class Link {
 
 	}
 
+	/**
+	 * Decides if the packet will get dropped
+	 * 
+	 * @return true if random below the probability factor
+	 */
+	
 	private boolean willDrop() {
 		return new Random().nextDouble() < 0.3f;
 	}
+	
+	/**
+	 * Set the timer for the packet to get pop out of the queue
+	 * 
+	 * @param i
+	 * 	   =1 for firstEndPoint
+	 * 	   =2 for secondEndPoint
+	 */
 
 	private void setTimer(final int i) {
 		timer.schedule(new TimerTask() {
@@ -114,5 +126,15 @@ public class Link {
 				&& link.secondEndPoint.getId() == secondEndPoint.getId())
 			return true;
 		return false;
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		timer.cancel();
+		firstEndPointUpLink.clear();
+		firstEndPointDownLink.clear();
+		secondEndPointUpLink.clear();
+		secondEndPointDownLink.clear();
+		super.finalize();
 	}
 }
