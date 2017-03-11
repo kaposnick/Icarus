@@ -3,8 +3,8 @@ package com.ntuaece.nikosapos.discover;
 import java.io.IOException;
 
 import com.google.gson.Gson;
-import com.ntuaece.nikosapos.entities.Neighbor;
-import com.ntuaece.nikosapos.entities.Node;
+import com.ntuaece.nikosapos.node.Neighbor;
+import com.ntuaece.nikosapos.node.Node;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -17,22 +17,29 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 	private static final String DISCOVERY_ENDPOINT = "http://localhost:8081/discovery/";
 
 	private final Node node;
-	private final OkHttpClient httpClient;
-	private final Request.Builder requestBuilder;
-	private final Gson gson;
 	private final DiscoverPacket packet;
+	private OkHttpClient httpClient;
+	private Request.Builder requestBuilder;
+	private Gson gson;
 
 	public DiscoveryServiceImpl(Node node) {
 		this.node = node;
 		this.packet = DiscoverPacket.FromNode(node);
-		this.httpClient = new OkHttpClient();
-		this.gson = new Gson();
-		this.requestBuilder = new Request.Builder().post(RequestBody.create(JSON, gson.toJson(packet)));
 	}
 
+	public void setHttpClient(OkHttpClient client) {
+		this.httpClient = client;
+	}
+
+	public void setGson(Gson gson) {
+		this.gson = gson;
+	}
+
+	@Override
 	public boolean discoverForNeighbors() {
 		boolean result = true;
-
+		
+		validateResources();
 		// Will use later to get to know if nodes have quitted
 		// long neighboringIDs[] = node.getNeighbors().stream().mapToLong(node
 		// -> node.getId()).toArray();
@@ -67,7 +74,18 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Node " + node.getId() + " has " + node.getNeighbors().size() + " neighbors");
+		// System.out.println("Node " + node.getId() + " has " +
+		// node.getNeighbors().size() + " neighbors");
 		return result;
+	}
+
+	private void validateResources() {
+		if (httpClient == null)
+			httpClient = new OkHttpClient();
+		if (gson == null)
+			gson = new Gson();
+		if (requestBuilder == null)
+			requestBuilder = new Request.Builder().post(RequestBody.create(JSON, gson.toJson(packet)));
+		
 	}
 }

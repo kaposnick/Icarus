@@ -5,9 +5,8 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.ntuaece.nikosapos.RequestPacket;
 
-public class BehaviorUpdate extends RequestPacket {
+public class BehaviorUpdate  {
 	@SerializedName("nodeId") @Expose private int nodeId;
 	@SerializedName("neighborList") private List<BehaviorUpdateEntity> neighborList;
 	

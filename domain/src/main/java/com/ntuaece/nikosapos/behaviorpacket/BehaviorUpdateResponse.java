@@ -3,11 +3,9 @@ package com.ntuaece.nikosapos.behaviorpacket;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
-
 import com.google.gson.annotations.Expose;
-import com.ntuaece.nikosapos.ResponsePacket;
 
-public class BehaviorUpdateResponse extends ResponsePacket {
+public class BehaviorUpdateResponse {
 	@SerializedName("nodeId") @Expose private long nodeId;
 	@SerializedName("selfishNodes") @Expose private List<String> selfishNodes;
 	

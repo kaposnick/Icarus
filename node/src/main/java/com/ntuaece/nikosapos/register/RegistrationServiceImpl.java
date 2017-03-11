@@ -3,7 +3,7 @@ package com.ntuaece.nikosapos.register;
 import java.io.IOException;
 
 import com.google.gson.Gson;
-import com.ntuaece.nikosapos.entities.Node;
+import com.ntuaece.nikosapos.node.Node;
 import com.ntuaece.nikosapos.registerpacket.RegisterPacket;
 
 import okhttp3.MediaType;
@@ -28,15 +28,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 		boolean result = true;
 
 		Request request = new Request.Builder()
-				.post(RequestBody.create(JSON, new Gson().toJson(RegisterPacket.FromNode(node))))
-				.url(DISCOVERY_ENDPOINT)
-				.build();
-		
+				.post(RequestBody.create(JSON,
+						new Gson().toJson(new RegisterPacket.Builder().setId(node.getId()).setX(node.getX())
+								.setY(node.getY()).setTotalNeighbors(node.getNeighbors().size()))))
+				.url(DISCOVERY_ENDPOINT).build();
+
 		try {
 			Response response = new OkHttpClient().newCall(request).execute();
-			if (!response.isSuccessful()){
+			if (!response.isSuccessful()) {
 				result = false;
-			} 
+			}
 		} catch (IOException e) {
 			result = false;
 			e.printStackTrace();

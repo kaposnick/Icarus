@@ -1,6 +1,16 @@
 package com.ntuaece.nikosapos.node;
 
 public final class NodePosition {
+	public final static int[] x = new int[] {
+			43,80 
+			,55,71
+	};
+	
+	public final static int[] y = new int[] {
+			196, 182
+			,146, 238
+	};	
+	
 	public final static int[] pos_x = new int[] {
 		43, 204, 220, 101, 
 		256, 290, 290, 200, 

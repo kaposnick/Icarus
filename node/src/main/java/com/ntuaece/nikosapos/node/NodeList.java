@@ -1,8 +1,7 @@
 package com.ntuaece.nikosapos.node;
 
 import java.util.ArrayList;
-
-import com.ntuaece.nikosapos.entities.Node;
+import java.util.Optional;
 
 public class NodeList extends ArrayList<Node> {
 	private static NodeList instance;
@@ -18,5 +17,16 @@ public class NodeList extends ArrayList<Node> {
 			}
 		}
 		return instance;
+	}
+	
+	public static Optional<Node> GetNodeById(String id){
+		return GetNodeById(Long.parseLong(id));
+	}
+	
+	public static Optional<Node> GetNodeById(long id){
+		return instance
+			.stream()
+			.filter(n -> n.getId() == id)
+			.findFirst();
 	}
 }

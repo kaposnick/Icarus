@@ -1,34 +1,37 @@
 package com.ntuaece.nikosapos.tasks;
 
-import java.util.TimerTask;
-
+import com.google.gson.Gson;
 import com.ntuaece.nikosapos.discover.DiscoveryService;
 import com.ntuaece.nikosapos.discover.DiscoveryServiceImpl;
-import com.ntuaece.nikosapos.entities.Node;
+import com.ntuaece.nikosapos.node.Node;
 
-public class DiscoveryTask extends TimerTask {
-	
-	private final Node node;
+import okhttp3.OkHttpClient;
+
+public class DiscoveryTask extends NodeTask implements Runnable {
+
 	private final DiscoveryService discoveryServiceImpl;
-	private boolean verbose;
-	
-	public DiscoveryTask(Node node){
-		this.node = node;
+
+	public DiscoveryTask(Node node) {
+		super(node);
 		this.discoveryServiceImpl = new DiscoveryServiceImpl(node);
-		verbose = false;
 	}
-	
-	public void setVerbose(boolean verbose){
-		this.verbose = verbose;
+
+	public void setHttpClient(OkHttpClient client) {
+		if (discoveryServiceImpl instanceof DiscoveryServiceImpl) {
+			((DiscoveryServiceImpl) discoveryServiceImpl).setHttpClient(client);
+		}
+	}
+
+	public void setGson(Gson gson) {
+		if (discoveryServiceImpl instanceof DiscoveryServiceImpl) {
+			((DiscoveryServiceImpl) discoveryServiceImpl).setGson(gson);
+		}
 	}
 
 	@Override
 	public void run() {
 		System.out.println("Node: " + node.getId() + " discovering neighbor nodes...");
-		boolean result = discoveryServiceImpl.discoverForNeighbors();
-		if (result && verbose){
-			System.out.println("Discovery successful");
-		}
-	}
+		discoveryServiceImpl.discoverForNeighbors();
 
+	}
 }

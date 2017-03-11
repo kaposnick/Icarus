@@ -2,7 +2,7 @@ package com.ntuaece.nikosapos.discover;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.ntuaece.nikosapos.entities.Node;
+import com.ntuaece.nikosapos.node.Node;
 
 public class DiscoverPacket {
 	@SerializedName("nodeID")

@@ -1,13 +1,34 @@
-package com.ntuaece.nikosapos.entities;
+package com.ntuaece.nikosapos.node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 
 public class Node {
 	private long id;
 	private int x;
 	private int y;
 	private List<Neighbor> neighbors = new ArrayList<Neighbor>();
+	private List<String> selfishNodes = new ArrayList<String>();
+
+	public boolean isNeighborWith(long maybeNeighborID) {
+		return neighbors
+			.stream()
+			.anyMatch(n -> n.getId() == maybeNeighborID);
+	}
+	
+	public Optional<Neighbor> findNeighborById(long id){
+		return neighbors
+				.stream()
+				.filter(n -> n.getId() == id)
+				.findFirst();
+	}
+	
+	public void updateSelfishNodeList(List<String> updatedList){
+		selfishNodes.clear();
+		selfishNodes.addAll(updatedList);
+	}
 
 	public void setId(long id) {
 		this.id = id;
@@ -39,12 +60,6 @@ public class Node {
 
 	public List<Neighbor> getNeighbors() {
 		return neighbors;
-	}
-
-	public boolean isNeighborWith(long maybeNeighborID) {
-		return neighbors
-			.stream()
-			.anyMatch(n -> n.getId() == maybeNeighborID);
 	}
 
 	public static class Builder {
@@ -88,7 +103,7 @@ public class Node {
 		if (obj == null || getClass() != obj.getClass())
 			return false;
 		Node node = (Node) obj;
-		if ((node.getX() == this.x && node.getY() == this.y) || node.getId() == this.id)
+		if (node.getId() == this.id)
 			return true;
 		return false;
 	}
