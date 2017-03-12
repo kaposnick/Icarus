@@ -7,4 +7,9 @@ public final class NodeScheduledTask {
 	
 	public final static int UPDATE_BEHAVIOR_PERIOD = 25000;
 	public final static int UPDATE_BEHAVIOR_INITIAL_DELAY = 0;
+	
+	public final static int DARWIN_UPDATE_PERIOD = 20000;
+	
+	public final static int PACKET_SENT_PERIOD = 2500;
+	public final static int PACKET_SENT_INITIAL_DELAY = 500;
 }

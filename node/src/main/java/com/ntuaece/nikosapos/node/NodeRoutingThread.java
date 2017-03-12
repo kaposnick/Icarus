@@ -4,83 +4,140 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.ntuaece.nikosapos.entities.Packet;
 
 public class NodeRoutingThread extends Thread implements PacketReceiver {
 
-	private final Node node;
-	private Map<Long, Link> idToLink = new HashMap<>();
-	private Queue<Long> incomingPacketQueue = new ConcurrentLinkedQueue<>();
+    private final Node node;
 
-	public NodeRoutingThread(Node node) {
-		this.node = node;
-		node.getNeighbors().stream().forEach(neighbor -> idToLink.put(neighbor.getLink().getId(), neighbor.getLink()));
-	}
+    private final Router router;
+    private final NeighborStatsRecorder recorder;
 
-	@Override
-	public void run() {
-		while (true) {
-			try {
-				//System.out.println("Node " + node.getId() + " sleeping");
-				sleep(Long.MAX_VALUE);
-			} catch (InterruptedException e) {
-				// e.printStackTrace();
-				checkLinks();
-			}
-		}
-	}
+    private Map<Long, Link> idToLink = new HashMap<>();
+    private Queue<Long> incomingPacketQueue = new ConcurrentLinkedQueue<>();
+    private int nextPacketDestination = 0;
+    private boolean canSend = false;
 
-	private void checkLinks() {
-		// TODO Auto-generated method stub
-		while (incomingPacketQueue.size() > 0) {
-			Optional<Packet> maybePacket = idToLink.get(incomingPacketQueue.poll()).removePacketFromDownLink(node);
-			if (maybePacket.isPresent()) {
-				managePacket(maybePacket.get());
-				
-				for (int i = 0; i<= 1000000; i++);
-				
-				Packet packet = maybePacket.get();
-				long lastID = packet.getPathlist().get(packet.getPathlist().size()-1);
-				packet.getPathlist().add(node.getId());
-				node.getNeighbors()
-					.stream()
-					.filter(neighbor -> neighbor.getId() == lastID)
-					.forEach(n -> n.getLink().addPacketToUpLink(node, packet));
-			}
-		}
+    public NodeRoutingThread(Node node) {
+        super("Node routing " + node.getId());
+        this.node = node;
+        this.router = new RouterImpl(node);
+        this.recorder = new NeighborStatsRecorderImpl(node);
+        node.getNeighbors().stream().forEach(neighbor -> {
+            idToLink.put(neighbor.getLink().getId(), neighbor.getLink());
+            neighbor.getLink().setPacketReceiver(node, this);
+        });
+        if (node.getId() == 0) setTimer();
+    }
 
-	}
+    private void checkLinks() {
+        while (incomingPacketQueue.size() > 0) {
+            long linkId = incomingPacketQueue.poll();
+            Optional<Packet> maybePacket = idToLink.get(linkId).removePacketFromDownLink(node);
+            if (maybePacket.isPresent()) {
+                Packet packet = maybePacket.get();
+                System.out.println("Node " + node.getId() + " received packet " + packet.getId());
+                managePacket(packet);
+            }
+        }
+    }
 
-	private void managePacket(Packet packet) {
-		System.out.println("Node " + node.getId() + " received packet " + packet.getId());
-		
-		if (packet.isAck()) {
-			// informNeighborTables(packet);
-			if (packet.getSourceNodeID() == node.getId()) packet.drop();
-		} else {
-			if (packet.getDestinationNodeID() == node.getId()) {
-				// create an ack
-				// inform icas
-				// send to next neighbor
-			} else {
-				if ( hasToDrop() ) {
-					// do nothing
-				} else {
-					// update packet
-					// send to next neighbor
-				}
-			}
-		}
-	}
-	
-	private boolean hasToDrop(){return false;}
+    private void sendNewPacket() {
+        if (!icasPermits()) return;
+        Packet newPacket = new Packet.Builder().setSourceNodeId(node.getId())
+                                               .setDestinationNodeId(nextPacketDestination)
+                                               .setData((byte) 0x04)
+                                               .build();
+        System.out.println("Node " + node.getId() + " sending new packet " + newPacket.getId() + " to "
+                + nextPacketDestination);
+        managePacket(newPacket);
+    }
 
-	@Override
-	public void onPacketReceived(Long id) {
-		incomingPacketQueue.offer(id);
-		interrupt();
-	}
+    private void managePacket(Packet packet) {
+        boolean hasToRoute = false;
+        Neighbor nextNode = null;
+        if (packet.isAck()) {
+            // if it is the source of a packet sent
+            if (packet.getSourceNodeID() == node.getId()) packet.drop();
+            else {
+                hasToRoute = true;
+                nextNode = router.routePacket(packet);
+            }
+        } else {
+            if (packet.getDestinationNodeID() == node.getId()) {
+                // create an ack
+                packet.setAck(true);
+                // inform icas
+                // send to next neighbor
+                hasToRoute = true;
+                nextNode = router.routePacket(packet);
+            } else {
+                if (hasToDrop() || packet.getHopsRemaining() == 0) {
+                    packet.drop();
+                } else {
+                    // send to next neighbor
+                    hasToRoute = true;
+                    nextNode = router.routePacket(packet);
+                }
+            }
+        }
+
+        if (hasToRoute && nextNode != null) {
+            recorder.recordPacket(packet, nextNode.getLink().getId());
+            nextNode.getLink().addPacketToUpLink(node, packet);
+        }
+    }
+
+    private boolean hasToDrop() {
+        // TODO:
+        return false;
+    }
+
+    private boolean icasPermits() {
+        // TODO:
+        return true;
+    }
+
+    private void setTimer() {
+        Timer timer = new Timer("Node " + node.getId() + " packet generator");
+        timer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                // choose a random node (maybe fixed)
+                nextPacketDestination = new Random().nextInt(NodePosition.x.length);
+                canSend = true;
+                if (!NodeRoutingThread.this.isInterrupted()) {
+                    NodeRoutingThread.this.interrupt();
+                }
+            }
+        }, NodeScheduledTask.PACKET_SENT_INITIAL_DELAY, NodeScheduledTask.PACKET_SENT_PERIOD);
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                sleep(Long.MAX_VALUE);
+            } catch (InterruptedException e) {
+                checkLinks();
+                if (canSend) {
+                    canSend = false;
+                    sendNewPacket();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onPacketReceived(Long id) {
+        incomingPacketQueue.offer(id);
+        if (!isInterrupted()) interrupt();
+    }
 
 }

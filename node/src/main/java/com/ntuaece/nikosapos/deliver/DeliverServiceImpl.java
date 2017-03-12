@@ -26,7 +26,6 @@ public class DeliverServiceImpl implements DeliveryService{
 	
 	@Override
 	public void deliverPacketToNode(long nodeId, Packet p) {
-//		System.out.println("Sending packet " + p.getId());
 		Request request = new Request.Builder()
 				.post(RequestBody.create(JSON, gson.toJson(p)))
 				.url(SEND_ENDPOINT + nodeId)
@@ -34,12 +33,8 @@ public class DeliverServiceImpl implements DeliveryService{
 		try {
 			httpClient.newCall(request).execute();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-//				System.out.println("Packet " + p.getId() + " sent");
-//			if (response.isSuccessful()) return true;
-//			else return false;		
+		}		
 	}
 
 }

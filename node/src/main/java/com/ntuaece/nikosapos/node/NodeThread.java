@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ntuaece.nikosapos.entities.Packet;
 import com.ntuaece.nikosapos.spring.NodeApplication;
+import com.ntuaece.nikosapos.tasks.DarwinUpdateTask;
 import com.ntuaece.nikosapos.tasks.DiscoveryTask;
 import com.ntuaece.nikosapos.tasks.LinkCreateTask;
 import com.ntuaece.nikosapos.tasks.RegistrationTask;
@@ -18,78 +19,71 @@ import okhttp3.OkHttpClient;
 
 public class NodeThread extends Thread {
 	private final Node node;
+	
+	private OkHttpClient httpClient;
+	private Gson gson;
+	private ScheduledExecutorService scheduledExecutorService;
 
 	public NodeThread(Node node) {
-		super(String.valueOf(node.getId()));
+		super("Node main " + String.valueOf(node.getId()));
 		this.node = node;
 	}
 
 	@Override
 	public void run() {
-		OkHttpClient httpClient = new OkHttpClient();
-		Gson gson = new GsonBuilder()
+		httpClient = new OkHttpClient.Builder()
+		                    .readTimeout(50, TimeUnit.SECONDS)
+		                    .build();
+		gson = new GsonBuilder()
 						.excludeFieldsWithoutExposeAnnotation()
 						.create();
+		scheduledExecutorService = Executors.newScheduledThreadPool(2);		
 		
-		DiscoveryTask discoveryTask = new DiscoveryTask(node);
-		discoveryTask.setHttpClient(httpClient);
-		discoveryTask.setGson(gson);		
-		
-		RegistrationTask registrationTask = new RegistrationTask(node);
-		LinkCreateTask linkTask = new LinkCreateTask(node);
-		UpdateBehaviorTask updateTask = new UpdateBehaviorTask();
-
-		ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
-
-		Future<?> discoveryFutureResult = scheduledExecutorService.submit(discoveryTask);
-		// wait for the discovery task to get finished
-		while (!discoveryFutureResult.isDone())
-			;
-
-		Future<?> linkFutureResult = scheduledExecutorService.submit(linkTask);
-		// wait fot the link creation task to get finished
-		while (!linkFutureResult.isDone())
-			;
-
+		executeAndSheduleDiscoveryTask();
+		// executeRegistrationTask();
+		executeLinkTask();
+		// scheduleDarwinTask();
 		
 		NodeRoutingThread routingThread = new NodeRoutingThread(node);
-		node.getNeighbors().stream().forEach(neigh -> neigh.getLink().setPacketReceiver(node, routingThread));
-		routingThread.start();
+		routingThread.start();	
+	}
 
-		if (node.getId() >= 1 ) {
-			for (int i = 0; i< 1; i++){
-				node.getNeighbors()
-				.get(0)
-				.getLink()
-				.addPacketToUpLink(node, new Packet.Builder()
-						.setSourceNodeId(node.getId())
-						.setDestinationNodeId(15)
-						.setData((byte)4)
-						.build());
-				try {
-					sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-				
-//		Future<?> registrationFutureResult = scheduledExecutorService.submit(registrationTask);
-//		// wait for the registration task to get finished
-//		while (!registrationFutureResult.isDone())
-//			;
-		
+    private void scheduleDarwinTask() {
+        DarwinUpdateTask darwinUpdateTask = new DarwinUpdateTask(node);
+        scheduledExecutorService.scheduleAtFixedRate(
+                         darwinUpdateTask,
+                         NodeScheduledTask.DARWIN_UPDATE_PERIOD * 10, 
+                         NodeScheduledTask.DARWIN_UPDATE_PERIOD, 
+                         TimeUnit.MILLISECONDS);
+    }
 
-		// Schedule discover neighbor task
-		scheduledExecutorService.scheduleAtFixedRate(discoveryTask,
-				NodeScheduledTask.DISCOVERY_PERIOD + node.getId() * 10, NodeScheduledTask.DISCOVERY_PERIOD,
-				TimeUnit.MILLISECONDS);
+    private void executeLinkTask() {
+        LinkCreateTask linkTask = new LinkCreateTask(node);
+        Future<?> linkFutureResult = scheduledExecutorService.submit(linkTask);
+        while (!linkFutureResult.isDone()) ;
+    }
 
-		// schedule update neighbor behavior task
-		scheduledExecutorService.scheduleAtFixedRate(updateTask,
-				NodeScheduledTask.UPDATE_BEHAVIOR_INITIAL_DELAY + node.getId() * 10,
-				NodeScheduledTask.UPDATE_BEHAVIOR_PERIOD, TimeUnit.MILLISECONDS);
-		}
+    private void executeRegistrationTask() {
+        RegistrationTask registrationTask = new RegistrationTask(node);
+        Future<?> registrationFutureResult  = scheduledExecutorService.submit(registrationTask);
+        while (!registrationFutureResult.isDone()) ;
+    }
+
+    private void executeAndSheduleDiscoveryTask() {
+        DiscoveryTask discoveryTask = new DiscoveryTask(node);
+        discoveryTask.setHttpClient(httpClient);
+        discoveryTask.setGson(gson);        
+        
+        Future<?> discoveryFutureResult = scheduledExecutorService.submit(discoveryTask);
+        // wait for the discovery task to get finished
+        while (!discoveryFutureResult.isDone()) ;
+        
+     // Schedule discover neighbor task
+        scheduledExecutorService.scheduleAtFixedRate(
+                                                  discoveryTask,
+                                                  NodeScheduledTask.DISCOVERY_PERIOD + node.getId() * 10, 
+                                                  NodeScheduledTask.DISCOVERY_PERIOD,
+                                                  TimeUnit.MILLISECONDS);
+    }
 
 }
