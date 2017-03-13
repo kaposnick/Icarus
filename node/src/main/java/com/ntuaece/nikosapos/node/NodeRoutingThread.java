@@ -59,36 +59,39 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     }
 
     private void managePacket(Packet packet) {
-        boolean hasToRoute = false;
         Neighbor nextNode = null;
         if (packet.isAck()) {
             // if it is the source of a packet sent
-            if (packet.getSourceNodeID() == node.getId()) packet.drop();
-            else {
-                hasToRoute = true;
+            if (packet.getSourceNodeID() == node.getId()) {
+                System.out.println("Packet " + packet.getId() + " has reached source " + node.getId());
+                recorder.recordPacket(packet);
+                packet.drop();
+            } else {
                 nextNode = router.routePacket(packet);
+                recorder.recordPacket(packet);
             }
         } else {
             if (packet.getDestinationNodeID() == node.getId()) {
+                System.out.println("Packet " + packet.getId() + " has reached destination.");
                 // create an ack
                 packet.setAck(true);
                 // inform icas
                 // send to next neighbor
-                hasToRoute = true;
                 nextNode = router.routePacket(packet);
+                recorder.recordPacket(packet);
             } else {
                 if (hasToDrop() || packet.getHopsRemaining() == 0) {
+                    recorder.recordPacket(packet);
                     packet.drop();
                 } else {
                     // send to next neighbor
-                    hasToRoute = true;
                     nextNode = router.routePacket(packet);
+                    recorder.recordPacket(packet);
                 }
             }
         }
 
-        if (hasToRoute && nextNode != null) {
-            recorder.recordPacket(packet, nextNode.getLink().getId());
+        if (nextNode != null) {
             nextNode.getLink().addPacketToUpLink(node, packet);
         }
     }
@@ -110,7 +113,9 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             @Override
             public void run() {
                 // choose a random node (maybe fixed)
-                nextPacketDestination = new Random().nextInt(NodePosition.x.length);
+                do {
+                    nextPacketDestination = new Random().nextInt(NodePosition.x.length);
+                } while (nextPacketDestination == node.getId());
                 canSend = true;
                 if (!NodeRoutingThread.this.isInterrupted()) {
                     NodeRoutingThread.this.interrupt();

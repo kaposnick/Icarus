@@ -41,11 +41,13 @@ public class Neighbor {
 
 	public void incrementSentPacketCounter() {
 		packetsSent++;
+		System.out.println("Neighbor " + id + " sent " + packetsSent );
 		updateConnectivityRatio();
 	}
 
 	public void incrementForwardedPacketCounter() {
 		packetsForwarded++;
+	      System.out.println("Neighbor " + id + " sent " + packetsForwarded );
 		updateConnectivityRatio();
 	}
 	

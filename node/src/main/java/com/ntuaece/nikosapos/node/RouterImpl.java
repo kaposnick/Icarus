@@ -15,24 +15,32 @@ public class RouterImpl implements Router {
     @Override
     public Neighbor routePacket(Packet packet) {
         Neighbor nextNode = null;
+        
+        if (packet.getSourceNodeID() == node.getId()) {
+            packet.addPathlist(node.getId());
+        }
+        
+        
         if (!packet.isAck()) {
             nextNode = findNextNeighbor(packet);
-            packet.addPathlist(node.getId());
+            packet.addPathlist(nextNode.getId());
             packet.decrementTTL();
         } else {
-            // ACK 
-            int nextNeighborIndex;
-            for(nextNeighborIndex = 0; nextNeighborIndex < packet.getPathlist().size(); nextNeighborIndex++){
-                long pathNode = packet.getPathlist().get(nextNeighborIndex);
-                if (pathNode == node.getId()) break;
-            }
-            
-            if (nextNeighborIndex > packet.getPathlist().size()) {
-                throw new  RuntimeException("Index too high!");
+            // ACK
+            int nextNeighborIndex = -1;
+
+            for (int i = 0; i < packet.getPathlist().size(); i++) {
+                long pathNode = packet.getPathlist().get(i);
+                if (pathNode == node.getId()) {
+                    nextNeighborIndex = i - 1;
+                    break;
+                }
             }
 
+            if (nextNeighborIndex > packet.getPathlist().size()) { throw new RuntimeException("Index too high!"); }
+
             // next neighbor for an ack can be retrieved from the path list
-            long nextNeighborID = packet.getPathlist().get(nextNeighborIndex - 1);
+            long nextNeighborID = packet.getPathlist().get(nextNeighborIndex);
             Optional<Neighbor> neighbor = node.findNeighborById(nextNeighborID);
 
             if (neighbor.isPresent()) {
@@ -45,7 +53,7 @@ public class RouterImpl implements Router {
     }
 
     private Neighbor findNextNeighbor(Packet p) {
-        //TODO: must implement the full algorithm here
+        // TODO: must implement the full algorithm here
         return node.getNeighbors().get(0);
     }
 
