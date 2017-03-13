@@ -18,9 +18,14 @@ public final class SimulationParameters {
 	public static final float DISTANT_NODES_THRESOLD_SECOND = 4f;
 	
 	/**
+	 * Credit threshold to determine node state
+	 */
+	public static final int CREDIT_STATUS_THRESHOLD = 4;
+	
+	/**
 	 * Threshold used by ICAS to determine if a node is selfish
 	 */
-	public static final int CREDITS_SELFISH_THRESHOLD = 4;
+	public static final float CONNECTIVITY_RATIO_ICAS_THRESHOLD = 0.5f;
 	
 	/**
 	 * Number of packets that must be dropped before
@@ -48,4 +53,8 @@ public final class SimulationParameters {
 	 * Maximum distance for two nodes to be considered as neighbors
 	 */
 	public static final int MAX_NEIGHBOR_DISTANCE = 60;
+	
+	/**
+	 * 
+	 */
 }

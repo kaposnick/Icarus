@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 public class BehaviorUpdate  {
 	@SerializedName("nodeId") @Expose private int nodeId;
 	@SerializedName("neighborList") private List<BehaviorUpdateEntity> neighborList;
+	@SerializedName("relayedPackets") private int relayedPackets;
 	
 	public void setNodeId(int sourceNodeID) {
 		this.nodeId = sourceNodeID;
@@ -17,6 +18,14 @@ public class BehaviorUpdate  {
 	public int getNodeID() {
 		return nodeId;
 	}
+	
+	public void setRelayedPackets(int relayedPackets) {
+        this.relayedPackets = relayedPackets;
+    }
+	
+	public int getRelayedPackets() {
+        return relayedPackets;
+    }
 	
 	public void setNeighborList(List<BehaviorUpdateEntity> neighborBehaviorList) {
 		this.neighborList = neighborBehaviorList;
