@@ -67,7 +67,7 @@ public class Link {
     }
 
     public void addPacketToUpLink(Node sender, Packet p) {
-        if (willDrop()) { return; }
+        if (willDrop(p)) { return; }
 //        System.out.println("Node " + sender.getId() + " sending packet " + p.getId() + " to " + p.getDestinationNodeID());
         if (sender.equals(firstEndPoint)) {
             firstEndPointUpLink.offer(p);
@@ -113,8 +113,12 @@ public class Link {
      * @return true if random below the probability factor
      */
 
-    private boolean willDrop() {
-        return false; // new Random().nextDouble() < 0.3f;
+    private boolean willDrop(Packet packet) {
+        if (packet.isAck()) {
+          return new Random().nextDouble() < 0.0002f; // 0.02%  
+        } else {
+          return new Random().nextDouble() < 0.002f;  // 0.2%  
+        } 
     }
 
     /**
