@@ -1,0 +1,36 @@
+package com.ntuaece.nikosapos.node;
+
+public class Distant {
+    private long id;
+    private long relayId = -1;
+    private int totalHops;
+    private double distance;
+    
+    public long getId() {
+        return id;
+    }
+    
+    public void setRelayId(long relayId) {
+        this.relayId = relayId;
+    }
+    
+    public long getRelayId() {
+        return relayId;
+    }
+    
+    public void setTotalHops(int totalHops) {
+        this.totalHops = totalHops;
+    }
+    
+    public int getTotalHops() {
+        return totalHops;
+    }
+    
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+    
+    public double getDistance() {
+        return distance;
+    }
+}

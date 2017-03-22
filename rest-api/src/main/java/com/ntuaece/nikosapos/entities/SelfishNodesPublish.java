@@ -50,13 +50,11 @@ public class SelfishNodesPublish extends TimerTask {
                     
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        // TODO Auto-generated method stub
                         
                     }
                     
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        // TODO Auto-generated method stub
                         
                     }
                 });

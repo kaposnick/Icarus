@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.ntuaece.nikosapos.SimulationParameters;
-import com.ntuaece.nikosapos.entities.NodeEntity.Builder;
 
 public class NodeEntity  {
 	public static final List<NodeEntity> NodeEntityList = new ArrayList<>();
@@ -41,11 +40,9 @@ public class NodeEntity  {
 	public static class Builder {
     	private long id;
     	private int x,y;
-    	private int tokens;
     	private boolean isDistant;
     	private int totalNeighbors;
     	
-    	private float nodeConnectivityRatio;
     	
     	public Builder setId(long id) {
     		this.id = id;
@@ -67,15 +64,6 @@ public class NodeEntity  {
     		return this;
     	}
     	
-    	public Builder setTokens(int tokens) {
-    		this.tokens = tokens;
-    		return this;
-    	}
-    	
-    	public Builder setNodeConnectivityRatio(float nodeConnectivityRatio) {
-    		this.nodeConnectivityRatio = nodeConnectivityRatio;
-    		return this;
-    	}
     	
     	public Builder setTotalNeighbors(int totalNeighbors) {
     	    this.totalNeighbors = totalNeighbors;
@@ -87,9 +75,9 @@ public class NodeEntity  {
     		entity.id = id;
     		entity.x = x;
     		entity.y = y;
-    		entity.tokens = tokens;
+    		entity.tokens = SimulationParameters.CREDITS_INITIAL;
     		entity.neighborConnectivityRatio = new HashMap<>();
-    		entity.nodeConnectivityRatio = nodeConnectivityRatio;
+    		entity.nodeConnectivityRatio = 1.0f;
     		entity.nodeStatus = NodeStatus.ANY_SEND;
     		entity.isDistant = isDistant;
     		entity.isSelfish = false;
@@ -107,9 +95,11 @@ public class NodeEntity  {
             int totalNonSelfishNeighbors = 0;
             for (Entry<Long,Float> neighborEntry : neighborConnectivityRatio.entrySet()) {
                 long neighborId = neighborEntry.getKey();
+                
+                // take into account only the non-selfish nodes
                 if (!NodeEntity.GetNodeEntityById(neighborId).get().isSelfish()){
                     totalNonSelfishNeighbors++;
-                    sum = neighborEntry.getValue();
+                    sum += neighborEntry.getValue();
                 }
             }
             
@@ -125,7 +115,6 @@ public class NodeEntity  {
 
     public void setTokens(int tokens) {
 		this.tokens = tokens;
-		updateNodeStatus();
 	}
 	
 	public void setAllowedToSendPacketsForFree(boolean isAllowedToSentPacketsForFree) {
@@ -172,7 +161,7 @@ public class NodeEntity  {
         return isDistant;
     }
 
-    private void updateNodeStatus() {
+    public void updateNodeStatus() {
         if (tokens >= SimulationParameters.CREDIT_STATUS_THRESHOLD) {
             nodeStatus = NodeStatus.ANY_SEND;
         } else if (tokens < SimulationParameters.CREDIT_STATUS_THRESHOLD
@@ -182,7 +171,8 @@ public class NodeEntity  {
     }
 
     private void setSelfish() {
-        isSelfish = nodeConnectivityRatio <= SimulationParameters.CONNECTIVITY_RATIO_ICAS_THRESHOLD;
+        isSelfish = nodeConnectivityRatio < SimulationParameters.CONNECTIVITY_RATIO_ICAS_THRESHOLD;
+        System.out.println("Updating selfish for node " + id + " : " + isSelfish);
     }
 	
 	

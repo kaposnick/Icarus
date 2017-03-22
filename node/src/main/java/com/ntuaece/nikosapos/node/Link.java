@@ -14,12 +14,36 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ntuaece.nikosapos.deliver.DeliverServiceImpl;
 import com.ntuaece.nikosapos.deliver.DeliveryService;
+import com.ntuaece.nikosapos.distance.DistanceCalculator;
 import com.ntuaece.nikosapos.entities.Packet;
 
 import okhttp3.OkHttpClient;
 
 public class Link {
     public static final List<Link> LinkList = new ArrayList<>();
+
+    public synchronized static void createLinkIfNotExists(Node node1, Node node2, double distance) {
+
+        // check if link already existing
+        if (!LinkList.stream()
+                     .noneMatch(link -> link.getFirstEndPoint().equals(node1) && link.getSecondEndPoint().equals(node2)
+                             || link.getFirstEndPoint().equals(node2)
+                                     && link.getSecondEndPoint().equals(node1))) { return; }
+
+        // create link and bind to each neighbor
+        Link link = new Link(node1, node2, distance);
+        node1.getNeighbors().stream().filter(n -> n.getId() == node2.getId()).forEach(n -> {
+            n.bindLink(link);
+            n.setDistance(distance);
+        });
+        node2.getNeighbors().stream().filter(n -> n.getId() == node1.getId()).forEach(n -> {
+            n.bindLink(link);
+            n.setDistance(distance);
+        });
+
+        LinkList.add(link);
+        System.out.println("Created Link " + node1.getId() + " - " + node2.getId());
+    }
 
     private final long id;
     private final static AtomicLong linkCounter = new AtomicLong();
@@ -68,7 +92,8 @@ public class Link {
 
     public void addPacketToUpLink(Node sender, Packet p) {
         if (willDrop(p)) { return; }
-//        System.out.println("Node " + sender.getId() + " sending packet " + p.getId() + " to " + p.getDestinationNodeID());
+        // System.out.println("Node " + sender.getId() + " sending packet " +
+        // p.getId() + " to " + p.getDestinationNodeID());
         if (sender.equals(firstEndPoint)) {
             firstEndPointUpLink.offer(p);
             setTimer(1);
@@ -79,9 +104,6 @@ public class Link {
     }
 
     public synchronized void addPacketToDownLink(Node receiver, Packet p) {
-        // TODO: must wake the thread to manage the packet
-        // System.out.println("Node " + receiver.getId() + " received packet " +
-        // p.getId());
         if (receiver.equals(firstEndPoint)) {
             firstEndPointDownLink.offer(p);
             if (firstEndPointPacketReceiver != null) firstEndPointPacketReceiver.onPacketReceived(id);
@@ -115,10 +137,10 @@ public class Link {
 
     private boolean willDrop(Packet packet) {
         if (packet.isAck()) {
-          return new Random().nextDouble() < 0.0002f; // 0.02%  
+            return new Random().nextDouble() * 10000 < 2; // 0.02%
         } else {
-          return new Random().nextDouble() < 0.002f;  // 0.2%  
-        } 
+            return new Random().nextDouble() * 10000 < 20; // 0.2%
+        }
     }
 
     /**
@@ -147,6 +169,7 @@ public class Link {
     }
 
     private long calculateDeliveryTimerBasedOnDistance() {
+        // TODO: have to simulate the transfer delay
         return 50;
     }
 
@@ -188,26 +211,8 @@ public class Link {
         firstEndPointDownLink.clear();
         secondEndPointUpLink.clear();
         secondEndPointDownLink.clear();
+        firstEndPointPacketReceiver = null;
+        secondEndPointPacketReceiver = null;
         super.finalize();
-    }
-
-    public synchronized static void createLinkIfNotExists(Node node1, Node node2, double distance) {
-
-        // check if link already existing
-        if (!LinkList.stream()
-                     .noneMatch(link -> link.getFirstEndPoint().equals(node1) && link.getSecondEndPoint().equals(node2)
-                             || link.getFirstEndPoint().equals(node2) && link.getSecondEndPoint().equals(node1))) {
-            // System.out.println("Link " + node1.getId() + " - " +
-            // node2.getId() + " exists");
-            return;
-        }
-
-        // create link and bind to each neighbor
-        Link link = new Link(node1, node2, distance);
-        node1.getNeighbors().stream().filter(n -> n.getId() == node2.getId()).forEach(n -> n.bindLink(link));
-        node2.getNeighbors().stream().filter(n -> n.getId() == node1.getId()).forEach(n -> n.bindLink(link));
-
-        LinkList.add(link);
-        System.out.println("Created Link " + node1.getId() + " - " + node2.getId());
     }
 }

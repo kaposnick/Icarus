@@ -24,7 +24,7 @@ public class Packet {
 	private int hopsRemaining;
 	@SerializedName("pathlist")
 	@Expose
-	private List<Long> pathlist = new ArrayList<>();
+	private List<Long> pathlist;
 	@SerializedName("data")
 	@Expose
 	private byte data;
@@ -32,8 +32,6 @@ public class Packet {
 	@SerializedName("ack")
 	@Expose
 	private boolean isAck = false;
-
-	private boolean isDropped = false;
 
 	private Packet() {
 	}
@@ -47,7 +45,6 @@ public class Packet {
 	}
 
 	public void drop() {
-		isDropped = false;
 		pathlist.clear();
 		pathlist = null;
 	}
@@ -121,6 +118,7 @@ public class Packet {
 			packet.destinationNodeID = this.destinationID;
 			packet.hopsRemaining = SimulationParameters.MAX_HOPS;
 			packet.data = this.data;
+			packet.pathlist = new ArrayList<>();
 			return packet;
 		}
 

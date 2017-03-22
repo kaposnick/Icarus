@@ -1,28 +1,25 @@
 package com.ntuaece.nikosapos.tasks;
 
-
-
 import com.ntuaece.nikosapos.distance.DistanceCalculator;
 import com.ntuaece.nikosapos.node.Link;
 import com.ntuaece.nikosapos.node.Neighbor;
 import com.ntuaece.nikosapos.node.Node;
 import com.ntuaece.nikosapos.node.NodeList;
 
-public class LinkCreateTask extends NodeTask implements Runnable {
+public class LinkCreateTask extends NodeTask {
 
-	public LinkCreateTask(Node node) {
-		super(node);
-	}
+    public LinkCreateTask(Node node) {
+        super(node);
+    }
 
-	@Override
-	public void run() {
-		for (int neighborIndex = 0; neighborIndex < node.getNeighbors().size(); neighborIndex++) {
-			Neighbor neighbor = node.getNeighbors().get(neighborIndex);
-			long neighborID = neighbor.getId();
-			Node neighborNode = NodeList.GetInstance().stream().filter(n -> n.getId() == neighborID).findFirst().get();
-			Link.createLinkIfNotExists(node, neighborNode,
-					DistanceCalculator.calculateDistance(node, neighborNode));
-		}
-	}
+    @Override
+    public void run() {
+        for (int neighborIndex = 0; neighborIndex < node.getNeighbors().size(); neighborIndex++) {
+            Neighbor neighbor = node.getNeighbors().get(neighborIndex);
+            long neighborID = neighbor.getId();
+            Node neighborNode = NodeList.GetInstance().stream().filter(n -> n.getId() == neighborID).findFirst().get();
+            Link.createLinkIfNotExists(node, neighborNode, DistanceCalculator.calculateDistance(node, neighborNode));
+        }
+    }
 
 }

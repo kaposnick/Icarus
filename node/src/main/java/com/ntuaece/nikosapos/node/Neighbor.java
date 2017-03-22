@@ -10,6 +10,7 @@ public class Neighbor {
 	private float meanConnectivityRatio;
 	private int packetsSent;
 	private int packetsForwarded;
+	private double distance;
 	private boolean isSelfish;
 
 	private Link link;
@@ -25,6 +26,18 @@ public class Neighbor {
 		neighbor.isSelfish = false;
 		return neighbor;
 	}
+	
+	public void setDistance(double distance) {
+        this.distance = distance;
+    }
+	
+	public RouteDetails askRouteDetailsForNode(long id){
+	    return null;
+	}
+	
+	public double getDistance() {
+        return distance;
+    }
 
 	private void updateConnectivityRatio() {
 		if (packetsSent == 0)
@@ -41,13 +54,13 @@ public class Neighbor {
 
 	public void incrementSentPacketCounter() {
 		packetsSent++;
-		System.out.println("Neighbor " + id + " sent " + packetsSent );
+//		System.out.println("Neighbor " + id + " sent " + packetsSent );
 		updateConnectivityRatio();
 	}
 
 	public void incrementForwardedPacketCounter() {
 		packetsForwarded++;
-	      System.out.println("Neighbor " + id + " sent " + packetsForwarded );
+//	      System.out.println("Neighbor " + id + " sent " + packetsForwarded );
 		updateConnectivityRatio();
 	}
 	

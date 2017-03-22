@@ -7,7 +7,7 @@ import com.ntuaece.nikosapos.node.Node;
 
 import okhttp3.OkHttpClient;
 
-public class DarwinUpdateTask extends NodeTask implements Runnable {
+public class DarwinUpdateTask extends NetworkTask {
 
     private final DarwinUpdateService darwinUpdateService;
 

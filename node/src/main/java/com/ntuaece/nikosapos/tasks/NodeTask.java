@@ -2,7 +2,7 @@ package com.ntuaece.nikosapos.tasks;
 
 import com.ntuaece.nikosapos.node.Node;
 
-public class NodeTask {
+public abstract class NodeTask implements Runnable {
 	protected final Node node;
 	
 	public NodeTask(Node node){

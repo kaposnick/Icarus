@@ -23,7 +23,7 @@ public class DistantNodeAssist extends TimerTask {
             && node.getRelayedPackets() <= k * SimulationParameters.DISTANT_NODES_THRESOLD_SECOND * cpi
             && !node.isAllowedToSendPacketsForFree()) {
                int additionalTokens = 0;
-               float sintelestis = 0;
+               float sintelestis;
                if ( node.getRelayedPackets() <= k * SimulationParameters.DISTANT_NODES_THRESHOLD_FIRST * cpi) {
                    sintelestis = 1.5f;
                } else {

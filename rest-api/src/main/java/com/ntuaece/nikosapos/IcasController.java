@@ -12,86 +12,95 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdate;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
+import com.ntuaece.nikosapos.entities.DistantValidator;
 import com.ntuaece.nikosapos.entities.NodeEntity;
 import com.ntuaece.nikosapos.entities.NodeStatus;
 import com.ntuaece.nikosapos.entities.Rewarder;
 import com.ntuaece.nikosapos.entities.RewarderImpl;
+import com.ntuaece.nikosapos.permission.Permission;
 import com.ntuaece.nikosapos.permission.PermissionPacket;
 import com.ntuaece.nikosapos.registerpacket.RegisterPacket;
 
 @RestController
 public class IcasController {
-    
+
     private Rewarder rewarder;
-    
+    private DistantValidator distantValidator;
+
     public IcasController() {
         rewarder = new RewarderImpl();
+        distantValidator = new DistantValidator() {
+            
+            @Override
+            public boolean isDistant(int totalneighbors) {
+                return totalneighbors <= 2;
+            }
+        };
     }
 
+    
+    //Tested
     @RequestMapping(method = RequestMethod.POST, value = "/register")
-    public ResponseEntity registerNode(@RequestBody RegisterPacket registerPacket) {
+    public ResponseEntity<?> registerNode(@RequestBody RegisterPacket registerPacket) {
         if (registerPacket.getId() != -1) {
-            if ( NodeEntity.NodeExists(registerPacket.getId())) {
-                return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
-            }
+            if (NodeEntity.NodeExists(registerPacket.getId())) { return new ResponseEntity<>(HttpStatus.CONFLICT); }
             NodeEntity nodeEntity = new NodeEntity.Builder().setId(registerPacket.getId())
                                                             .setX(registerPacket.getX())
                                                             .setY(registerPacket.getY())
                                                             .setTotalNeighbors(registerPacket.getTotalNeighbors())
-                                                            .setDistant(registerPacket.getTotalNeighbors() <= 2)
-                                                            .setTokens(SimulationParameters.CREDITS_INITIAL)
-                                                            .setNodeConnectivityRatio(1.0f)
+                                                            .setDistant(distantValidator.isDistant(registerPacket.getTotalNeighbors()))
                                                             .build();
             NodeEntity.NodeEntityList.add(nodeEntity);
-            System.out.println("Node " + nodeEntity.getId() + " registered") ;
-            return new ResponseEntity(HttpStatus.CREATED);
+            System.out.println("Node " + nodeEntity.getId() + " registered");
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/permission")
-    public ResponseEntity askPermission(@RequestBody PermissionPacket permissionPacket) {
+    public ResponseEntity<?> askPermission(@RequestBody PermissionPacket permissionPacket) {
         Optional<NodeEntity> node = NodeEntity.GetNodeEntityById(permissionPacket.getNodeId());
         if (node.isPresent()) {
-            if (node.get().isAllowedToSendPacketsForFree()) {
-                return new ResponseEntity("yes", HttpStatus.OK);
-            }
             NodeStatus status = node.get().getStatus();
-            String response = "";
-            switch (status) {
-                case ANY_SEND:
-                    response = "yes";
-                    break;
-                case NEIGHBOR_SEND:
-                    response = "neighbornly";
-                    break;
-                case NO_SEND:
-                    response = "no";
-                    break;
+            Permission permission;
+            if (node.get().isAllowedToSendPacketsForFree()) permission = Permission.FREE_SEND;
+            else {
+                switch (status) {
+                    case ANY_SEND:
+                        permission = Permission.ANY_SEND;
+                        break;
+                    case NEIGHBOR_SEND:
+                        permission = Permission.NEIGHBOR_SEND;
+                        break;
+                    case NO_SEND:
+                        permission = Permission.NO_SEND;
+                        break;
+                    default:
+                        permission = Permission.NO_SEND;
+                        break;
+                }
             }
-            return new ResponseEntity<String>(response, HttpStatus.OK);
+            return new ResponseEntity<String>(permission.getText(), HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<String>("Node " + permissionPacket.getNodeId() + " not registered",
+                                              HttpStatus.UNAUTHORIZED);
         }
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/deliverysuccessful")
-    public ResponseEntity deliverySuccessful(@RequestBody List<Long> nodeIdList) {
-        
-        if (nodeIdList.size() < 2) {
-            return new ResponseEntity("Should contain at least two ids",HttpStatus.BAD_REQUEST);
-        }
-        
+    public ResponseEntity<?> deliverySuccessful(@RequestBody List<Long> nodeIdList) {
+
+        if (nodeIdList.size() < 2) { return new ResponseEntity<String>("Should contain at least two ids",
+                                                                       HttpStatus.BAD_REQUEST); }
+
         // no relays --> no rewards
-        if (nodeIdList.size() == 2){
-            return new ResponseEntity(HttpStatus.OK);
-        }        
-        
+        if (nodeIdList.size() == 2) { return new ResponseEntity<>(HttpStatus.OK); }
+
         int totalRelayRewards = 0;
-        
+
         // not take into account source and destination for relay cost
-        for(int index = 1; index < nodeIdList.size() - 1; index++) {
+        for (int index = 1; index < nodeIdList.size() - 1; index++) {
             Long nodeId = nodeIdList.get(index);
             Optional<NodeEntity> node = NodeEntity.GetNodeEntityById(nodeId);
             if (node.isPresent()) {
@@ -99,44 +108,46 @@ public class IcasController {
                 totalRelayRewards += rewarder.rewardNode(node.get());
                 System.out.println("Node " + node.get().getId() + " tokens " + node.get().getTokens());
             } else {
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         }
-        
+
         // charge source node
         Optional<NodeEntity> sourceNode = NodeEntity.GetNodeEntityById(nodeIdList.get(0));
-        if (sourceNode.isPresent()){
+        if (sourceNode.isPresent()) {
             rewarder.chargeNode(sourceNode.get(), totalRelayRewards);
             System.out.println("Node " + sourceNode.get().getId() + " tokens " + sourceNode.get().getTokens());
         } else {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        
-        return new ResponseEntity(HttpStatus.OK);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/neighborUpdate")
-    public ResponseEntity updateNeighborBehavior(@RequestBody BehaviorUpdate behaviorPacket ){
-        
+    public ResponseEntity<?> updateNeighborBehavior(@RequestBody BehaviorUpdate behaviorPacket) {
+
         // the sender node id
         long senderNodeId = behaviorPacket.getNodeID();
-        
-        // update the relayed packets field so that it gets computed for the distant nodes
+
+        // update the relayed packets field so that it gets computed for the
+        // distant nodes
         NodeEntity.GetNodeEntityById(senderNodeId).get().setRelayedPackets(behaviorPacket.getRelayedPackets());
-        
+
         // iterate through all the neighbors
-        for (BehaviorUpdateEntity behaviorUpdateEntity : behaviorPacket.getNeighborList()){
+        for (BehaviorUpdateEntity behaviorUpdateEntity : behaviorPacket.getNeighborList()) {
             long neighborId = behaviorUpdateEntity.getNeighId();
-            
+
             // for each neighbor add the ConnectivityRatio sender node perceives
             Optional<NodeEntity> neighborNode = NodeEntity.GetNodeEntityById(neighborId);
-            if (neighborNode.isPresent()){
+            if (neighborNode.isPresent()) {
                 neighborNode.get().getNeighborConnectivityRatio().put(senderNodeId, behaviorUpdateEntity.getRatio());
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            
-            // if all the packets from the neighbors have arrived then update the connectivity ratio of 
+
+            // if all the packets from the neighbors have arrived then update
+            // the connectivity ratio of
             // the node and clear the ratios
             neighborNode.get().updateConnectivityRatioIfNecessary();
         }

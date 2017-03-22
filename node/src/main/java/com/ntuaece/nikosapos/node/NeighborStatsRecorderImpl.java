@@ -16,7 +16,7 @@ public class NeighborStatsRecorderImpl implements NeighborStatsRecorder {
     public void recordPacket(Packet packet) {
         // if packet has reached destination no action should be done
         if (packet.getDestinationNodeID() != node.getId()) {
-
+            
             int myNodeIndex = 0;
             for (int i = 0; i < packet.getPathlist().size(); i++) {
                 if (packet.getPathlist().get(i) == node.getId()) {

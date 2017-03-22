@@ -9,4 +9,8 @@ public class PermissionPacket {
     public long getNodeId() {
         return nodeId;
     }
+    
+    public void setNodeId(long nodeId) {
+        this.nodeId = nodeId;
+    }
 }

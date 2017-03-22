@@ -72,11 +72,10 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             }
         } else {
             if (packet.getDestinationNodeID() == node.getId()) {
-                System.out.println("Packet " + packet.getId() + " has reached destination.");
-                // create an ack
+                System.out.println("Packet " + packet.getId() + " has reached destination " + node.getId());
                 packet.setAck(true);
                 // inform icas
-                // send to next neighbor
+                //TODO: we have to inform icas here for the arrival of the packet
                 nextNode = router.routePacket(packet);
                 recorder.recordPacket(packet);
             } else {
@@ -93,6 +92,9 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
 
         if (nextNode != null) {
             nextNode.getLink().addPacketToUpLink(node, packet);
+        } else {
+            System.out.println("Packet " + packet.getId() + " dropped by " + node.getId());
+            packet.drop();
         }
     }
 

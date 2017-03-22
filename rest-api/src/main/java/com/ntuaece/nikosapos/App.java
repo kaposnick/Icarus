@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 
 import com.ntuaece.nikosapos.entities.DistantNodeAssist;
 import com.ntuaece.nikosapos.entities.SelfishNodesPublish;
+import com.ntuaece.nikosapos.entities.UpdateNodeStatus;
 
 
 @SpringBootApplication
@@ -20,7 +21,8 @@ public class App
         SpringApplication.run(App.class, args);
         
         Timer icasTimer = new Timer("Icas Timer");
-        icasTimer.scheduleAtFixedRate(new SelfishNodesPublish(), 15000, 15000);
-        icasTimer.scheduleAtFixedRate(new DistantNodeAssist(), 20000, 20000);
+        icasTimer.scheduleAtFixedRate(new SelfishNodesPublish(), 10000, 10000);
+//        icasTimer.scheduleAtFixedRate(new DistantNodeAssist(), 50000, 50000);
+//        icasTimer.scheduleAtFixedRate(new UpdateNodeStatus(), 10000, 10000);
     }
 }

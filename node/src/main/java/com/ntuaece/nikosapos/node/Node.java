@@ -11,6 +11,8 @@ public class Node {
     private long id;
     private int x;
     private int y;
+    
+    private List<Distant> distants = new ArrayList<Distant>();
     private List<Neighbor> neighbors = new ArrayList<Neighbor>();
     private List<String> selfishNodes = new ArrayList<String>();
 
@@ -22,6 +24,10 @@ public class Node {
 
     public Optional<Neighbor> findNeighborById(long id) {
         return neighbors.stream().filter(n -> n.getId() == id).findFirst();
+    }
+    
+    public Optional<Distant> findDistantById(long id) {
+        return distants.stream().filter(dst -> dst.getId() == id).findFirst();
     }
 
     public void updateSelfishNodeList(List<String> updatedList) {
@@ -65,6 +71,14 @@ public class Node {
             neighbor.setMeanConnectivityRatio(meanConnectivityRatio);
             neighbor.clearCounters();
         });
+    }
+    
+    public List<String> getSelfishNodes(){
+        return selfishNodes;
+    }
+    
+    public List<Distant> getDistantNodes(){
+        return distants;
     }
 
     public void setId(long id) {

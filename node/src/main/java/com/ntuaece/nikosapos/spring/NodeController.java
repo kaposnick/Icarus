@@ -19,9 +19,11 @@ import com.ntuaece.nikosapos.discover.DiscoverResponse;
 import com.ntuaece.nikosapos.distance.NeighborValidator;
 import com.ntuaece.nikosapos.distance.NeighborValidatorImpl;
 import com.ntuaece.nikosapos.entities.Packet;
+import com.ntuaece.nikosapos.node.Distant;
 import com.ntuaece.nikosapos.node.Neighbor;
 import com.ntuaece.nikosapos.node.Node;
 import com.ntuaece.nikosapos.node.NodeList;
+import com.ntuaece.nikosapos.node.RouteDetails;
 
 @RestController
 public class NodeController {
@@ -35,7 +37,7 @@ public class NodeController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/discovery/{id}")
-    public ResponseEntity onDiscovery(@PathVariable("id") String nodeID,
+    public ResponseEntity<?> onDiscovery(@PathVariable("id") String nodeID,
 
             @RequestBody DiscoverPacket incomingDiscoveryMessage) {
 
@@ -71,18 +73,18 @@ public class NodeController {
     }
 
     @RequestMapping(value = "/send/{id}", method = RequestMethod.POST)
-    public ResponseEntity onReceive(@PathVariable("id") String nodeID, @RequestBody Packet packet) {
+    public ResponseEntity<?> onReceive(@PathVariable("id") String nodeID, @RequestBody Packet packet) {
         try {
             interCarrier.deliverToQueue(Long.parseLong(nodeID), packet);
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @RequestMapping(value = "/darwin/{id}", method = RequestMethod.POST)
-    public ResponseEntity onDarwin(@PathVariable("id") String nodeID, @RequestBody DarwinPacket packet) {
+    public ResponseEntity<?> onDarwin(@PathVariable("id") String nodeID, @RequestBody DarwinPacket packet) {
         Optional<Node> mayNode = NodeList.GetNodeById(nodeID);
         if (mayNode.isPresent()) {
             Node node = mayNode.get();
@@ -91,10 +93,48 @@ public class NodeController {
                 node.computeNeighborMeanConnectivityRatio();
                 node.clearDarwinPacketList();
             }
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/route/{id}/{dst}")
+    public ResponseEntity<?> onRouteHelp(@PathVariable("id") String nodeID, @PathVariable("dst") String wantedID) {
+        Optional<Node> node = NodeList.GetNodeById(nodeID);
+
+        // validate id
+        if (!node.isPresent()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        RouteDetails routeDetails = new RouteDetails();
+        boolean isFound = false;
+
+        Optional<Neighbor> neighbor = node.get().findNeighborById(Long.parseLong(wantedID));
+        if (neighbor.isPresent()) {
+            // is neighbor node
+            isFound = true;
+            routeDetails.setNodeId(Long.parseLong(nodeID));
+            routeDetails.setDestinationId(Long.parseLong(wantedID));
+            routeDetails.setDistance(neighbor.get().getDistance());
+            routeDetails.setMaxHops(1);
+        }
+
+        if (!isFound) {
+            // if not neighbor then distant
+            Optional<Distant> distant = node.get().findDistantById(Long.parseLong(wantedID));
+            if (distant.isPresent()) {
+                // is distant node
+                isFound = true;
+                routeDetails.setNodeId(Long.parseLong(nodeID));
+                routeDetails.setDestinationId(Long.parseLong(wantedID));
+                routeDetails.setDistance(distant.get().getDistance());
+                routeDetails.setMaxHops(distant.get().getTotalHops());
+            }
+        }
+
+        routeDetails.setFound(isFound);
+        return new ResponseEntity<RouteDetails>(routeDetails, HttpStatus.OK);
+    }
+
 }
