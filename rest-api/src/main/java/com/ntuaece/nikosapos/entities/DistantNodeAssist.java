@@ -32,12 +32,12 @@ public class DistantNodeAssist extends TimerTask {
                additionalTokens = (int) (sintelestis + SimulationParameters.CREDITS_DISTANT_INITIAL * Math.pow(cpi, 2));
                node.setTokens(node.getTokens() + additionalTokens);
           }
-          boolean isAllowdToSendFree =  !node.isSelfish()
+          boolean isAllowedToSendFree =  !node.isSelfish()
             && node.getStatus() == NodeStatus.ANY_SEND
             && node.getRelayedPackets() <= k * SimulationParameters.DISTANT_NODES_THRESOLD_SECOND * cpi
             && node.getTokens() < 0;
             
-          node.setAllowedToSendPacketsForFree(isAllowdToSendFree);           
+          node.setAllowedToSendPacketsForFree(isAllowedToSendFree);           
       });
     }
 

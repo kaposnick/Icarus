@@ -60,7 +60,6 @@ public class AppTest {
                     assertFalse(response.isSuccessful());
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -77,7 +76,6 @@ public class AppTest {
             Response response = client.newCall(request).execute();
             assertTrue(response.body().string().contains(Permission.ANY_SEND.getText()));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } 
 

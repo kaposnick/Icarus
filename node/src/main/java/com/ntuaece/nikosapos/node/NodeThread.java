@@ -16,74 +16,76 @@ import com.ntuaece.nikosapos.tasks.RegistrationTask;
 import com.ntuaece.nikosapos.tasks.UpdateBehaviorTask;
 
 import okhttp3.OkHttpClient;
+import services.IcasResponsible;
+import services.IcasService;
+import services.NeighborResponsible;
+import services.NeighborService;
 
 public class NodeThread extends Thread {
-	private final Node node;
-	
-	private OkHttpClient httpClient;
-	private Gson gson;
-	private ScheduledExecutorService scheduledExecutorService;
+    private final Node node;
 
-	public NodeThread(Node node) {
-		super("Node main " + String.valueOf(node.getId()));
-		this.node = node;
-	}
+    private IcasResponsible icasService;
+    private NeighborResponsible neighborService;
+    private ScheduledExecutorService scheduledExecutorService;
 
-	@Override
-	public void run() {
-		httpClient = new OkHttpClient.Builder()
-		                    .readTimeout(50, TimeUnit.SECONDS)
-		                    .build();
-		gson = new GsonBuilder()
-						.excludeFieldsWithoutExposeAnnotation()
-						.create();
-		scheduledExecutorService = Executors.newScheduledThreadPool(2);		
-		
-		executeAndSheduleDiscoveryTask();
-		// executeRegistrationTask();
-		executeLinkTask();
-		// scheduleDarwinTask();
-		
-		NodeRoutingThread routingThread = new NodeRoutingThread(node);
-		routingThread.start();	
-	}
+    public NodeThread(Node node) {
+        super("Node main " + String.valueOf(node.getId()));
+        this.node = node;
+    }
+
+    @Override
+    public void run() {
+        prepareResources();
+        executeAndSheduleDiscoveryTask();
+        System.out.println("Node " + node.getId() + " neighbors " + node.getNeighbors().size());
+        // executeRegistrationTask();
+        executeLinkTask();
+        // scheduleDarwinTask();
+
+        NodeRoutingThread routingThread = new NodeRoutingThread(node);
+//        routingThread.start();
+    }
+
+    private void prepareResources() {
+        OkHttpClient httpClient = new OkHttpClient.Builder().readTimeout(50, TimeUnit.SECONDS).build();
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        icasService = new IcasService(node,httpClient,gson);
+        neighborService = new NeighborService(node,httpClient,gson);        
+        scheduledExecutorService = Executors.newScheduledThreadPool(2);
+    }
 
     private void scheduleDarwinTask() {
         DarwinUpdateTask darwinUpdateTask = new DarwinUpdateTask(node);
-        scheduledExecutorService.scheduleAtFixedRate(
-                         darwinUpdateTask,
-                         NodeScheduledTask.DARWIN_UPDATE_PERIOD * 10, 
-                         NodeScheduledTask.DARWIN_UPDATE_PERIOD, 
-                         TimeUnit.MILLISECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(darwinUpdateTask,
+                                                     NodeScheduledTask.DARWIN_UPDATE_PERIOD * 10,
+                                                     NodeScheduledTask.DARWIN_UPDATE_PERIOD,
+                                                     TimeUnit.MILLISECONDS);
     }
 
     private void executeLinkTask() {
         LinkCreateTask linkTask = new LinkCreateTask(node);
         Future<?> linkFutureResult = scheduledExecutorService.submit(linkTask);
-        while (!linkFutureResult.isDone()) ;
+        while (!linkFutureResult.isDone());
     }
 
     private void executeRegistrationTask() {
         RegistrationTask registrationTask = new RegistrationTask(node);
-        Future<?> registrationFutureResult  = scheduledExecutorService.submit(registrationTask);
-        while (!registrationFutureResult.isDone()) ;
+        Future<?> registrationFutureResult = scheduledExecutorService.submit(registrationTask);
+        while (!registrationFutureResult.isDone());
     }
 
     private void executeAndSheduleDiscoveryTask() {
-        DiscoveryTask discoveryTask = new DiscoveryTask(node);
-        discoveryTask.setHttpClient(httpClient);
-        discoveryTask.setGson(gson);        
-        
+        DiscoveryTask discoveryTask = new DiscoveryTask(node,neighborService);
+
         Future<?> discoveryFutureResult = scheduledExecutorService.submit(discoveryTask);
         // wait for the discovery task to get finished
-        while (!discoveryFutureResult.isDone()) ;
-        
-     // Schedule discover neighbor task
-        scheduledExecutorService.scheduleAtFixedRate(
-                                                  discoveryTask,
-                                                  NodeScheduledTask.DISCOVERY_PERIOD + node.getId() * 10, 
-                                                  NodeScheduledTask.DISCOVERY_PERIOD,
-                                                  TimeUnit.MILLISECONDS);
+        while (!discoveryFutureResult.isDone());
+
+        // Schedule discover neighbor task
+        scheduledExecutorService.scheduleAtFixedRate(discoveryTask,
+                                                     NodeScheduledTask.DISCOVERY_PERIOD + node.getId() * 10,
+                                                     NodeScheduledTask.DISCOVERY_PERIOD,
+                                                     TimeUnit.MILLISECONDS);
     }
 
 }

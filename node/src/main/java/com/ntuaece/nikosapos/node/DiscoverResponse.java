@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.discover;
+package com.ntuaece.nikosapos.node;
 
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.annotations.Expose;
