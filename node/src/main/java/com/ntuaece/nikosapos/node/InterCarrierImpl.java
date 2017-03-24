@@ -1,11 +1,8 @@
-package com.ntuaece.nikosapos.carrier;
+package com.ntuaece.nikosapos.node;
 
 import java.util.Optional;
 
 import com.ntuaece.nikosapos.entities.Packet;
-import com.ntuaece.nikosapos.node.Neighbor;
-import com.ntuaece.nikosapos.node.Node;
-import com.ntuaece.nikosapos.node.NodeList;
 
 public class InterCarrierImpl implements InterCarrier {
 

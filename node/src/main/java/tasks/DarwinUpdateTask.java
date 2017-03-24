@@ -1,10 +1,10 @@
-package com.ntuaece.nikosapos.tasks;
+package tasks;
 
 import com.google.gson.Gson;
-import com.ntuaece.nikosapos.darwin.DarwinUpdateService;
-import com.ntuaece.nikosapos.darwin.DarwinUpdateServiceImpl;
 import com.ntuaece.nikosapos.node.Node;
 
+import darwin.DarwinUpdateService;
+import darwin.DarwinUpdateServiceImpl;
 import okhttp3.OkHttpClient;
 
 public class DarwinUpdateTask extends NetworkTask {

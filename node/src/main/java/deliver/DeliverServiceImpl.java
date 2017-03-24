@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.deliver;
+package deliver;
 
 import java.io.IOException;
 

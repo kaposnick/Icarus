@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.darwin;
+package darwin;
 
 import com.google.gson.annotations.SerializedName;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;

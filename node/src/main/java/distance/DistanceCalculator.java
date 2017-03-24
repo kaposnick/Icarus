@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.distance;
+package distance;
 
 import com.ntuaece.nikosapos.node.Node;
 

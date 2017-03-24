@@ -1,7 +1,8 @@
-package com.ntuaece.nikosapos.deliver;
+package deliver;
 
 import com.ntuaece.nikosapos.entities.Packet;
-import com.ntuaece.nikosapos.tasks.NodeService;
+
+import tasks.NodeService;
 
 public interface DeliveryService {
 	void deliverPacketToNode(long nodeId, Packet p);

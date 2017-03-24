@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.ntuaece.nikosapos.darwin.DarwinPacket;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
+
+import darwin.DarwinPacket;
 
 public class Node {
     private long id;

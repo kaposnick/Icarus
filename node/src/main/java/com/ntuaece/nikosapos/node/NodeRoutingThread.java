@@ -11,10 +11,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.ntuaece.nikosapos.entities.Packet;
 
+import services.IcasResponsible;
+import services.NeighborResponsible;
+
 public class NodeRoutingThread extends Thread implements PacketReceiver {
 
     private final Node node;
-
+    private final NeighborResponsible neighborService;
+    private final IcasResponsible icasService;
     private final Router router;
     private final NeighborStatsRecorder recorder;
 
@@ -23,9 +27,11 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     private int nextPacketDestination = 0;
     private boolean canSend = false;
 
-    public NodeRoutingThread(Node node) {
+    public NodeRoutingThread(Node node, NeighborResponsible nService, IcasResponsible iService) {
         super("Node routing " + node.getId());
         this.node = node;
+        this.neighborService = nService;
+        this.icasService = iService;
         this.router = new RouterImpl(node);
         this.recorder = new NeighborStatsRecorderImpl(node);
         node.getNeighbors().stream().forEach(neighbor -> {
@@ -48,7 +54,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     }
 
     private void sendNewPacket() {
-        if (!icasPermits()) return;
+        if (!icasPermits(nextPacketDestination)) return;
         Packet newPacket = new Packet.Builder().setSourceNodeId(node.getId())
                                                .setDestinationNodeId(nextPacketDestination)
                                                .setData((byte) 0x04)
@@ -103,8 +109,9 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         return false;
     }
 
-    private boolean icasPermits() {
-        // TODO:
+    private boolean icasPermits(long id) {
+//        return icasService.askForSendPermission(id);
+        // TODO: 
         return true;
     }
 

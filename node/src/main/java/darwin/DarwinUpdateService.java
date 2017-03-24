@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.darwin;
+package darwin;
 
 public interface DarwinUpdateService {
     void updateNeighbors();

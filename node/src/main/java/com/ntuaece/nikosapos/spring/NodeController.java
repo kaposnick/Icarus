@@ -11,19 +11,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ntuaece.nikosapos.carrier.InterCarrier;
-import com.ntuaece.nikosapos.carrier.InterCarrierImpl;
-import com.ntuaece.nikosapos.darwin.DarwinPacket;
-import com.ntuaece.nikosapos.distance.NeighborValidator;
-import com.ntuaece.nikosapos.distance.NeighborValidatorImpl;
 import com.ntuaece.nikosapos.entities.Packet;
 import com.ntuaece.nikosapos.node.DiscoverPacket;
 import com.ntuaece.nikosapos.node.DiscoverResponse;
 import com.ntuaece.nikosapos.node.Distant;
+import com.ntuaece.nikosapos.node.InterCarrier;
+import com.ntuaece.nikosapos.node.InterCarrierImpl;
 import com.ntuaece.nikosapos.node.Neighbor;
 import com.ntuaece.nikosapos.node.Node;
 import com.ntuaece.nikosapos.node.NodeList;
 import com.ntuaece.nikosapos.node.RouteDetails;
+
+import darwin.DarwinPacket;
+import distance.NeighborValidator;
+import distance.NeighborValidatorImpl;
 
 @RestController
 public class NodeController {

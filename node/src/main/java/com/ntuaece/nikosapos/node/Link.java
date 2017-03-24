@@ -12,11 +12,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ntuaece.nikosapos.deliver.DeliverServiceImpl;
-import com.ntuaece.nikosapos.deliver.DeliveryService;
-import com.ntuaece.nikosapos.distance.DistanceCalculator;
 import com.ntuaece.nikosapos.entities.Packet;
 
+import deliver.DeliverServiceImpl;
+import deliver.DeliveryService;
+import distance.DistanceCalculator;
 import okhttp3.OkHttpClient;
 
 public class Link {

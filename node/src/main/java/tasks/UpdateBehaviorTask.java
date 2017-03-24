@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.tasks;
+package tasks;
 
 import java.util.TimerTask;
 

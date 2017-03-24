@@ -9,17 +9,17 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ntuaece.nikosapos.entities.Packet;
 import com.ntuaece.nikosapos.spring.NodeApplication;
-import com.ntuaece.nikosapos.tasks.DarwinUpdateTask;
-import com.ntuaece.nikosapos.tasks.DiscoveryTask;
-import com.ntuaece.nikosapos.tasks.LinkCreateTask;
-import com.ntuaece.nikosapos.tasks.RegistrationTask;
-import com.ntuaece.nikosapos.tasks.UpdateBehaviorTask;
 
 import okhttp3.OkHttpClient;
 import services.IcasResponsible;
 import services.IcasService;
 import services.NeighborResponsible;
 import services.NeighborService;
+import tasks.DarwinUpdateTask;
+import tasks.DiscoveryTask;
+import tasks.LinkCreateTask;
+import tasks.RegistrationTask;
+import tasks.UpdateBehaviorTask;
 
 public class NodeThread extends Thread {
     private final Node node;
@@ -37,20 +37,19 @@ public class NodeThread extends Thread {
     public void run() {
         prepareResources();
         executeAndSheduleDiscoveryTask();
-        System.out.println("Node " + node.getId() + " neighbors " + node.getNeighbors().size());
-        // executeRegistrationTask();
+        executeRegistrationTask();
         executeLinkTask();
         // scheduleDarwinTask();
 
-        NodeRoutingThread routingThread = new NodeRoutingThread(node);
-//        routingThread.start();
+        NodeRoutingThread routingThread = new NodeRoutingThread(node,neighborService,icasService);
+        // routingThread.start();
     }
 
     private void prepareResources() {
         OkHttpClient httpClient = new OkHttpClient.Builder().readTimeout(50, TimeUnit.SECONDS).build();
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        icasService = new IcasService(node,httpClient,gson);
-        neighborService = new NeighborService(node,httpClient,gson);        
+        icasService = new IcasService(node, httpClient, gson);
+        neighborService = new NeighborService(node, httpClient, gson);
         scheduledExecutorService = Executors.newScheduledThreadPool(2);
     }
 
@@ -69,13 +68,13 @@ public class NodeThread extends Thread {
     }
 
     private void executeRegistrationTask() {
-        RegistrationTask registrationTask = new RegistrationTask(node);
+        RegistrationTask registrationTask = new RegistrationTask(node,icasService);
         Future<?> registrationFutureResult = scheduledExecutorService.submit(registrationTask);
         while (!registrationFutureResult.isDone());
     }
 
     private void executeAndSheduleDiscoveryTask() {
-        DiscoveryTask discoveryTask = new DiscoveryTask(node,neighborService);
+        DiscoveryTask discoveryTask = new DiscoveryTask(node, neighborService);
 
         Future<?> discoveryFutureResult = scheduledExecutorService.submit(discoveryTask);
         // wait for the discovery task to get finished

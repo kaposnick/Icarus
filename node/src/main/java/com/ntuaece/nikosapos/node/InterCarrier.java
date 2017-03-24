@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.carrier;
+package com.ntuaece.nikosapos.node;
 
 import com.ntuaece.nikosapos.entities.Packet;
 
