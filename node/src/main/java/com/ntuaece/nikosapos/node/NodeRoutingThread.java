@@ -38,7 +38,8 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             idToLink.put(neighbor.getLink().getId(), neighbor.getLink());
             neighbor.getLink().setPacketReceiver(node, this);
         });
-        if (node.getId() == 0) setTimer();
+//        if (node.getId() == 0) setTimer();
+        setTimer();
     }
 
     private void checkLinks() {
@@ -72,6 +73,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
                 System.out.println("Packet " + packet.getId() + " has reached source " + node.getId());
                 recorder.recordPacket(packet);
                 packet.drop();
+                return;
             } else {
                 nextNode = router.routePacket(packet);
                 recorder.recordPacket(packet);
@@ -88,6 +90,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
                 if (hasToDrop() || packet.getHopsRemaining() == 0) {
                     recorder.recordPacket(packet);
                     packet.drop();
+                    return;
                 } else {
                     // send to next neighbor
                     nextNode = router.routePacket(packet);

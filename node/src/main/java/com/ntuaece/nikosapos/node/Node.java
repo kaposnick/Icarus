@@ -6,8 +6,6 @@ import java.util.Optional;
 
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
 
-import darwin.DarwinPacket;
-
 public class Node {
     private long id;
     private int x;

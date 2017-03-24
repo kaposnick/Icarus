@@ -63,25 +63,25 @@ public class IcasController {
         Optional<NodeEntity> node = NodeEntity.GetNodeEntityById(permissionPacket.getNodeId());
         if (node.isPresent()) {
             NodeStatus status = node.get().getStatus();
-            Permission permission;
-            if (node.get().isAllowedToSendPacketsForFree()) permission = Permission.FREE_SEND;
+            if (node.get().isAllowedToSendPacketsForFree()) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
             else {
                 switch (status) {
                     case ANY_SEND:
-                        permission = Permission.ANY_SEND;
-                        break;
+                        return new ResponseEntity<>(HttpStatus.OK);
                     case NEIGHBOR_SEND:
-                        permission = Permission.NEIGHBOR_SEND;
-                        break;
+                        // if is neighbor
+                        if (node.get().getNeighborConnectivityRatio().containsKey(permissionPacket.getDestinationNodeId())) {
+                            return new ResponseEntity<>(HttpStatus.OK);
+                        }
                     case NO_SEND:
-                        permission = Permission.NO_SEND;
-                        break;
                     default:
-                        permission = Permission.NO_SEND;
-                        break;
+                        return new ResponseEntity<String>("Node " + permissionPacket.getNodeId() + " is not permitted ",
+                                HttpStatus.UNAUTHORIZED);
+                        
                 }
             }
-            return new ResponseEntity<String>(permission.getText(), HttpStatus.OK);
         } else {
             return new ResponseEntity<String>("Node " + permissionPacket.getNodeId() + " not registered",
                                               HttpStatus.UNAUTHORIZED);

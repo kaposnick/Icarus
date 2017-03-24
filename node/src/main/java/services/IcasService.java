@@ -20,8 +20,8 @@ import okhttp3.Response;
 public class IcasService extends CommunicationService implements IcasResponsible {
     private final static String URL_ICAS = "http://localhost:8080/";
     private final static String ACTION_REGISTER = "register";
-    private final static String ACTION_UPDATE = "update";
-    private final static String ACTION_PERMISSION = "ask";
+    private final static String ACTION_UPDATE = "neighborupdate";
+    private final static String ACTION_PERMISSION = "permission";
     private final static String ACTION_DELIVERY = "deliverysuccessful";
 
     public IcasService(Node node, OkHttpClient client,Gson gson) {

@@ -2,6 +2,7 @@ package services;
 import java.io.IOException;
 
 import com.google.gson.Gson;
+import com.ntuaece.nikosapos.node.DarwinPacket;
 import com.ntuaece.nikosapos.node.DiscoverPacket;
 import com.ntuaece.nikosapos.node.DiscoverResponse;
 import com.ntuaece.nikosapos.node.Neighbor;
@@ -15,6 +16,7 @@ import okhttp3.Response;
 public class NeighborService extends CommunicationService implements NeighborResponsible {
     private final static String NEIGHBOR_URL = "http://localhost:8081/";
     private final static String ACTION_DISCOVER = "discovery/";
+    private final static String ACTION_DARWIN = "darwin/";
 
     public NeighborService(Node node, OkHttpClient client, Gson gson) {
         super(node,client,gson);
@@ -50,6 +52,19 @@ public class NeighborService extends CommunicationService implements NeighborRes
 
     @Override
     public void exchangeDarwinInfo() {
+        DarwinPacket packet = new DarwinPacket(node);
+        String body = gson.toJson(packet);
+        Request.Builder builder = new Request.Builder().post(RequestBody.create(JSON, body));
+        node.getNeighbors()
+            .stream()
+            .forEach(neighbor -> {
+                Request request = builder.url(NEIGHBOR_URL + ACTION_DARWIN + neighbor.getId()).build();
+                try {
+                    httpClient.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
     }
 
 }

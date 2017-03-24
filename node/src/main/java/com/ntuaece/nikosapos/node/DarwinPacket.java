@@ -1,8 +1,7 @@
-package darwin;
+package com.ntuaece.nikosapos.node;
 
 import com.google.gson.annotations.SerializedName;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
-import com.ntuaece.nikosapos.node.Node;
 
 import java.util.ArrayList;
 import java.util.List;

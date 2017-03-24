@@ -7,10 +7,12 @@ import com.ntuaece.nikosapos.node.NodeList;
 
 import distance.DistanceCalculator;
 
-public class LinkCreateTask extends NodeTask {
+public class LinkCreateTask implements Runnable {
+    
+    private final Node node;
 
     public LinkCreateTask(Node node) {
-        super(node);
+        this.node = node;
     }
 
     @Override

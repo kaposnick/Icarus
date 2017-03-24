@@ -2,13 +2,13 @@ package com.ntuaece.nikosapos.node;
 
 public final class NodePosition {
 	public final static int[] x = new int[] {
-			1,1 
-			,1,1
+			0,2 
+			,4,2
 	};
 	
 	public final static int[] y = new int[] {
-			1, 51
-			,101, 151
+			2, 0
+			,2, 4
 	};	
 	
 	public final static int[] pos_x = new int[] {

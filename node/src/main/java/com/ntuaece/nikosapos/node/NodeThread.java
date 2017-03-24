@@ -7,8 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ntuaece.nikosapos.entities.Packet;
-import com.ntuaece.nikosapos.spring.NodeApplication;
 
 import okhttp3.OkHttpClient;
 import services.IcasResponsible;
@@ -19,7 +17,6 @@ import tasks.DarwinUpdateTask;
 import tasks.DiscoveryTask;
 import tasks.LinkCreateTask;
 import tasks.RegistrationTask;
-import tasks.UpdateBehaviorTask;
 
 public class NodeThread extends Thread {
     private final Node node;
@@ -37,12 +34,12 @@ public class NodeThread extends Thread {
     public void run() {
         prepareResources();
         executeAndSheduleDiscoveryTask();
-        executeRegistrationTask();
+//        executeRegistrationTask();
         executeLinkTask();
         // scheduleDarwinTask();
 
-        NodeRoutingThread routingThread = new NodeRoutingThread(node,neighborService,icasService);
-        // routingThread.start();
+        NodeRoutingThread routingThread = new NodeRoutingThread(node, neighborService, icasService);
+        routingThread.start();
     }
 
     private void prepareResources() {
@@ -54,7 +51,7 @@ public class NodeThread extends Thread {
     }
 
     private void scheduleDarwinTask() {
-        DarwinUpdateTask darwinUpdateTask = new DarwinUpdateTask(node);
+        DarwinUpdateTask darwinUpdateTask = new DarwinUpdateTask(node,neighborService);
         scheduledExecutorService.scheduleAtFixedRate(darwinUpdateTask,
                                                      NodeScheduledTask.DARWIN_UPDATE_PERIOD * 10,
                                                      NodeScheduledTask.DARWIN_UPDATE_PERIOD,
@@ -68,7 +65,7 @@ public class NodeThread extends Thread {
     }
 
     private void executeRegistrationTask() {
-        RegistrationTask registrationTask = new RegistrationTask(node,icasService);
+        RegistrationTask registrationTask = new RegistrationTask(node, icasService);
         Future<?> registrationFutureResult = scheduledExecutorService.submit(registrationTask);
         while (!registrationFutureResult.isDone());
     }
