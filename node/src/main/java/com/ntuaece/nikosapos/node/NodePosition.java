@@ -2,13 +2,13 @@ package com.ntuaece.nikosapos.node;
 
 public final class NodePosition {
 	public final static int[] x = new int[] {
-			0,2 
-			,4,2
+			1,1 
+			,1,1
 	};
 	
 	public final static int[] y = new int[] {
-			2, 0
-			,2, 4
+			51, 101
+			,151, 201
 	};	
 	
 	public final static int[] pos_x = new int[] {
@@ -35,5 +35,31 @@ public final class NodePosition {
 			195, 335, 92, 220, 228,
 			263, 100, 77, 353, 290,
 			129, 333, 95, 162, 138	
+	};
+	
+	public final static long[] selfishNodes = new long[] {
+	  12, 
+	  19, 
+	  20      
+	};
+	
+	public final static long[][] destinationNodes = new long[][]{
+	     { 41, 22, 32, 10 },
+	     {  2,  9, 11, 45 },
+	     { 36, 25,  5, 10 },
+	     { 43,  6,  1, 31 },
+	     { 27, 18, 44, 12 },
+	     { 30, 20, 49, 15 },
+	     {  7, 33, 37, 47 },
+	     { 38, 29, 16,  4 },
+	     { 14, 34, 40,  2 },
+	     { 39, 26,  6, 44 },
+	     { 13, 41, 33,  0 },
+	     { 26, 37, 19,  7 },
+	     {  3, 35, 14, 18 }
+	};
+	
+	public final static long[] distantNodes = new long[] {
+	       0, 3, 4
 	};
 }

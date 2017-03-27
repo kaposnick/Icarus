@@ -30,7 +30,7 @@ public class IcasController {
     public IcasController() {
         rewarder = new RewarderImpl();
         distantValidator = new DistantValidator() {
-            
+
             @Override
             public boolean isDistant(int totalneighbors) {
                 return totalneighbors <= 2;
@@ -38,8 +38,7 @@ public class IcasController {
         };
     }
 
-    
-    //Tested
+    // Tested
     @RequestMapping(method = RequestMethod.POST, value = "/register")
     public ResponseEntity<?> registerNode(@RequestBody RegisterPacket registerPacket) {
         if (registerPacket.getId() != -1) {
@@ -48,7 +47,6 @@ public class IcasController {
                                                             .setX(registerPacket.getX())
                                                             .setY(registerPacket.getY())
                                                             .setTotalNeighbors(registerPacket.getTotalNeighbors())
-                                                            .setDistant(distantValidator.isDistant(registerPacket.getTotalNeighbors()))
                                                             .build();
             NodeEntity.NodeEntityList.add(nodeEntity);
             System.out.println("Node " + nodeEntity.getId() + " registered");
@@ -65,21 +63,20 @@ public class IcasController {
             NodeStatus status = node.get().getStatus();
             if (node.get().isAllowedToSendPacketsForFree()) {
                 return new ResponseEntity<>(HttpStatus.OK);
-            }
-            else {
+            } else {
                 switch (status) {
                     case ANY_SEND:
                         return new ResponseEntity<>(HttpStatus.OK);
                     case NEIGHBOR_SEND:
                         // if is neighbor
-                        if (node.get().getNeighborConnectivityRatio().containsKey(permissionPacket.getDestinationNodeId())) {
-                            return new ResponseEntity<>(HttpStatus.OK);
-                        }
+                        if (node.get()
+                                .getNeighborConnectivityRatio()
+                                .containsKey(permissionPacket.getDestinationNodeId())) { return new ResponseEntity<>(HttpStatus.OK); }
                     case NO_SEND:
                     default:
                         return new ResponseEntity<String>("Node " + permissionPacket.getNodeId() + " is not permitted ",
-                                HttpStatus.UNAUTHORIZED);
-                        
+                                                          HttpStatus.UNAUTHORIZED);
+
                 }
             }
         } else {
@@ -94,8 +91,13 @@ public class IcasController {
         if (nodeIdList.size() < 2) { return new ResponseEntity<String>("Should contain at least two ids",
                                                                        HttpStatus.BAD_REQUEST); }
 
+//        System.out.println("Successful delivery of packet");
+//        System.out.println(nodeIdList);
+
         // no relays --> no rewards
-        if (nodeIdList.size() == 2) { return new ResponseEntity<>(HttpStatus.OK); }
+        if (nodeIdList.size() == 2) {
+            return new ResponseEntity<>(HttpStatus.OK); 
+        }
 
         int totalRelayRewards = 0;
 
@@ -106,7 +108,7 @@ public class IcasController {
             if (node.isPresent()) {
                 // reward relay nodes
                 totalRelayRewards += rewarder.rewardNode(node.get());
-                System.out.println("Node " + node.get().getId() + " tokens " + node.get().getTokens());
+//                System.out.println("Node " + node.get().getId() + " tokens " + node.get().getTokens());
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
@@ -116,7 +118,7 @@ public class IcasController {
         Optional<NodeEntity> sourceNode = NodeEntity.GetNodeEntityById(nodeIdList.get(0));
         if (sourceNode.isPresent()) {
             rewarder.chargeNode(sourceNode.get(), totalRelayRewards);
-            System.out.println("Node " + sourceNode.get().getId() + " tokens " + sourceNode.get().getTokens());
+//            System.out.println("Node " + sourceNode.get().getId() + " tokens " + sourceNode.get().getTokens());
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -133,6 +135,7 @@ public class IcasController {
         // update the relayed packets field so that it gets computed for the
         // distant nodes
         NodeEntity.GetNodeEntityById(senderNodeId).get().setRelayedPackets(behaviorPacket.getRelayedPackets());
+        NodeEntity.GetNodeEntityById(senderNodeId).get().setTotalNeighbors(behaviorPacket.getTotalNeighbors());
 
         // iterate through all the neighbors
         for (BehaviorUpdateEntity behaviorUpdateEntity : behaviorPacket.getNeighborList()) {

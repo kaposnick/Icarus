@@ -12,9 +12,6 @@ public class DarwinPacket {
     @SerializedName("id") @Expose private long id;
     @SerializedName("neigh") @Expose private List<BehaviorUpdateEntity> neighborRatioList = new ArrayList<>();
 
-    private DarwinPacket() {
-    }
-
     public DarwinPacket(Node node) {
         this.id = node.getId();
         node.getNeighbors().stream().forEach(neighbor -> {

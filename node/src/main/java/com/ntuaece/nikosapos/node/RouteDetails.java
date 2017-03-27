@@ -4,7 +4,7 @@ public class RouteDetails {
     private long nodeId;
     private boolean isFound;
     private long destinationId;
-    private double distance;
+    private int distance;
     private int maxHops;
     
     public void setNodeId(long nodeId) {
@@ -19,7 +19,7 @@ public class RouteDetails {
         this.destinationId = destinationId;
     }
     
-    public void setDistance(double distance) {
+    public void setDistance(int distance) {
         this.distance = distance;
     }
     
@@ -39,7 +39,7 @@ public class RouteDetails {
         return destinationId;
     }
     
-    public double getDistance() {
+    public int getDistance() {
         return distance;
     }
     

@@ -25,6 +25,8 @@ import com.ntuaece.nikosapos.node.RouteDetails;
 
 import distance.NeighborValidator;
 import distance.NeighborValidatorImpl;
+import route.NodeRoutingInfo;
+import route.RoutingPacket;
 
 @RestController
 public class NodeController {
@@ -138,4 +140,35 @@ public class NodeController {
         return new ResponseEntity<RouteDetails>(routeDetails, HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "routing/{id}")
+    public ResponseEntity<?> onRoutingInfoExchange(@PathVariable("id") String nodeID,
+            @RequestBody RoutingPacket routingInfoPacket) {
+        Optional<Node> node = NodeList.GetNodeById(nodeID);
+        if (!node.isPresent()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        
+        
+        Optional<Neighbor> maybeNeighbor = node.get().findNeighborById(routingInfoPacket.getNodeId());
+        for(NodeRoutingInfo nodeInfo : routingInfoPacket.getNodeRoutingTable()) {
+            // same node
+            if (nodeInfo.getId() == Long.parseLong(nodeID)) continue;
+            long distantNodeId  = nodeInfo.getId();
+            
+            // common neighbors 
+            if (node.get().isNeighborWith(distantNodeId)) continue;
+            
+            Optional<Distant> maybeDistant = node.get().findDistantById(distantNodeId);
+            if (maybeDistant.isPresent() && maybeNeighbor.isPresent()) {
+                Distant distant = maybeDistant.get();
+                Neighbor neighbor = maybeNeighbor.get();
+                if (distant.getDistance() > nodeInfo.getDistance() + neighbor.getDistance()) {
+                    distant.setRelayId(routingInfoPacket.getNodeId());
+                    distant.setDistance(nodeInfo.getDistance() + neighbor.getDistance());
+                    distant.setTotalHops(1 + nodeInfo.getHops());
+                }
+            }
+        }
+        
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
 }

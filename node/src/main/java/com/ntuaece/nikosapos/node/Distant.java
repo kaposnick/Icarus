@@ -4,7 +4,11 @@ public class Distant {
     private long id;
     private long relayId = -1;
     private int totalHops;
-    private double distance;
+    private int distance;
+    
+    public void setId(long id) {
+        this.id = id;
+    }
     
     public long getId() {
         return id;
@@ -26,11 +30,11 @@ public class Distant {
         return totalHops;
     }
     
-    public void setDistance(double distance) {
+    public void setDistance(int distance) {
         this.distance = distance;
     }
     
-    public double getDistance() {
+    public int getDistance() {
         return distance;
     }
 }

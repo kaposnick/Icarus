@@ -21,7 +21,7 @@ public class LinkCreateTask implements Runnable {
             Neighbor neighbor = node.getNeighbors().get(neighborIndex);
             long neighborID = neighbor.getId();
             Node neighborNode = NodeList.GetInstance().stream().filter(n -> n.getId() == neighborID).findFirst().get();
-            Link.createLinkIfNotExists(node, neighborNode, DistanceCalculator.calculateDistance(node, neighborNode));
+            Link.createLinkIfNotExists(node, neighborNode, Math.round(DistanceCalculator.calculateDistance(node, neighborNode)));
         }
     }
 

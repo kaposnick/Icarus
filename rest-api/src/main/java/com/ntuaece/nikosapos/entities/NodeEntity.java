@@ -40,18 +40,12 @@ public class NodeEntity  {
 	public static class Builder {
     	private long id;
     	private int x,y;
-    	private boolean isDistant;
     	private int totalNeighbors;
     	
     	
     	public Builder setId(long id) {
     		this.id = id;
     		return this;
-    	}
-    	
-    	public Builder setDistant(boolean distant) {
-    	    this.isDistant = distant;
-    	    return this;
     	}
     	
     	public Builder setX(int x) {
@@ -79,7 +73,7 @@ public class NodeEntity  {
     		entity.neighborConnectivityRatio = new HashMap<>();
     		entity.nodeConnectivityRatio = 1.0f;
     		entity.nodeStatus = NodeStatus.ANY_SEND;
-    		entity.isDistant = isDistant;
+    		entity.isDistant = totalNeighbors <= 1;
     		entity.isSelfish = false;
     		entity.isAllowedToSendPacketsForFree = false;
     		entity.relayedPackets = 0;
@@ -111,6 +105,11 @@ public class NodeEntity  {
             setSelfish();
             neighborConnectivityRatio.clear();
         }
+    }
+    
+    public void setTotalNeighbors(int neighbors) {
+        this.totalNeighbors = neighbors;
+        this.isDistant = totalNeighbors <= 1;
     }
 
     public void setTokens(int tokens) {

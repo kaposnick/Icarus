@@ -17,7 +17,6 @@ import services.NeighborResponsible;
 public class NodeRoutingThread extends Thread implements PacketReceiver {
 
     private final Node node;
-    private final NeighborResponsible neighborService;
     private final IcasResponsible icasService;
     private final Router router;
     private final NeighborStatsRecorder recorder;
@@ -30,9 +29,8 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     public NodeRoutingThread(Node node, NeighborResponsible nService, IcasResponsible iService) {
         super("Node routing " + node.getId());
         this.node = node;
-        this.neighborService = nService;
         this.icasService = iService;
-        this.router = new RouterImpl(node);
+        this.router = new RouterImpl(node, nService);
         this.recorder = new NeighborStatsRecorderImpl(node);
         node.getNeighbors().stream().forEach(neighbor -> {
             idToLink.put(neighbor.getLink().getId(), neighbor.getLink());
@@ -56,6 +54,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
 
     private void sendNewPacket() {
         if (!icasPermits(nextPacketDestination)) return;
+//        System.out.println("Node " + node.getId()  + " : ICAS PERMITS!");
         Packet newPacket = new Packet.Builder().setSourceNodeId(node.getId())
                                                .setDestinationNodeId(nextPacketDestination)
                                                .setData((byte) 0x04)
@@ -82,8 +81,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             if (packet.getDestinationNodeID() == node.getId()) {
                 System.out.println("Packet " + packet.getId() + " has reached destination " + node.getId());
                 packet.setAck(true);
-                // inform icas
-                //TODO: we have to inform icas here for the arrival of the packet
+                icasService.confirmSuccessfulDelivery(packet);
                 nextNode = router.routePacket(packet);
                 recorder.recordPacket(packet);
             } else {
@@ -109,13 +107,12 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
 
     private boolean hasToDrop() {
         // TODO:
+//        return node.rejectsPackets();
         return false;
     }
 
     private boolean icasPermits(long id) {
-//        return icasService.askForSendPermission(id);
-        // TODO: 
-        return true;
+        return icasService.askForSendPermission(id);
     }
 
     private void setTimer() {

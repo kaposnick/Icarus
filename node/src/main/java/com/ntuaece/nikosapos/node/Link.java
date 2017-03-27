@@ -22,7 +22,7 @@ import okhttp3.OkHttpClient;
 public class Link {
     public static final List<Link> LinkList = new ArrayList<>();
 
-    public synchronized static void createLinkIfNotExists(Node node1, Node node2, double distance) {
+    public synchronized static void createLinkIfNotExists(Node node1, Node node2, long distance) {
 
         // check if link already existing
         if (!LinkList.stream()
@@ -34,15 +34,15 @@ public class Link {
         Link link = new Link(node1, node2, distance);
         node1.getNeighbors().stream().filter(n -> n.getId() == node2.getId()).forEach(n -> {
             n.bindLink(link);
-            n.setDistance(distance);
+            n.setDistance((int) distance);
         });
         node2.getNeighbors().stream().filter(n -> n.getId() == node1.getId()).forEach(n -> {
             n.bindLink(link);
-            n.setDistance(distance);
+            n.setDistance((int) distance);
         });
 
         LinkList.add(link);
-        System.out.println("Created Link " + node1.getId() + " - " + node2.getId());
+//        System.out.println("Created Link " + node1.getId() + " - " + node2.getId() + " distance " + distance);     
     }
 
     private final long id;

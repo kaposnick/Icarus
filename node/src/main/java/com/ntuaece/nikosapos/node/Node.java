@@ -10,11 +10,16 @@ public class Node {
     private long id;
     private int x;
     private int y;
-    
+
+    private int relayedPackets;
+
+    private boolean isCheater;
+    private int SBI;
+
+    private List<Long> destinations = new ArrayList<Long>();
     private List<Distant> distants = new ArrayList<Distant>();
     private List<Neighbor> neighbors = new ArrayList<Neighbor>();
     private List<String> selfishNodes = new ArrayList<String>();
-
     private List<DarwinPacket> darwinPacketList = new ArrayList<DarwinPacket>();
 
     public boolean isNeighborWith(long maybeNeighborID) {
@@ -24,7 +29,7 @@ public class Node {
     public Optional<Neighbor> findNeighborById(long id) {
         return neighbors.stream().filter(n -> n.getId() == id).findFirst();
     }
-    
+
     public Optional<Distant> findDistantById(long id) {
         return distants.stream().filter(dst -> dst.getId() == id).findFirst();
     }
@@ -32,6 +37,10 @@ public class Node {
     public void updateSelfishNodeList(List<String> updatedList) {
         selfishNodes.clear();
         selfishNodes.addAll(updatedList);
+    }
+
+    public boolean rejectPacket() {
+        return isCheater && SBI > 0;
     }
 
     public void computeNeighborMeanConnectivityRatio() {
@@ -71,12 +80,24 @@ public class Node {
             neighbor.clearCounters();
         });
     }
-    
-    public List<String> getSelfishNodes(){
+
+    public void incrementRelayedPacketCounter() {
+        relayedPackets++;
+    }
+
+    public int getRelayedPackets() {
+        return relayedPackets;
+    }
+
+    public void clearRelayedPacketsCounter() {
+        relayedPackets = 0;
+    }
+
+    public List<String> getSelfishNodes() {
         return selfishNodes;
     }
-    
-    public List<Distant> getDistantNodes(){
+
+    public List<Distant> getDistantNodes() {
         return distants;
     }
 
@@ -132,6 +153,8 @@ public class Node {
         private long id;
         private int x;
         private int y;
+        private boolean selfish = false;
+        private List<Long> destinationIds = new ArrayList<>();
 
         public Builder setId(long id) {
             this.id = id;
@@ -147,12 +170,30 @@ public class Node {
             this.y = y;
             return this;
         }
+        
+        public Builder setSelfish(boolean selfish) {
+            this.selfish = selfish;
+            return this;
+        }
+        
+        public Builder setDestinationIds(long[] ids){
+            for(int index = 0; index < ids.length; index++){
+                destinationIds.add(ids[index]);
+            }
+            return this;
+        }
 
         public Node build() {
             Node node = new Node();
             node.id = id;
             node.x = x;
             node.y = y;
+            node.isCheater = selfish;
+            node.SBI = 0;
+            node.relayedPackets = 0;
+            node.destinations.addAll(destinationIds);
+            destinationIds.clear();
+            destinationIds = null;
             return node;
         }
     }

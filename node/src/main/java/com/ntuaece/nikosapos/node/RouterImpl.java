@@ -5,16 +5,20 @@ import java.util.Optional;
 
 import com.ntuaece.nikosapos.entities.Packet;
 
+import services.NeighborResponsible;
+
 public class RouterImpl implements Router {
 
     private final Node node;
+    private final NeighborResponsible service;
 
     private List<String> selfishNodeList;
     private List<Distant> distantNodeList;
     private List<Neighbor> neighborNodeList;
 
-    public RouterImpl(Node node) {
+    public RouterImpl(Node node, NeighborResponsible service) {
         this.node = node;
+        this.service = service;
         selfishNodeList = node.getSelfishNodes();
         distantNodeList = node.getDistantNodes();
         neighborNodeList = node.getNeighbors();
@@ -82,13 +86,13 @@ public class RouterImpl implements Router {
         } else {
             boolean newRouteToDstFound = false;
             long newNextNodeId = -1;
-            double maxDistance = 1000;
+            int maxDistance = 1000;
             int maxHops = 15; // = MAX_HOPS;
 
             // iterate through neighbors
             for (Neighbor neighbor : neighborNodeList) {
                 long neighborId = neighbor.getId();
-                double neighborDistance = neighbor.getDistance();
+                int neighborDistance = neighbor.getDistance();
 
                 // neighbor not selfish neither in existin path
                 if (!isSelfishNode(neighborId) && !nodeExistsInPath(p, neighborId)) {
@@ -97,7 +101,7 @@ public class RouterImpl implements Router {
 
                     // if more details not found continue to the next neighbor
                     if (routingInformation == null || routingInformation.isFound() ) continue;
-                    double retrievedDistance = routingInformation.getDistance();
+                    int retrievedDistance = routingInformation.getDistance();
                     int retrievedHops = routingInformation.getMaxHops();
 
                     // trying to find the optimal route. first check
