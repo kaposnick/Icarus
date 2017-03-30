@@ -1,11 +1,14 @@
 package com.ntuaece.nikosapos.node;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class RouteDetails {
-    private long nodeId;
-    private boolean isFound;
-    private long destinationId;
-    private int distance;
-    private int maxHops;
+    @SerializedName("nodeId") @Expose private long nodeId;
+    @SerializedName("isFound") @Expose private boolean isFound;
+    @SerializedName("destinationId") @Expose private long destinationId;
+    @SerializedName("distance") @Expose private int distance;
+    @SerializedName("maxHops") @Expose private int maxHops;
     
     public void setNodeId(long nodeId) {
         this.nodeId = nodeId;

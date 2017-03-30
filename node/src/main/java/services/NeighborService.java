@@ -11,6 +11,7 @@ import com.ntuaece.nikosapos.node.Distant;
 import com.ntuaece.nikosapos.node.Link;
 import com.ntuaece.nikosapos.node.Neighbor;
 import com.ntuaece.nikosapos.node.Node;
+import com.ntuaece.nikosapos.node.RouteDetails;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -24,6 +25,7 @@ public class NeighborService extends CommunicationService implements NeighborRes
     private final static String ACTION_DISCOVER = "discovery/";
     private final static String ACTION_DARWIN = "darwin/";
     private final static String ACTION_ROUTING_EXCHANGE = "routing/";
+    private final static String ACTION_ROUTING_EXCHANGE_NODE = "routingnode/";
 
     public NeighborService(Node node, OkHttpClient client, Gson gson) {
         super(node, client, gson);
@@ -118,9 +120,21 @@ public class NeighborService extends CommunicationService implements NeighborRes
     }
 
     @Override
-    public void exchangeRoutingInformationForNode(long nodeId) {
-        // TODO Auto-generated method stub
-
+    public RouteDetails exchangeRoutingInformationForNode(Neighbor neighbor, long nodeId) {
+        Request request = new Request.Builder().url(NEIGHBOR_URL + ACTION_ROUTING_EXCHANGE_NODE + neighbor.getId() + "/" + nodeId).build();
+        try {
+            Response response = httpClient.newCall(request).execute();
+            if (response.isSuccessful()) {
+                return gson.fromJson(response.body().charStream(), RouteDetails.class);
+            } else {
+                return null;
+            }
+            
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

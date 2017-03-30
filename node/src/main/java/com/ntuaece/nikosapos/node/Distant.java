@@ -37,4 +37,9 @@ public class Distant {
     public int getDistance() {
         return distance;
     }
+    
+    @Override
+    public String toString() {
+        return id + " distance: " + distance + " through " + relayId + " total hops: " + totalHops;
+    }
 }

@@ -1,17 +1,30 @@
 package com.ntuaece.nikosapos.node;
 
 public final class NodePosition {
-	public final static int[] x = new int[] {
-			1,1 
-			,1,1
+    public final static int[] x = new int[] {
+            0, 50, 100, 100, 150
+    };
+    
+    public final static int[] y = new int[] {
+            0, 0, 0, 30, 0
+    };
+    
+    
+	public final static int[] x2 = new int[] {
+			1, 1, 1, 1
+			,51, 51, 51, 51
+			,100, 100, 100, 100
+			,151, 151, 151, 151
 	};
 	
-	public final static int[] y = new int[] {
-			51, 101
-			,151, 201
+	public final static int[] y2 = new int[] {
+			26, 51,76, 101
+		   ,26, 51,76, 101
+		   ,26, 51,76, 101
+		   ,26, 51,76, 101
 	};	
 	
-	public final static int[] pos_x = new int[] {
+	public final static int[] x_2 = new int[] {
 		43, 204, 220, 101, 
 		256, 290, 290, 200, 
 		123, 374, 147, 288, 268, 
@@ -24,7 +37,7 @@ public final class NodePosition {
 		234, 71, 154, 300, 88, 239, 202
 	};
 	
-	public final static int[] pos_y = new int[] {
+	public final static int[] y_2 = new int[] {
 			196, 220, 297, 43,38,
 			262, 200, 219, 99 ,201,
 			264, 128, 82, 128, 284,

@@ -93,7 +93,7 @@ public class NodeController {
             Node node = mayNode.get();
             node.addDarwinPacket(packet);
             if (node.allDarwinPacketsArrived()) {
-                node.computeNeighborMeanConnectivityRatio();
+                node.computeNeighborMeanConnectivityRatioForNeighbors();
                 node.clearDarwinPacketList();
             }
             return new ResponseEntity<>(HttpStatus.OK);
@@ -103,10 +103,9 @@ public class NodeController {
 
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/route/{id}/{dst}")
+    @RequestMapping(method = RequestMethod.GET, value = "/routingnode/{id}/{dst}")
     public ResponseEntity<?> onRouteHelp(@PathVariable("id") String nodeID, @PathVariable("dst") String wantedID) {
         Optional<Node> node = NodeList.GetNodeById(nodeID);
-
         // validate id
         if (!node.isPresent()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
@@ -135,7 +134,6 @@ public class NodeController {
                 routeDetails.setMaxHops(distant.get().getTotalHops());
             }
         }
-
         routeDetails.setFound(isFound);
         return new ResponseEntity<RouteDetails>(routeDetails, HttpStatus.OK);
     }
@@ -165,6 +163,13 @@ public class NodeController {
                     distant.setDistance(nodeInfo.getDistance() + neighbor.getDistance());
                     distant.setTotalHops(1 + nodeInfo.getHops());
                 }
+            } else {
+                Distant distant = new Distant();
+                distant.setId(nodeInfo.getId());
+                distant.setRelayId(routingInfoPacket.getNodeId());
+                distant.setDistance(nodeInfo.getDistance() + maybeNeighbor.get().getDistance());
+                distant.setTotalHops(1 + nodeInfo.getHops());
+                node.get().getDistantNodes().add(distant);
             }
         }
         

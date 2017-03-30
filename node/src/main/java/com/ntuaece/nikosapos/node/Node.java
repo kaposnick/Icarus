@@ -1,9 +1,12 @@
 package com.ntuaece.nikosapos.node;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import com.ntuaece.nikosapos.SimulationParameters;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
 
 public class Node {
@@ -11,16 +14,21 @@ public class Node {
     private int x;
     private int y;
 
+    private int totalPacketsSent;
+    private int totalPacketsForwarded;
+    private int sentPackets;
+    private int forwardedPackets;
     private int relayedPackets;
 
     private boolean isCheater;
-    private int SBI;
 
     private List<Long> destinations = new ArrayList<Long>();
     private List<Distant> distants = new ArrayList<Distant>();
     private List<Neighbor> neighbors = new ArrayList<Neighbor>();
-    private List<String> selfishNodes = new ArrayList<String>();
+    private Set<Long> selfishNodes = new HashSet<Long>();
     private List<DarwinPacket> darwinPacketList = new ArrayList<DarwinPacket>();
+
+    private double ownDarwinPropability, ownP, ownQ;
 
     public boolean isNeighborWith(long maybeNeighborID) {
         return neighbors.stream().anyMatch(n -> n.getId() == maybeNeighborID);
@@ -34,18 +42,24 @@ public class Node {
         return distants.stream().filter(dst -> dst.getId() == id).findFirst();
     }
 
-    public void updateSelfishNodeList(List<String> updatedList) {
+    public void updateSelfishNodeList(Set<Long> updatedList) {
         selfishNodes.clear();
         selfishNodes.addAll(updatedList);
     }
 
     public boolean rejectPacket() {
-        return isCheater && SBI > 0;
+        boolean SBI = sentPackets - forwardedPackets <= SimulationParameters.IFN;
+        boolean condition = isCheater && SBI;
+        if (sentPackets > SimulationParameters.IFN + 1) {
+            clearSentPacketCounter();
+            clearForwardedPacketCounter();
+        }
+        return condition;
     }
 
-    public void computeNeighborMeanConnectivityRatio() {
+    public void computeNeighborMeanConnectivityRatioForNeighbors() {
         neighbors.stream().forEach(neighbor -> {
-            float meanConnectivityRatio = 0;
+            float c_i = 0;
             float numerator = 0;
             float fractor = 0;
 
@@ -73,12 +87,43 @@ public class Node {
             numerator += (c_im * c_mj);
             fractor += c_im;
 
-            if (fractor > 0) meanConnectivityRatio = numerator / fractor;
-            else meanConnectivityRatio = 0;
+            if (fractor > 0) c_i = numerator / fractor;
+            else c_i = 1;
+            
+            double p_i = 1-c_i;
+            double q_i = p_i - neighbor.getNeighborDarwin();
+            q_i = DarwinUtils.normalizeValue(q_i);
+            
+            
 
-            neighbor.setMeanConnectivityRatio(meanConnectivityRatio);
-            neighbor.clearCounters();
+            neighbor.setMeanConnectivityRatio(c_i);
+            if (c_i < 0.6) {
+//                System.out.println("Node " + id + " recognized " + neighbor.getId() + " as selfish.");
+                selfishNodes.add(neighbor.getId());
+            } else {
+//                System.out.println("Node " + id + " removed " + neighbor.getId() + " from selfish.");
+                selfishNodes.removeIf(id -> neighbor.getId() == id);
+            }
+//            neighbor.clearCounters();
         });
+    }
+
+    public void incrementSentPacketCounter() {
+        sentPackets++;
+        totalPacketsSent++;
+    }
+
+    public void incrementForwardedPacketCounter() {
+        forwardedPackets++;
+        totalPacketsForwarded++;
+    }
+
+    public void clearSentPacketCounter() {
+        sentPackets = 0;
+    }
+
+    public void clearForwardedPacketCounter() {
+        forwardedPackets = 0;
     }
 
     public void incrementRelayedPacketCounter() {
@@ -93,7 +138,7 @@ public class Node {
         relayedPackets = 0;
     }
 
-    public List<String> getSelfishNodes() {
+    public Set<Long> getSelfishNodes() {
         return selfishNodes;
     }
 
@@ -148,6 +193,22 @@ public class Node {
     public List<Neighbor> getNeighbors() {
         return neighbors;
     }
+    
+    public void setCheater(boolean isCheater) {
+        this.isCheater = isCheater;
+    }
+    
+    public int getTotalPacketsSent() {
+        return totalPacketsSent;
+    }
+    
+    public int getTotalPacketsForwarded() {
+        return totalPacketsForwarded;
+    }
+    
+    public boolean isCheater() {
+        return isCheater;
+    }
 
     public static class Builder {
         private long id;
@@ -170,14 +231,14 @@ public class Node {
             this.y = y;
             return this;
         }
-        
+
         public Builder setSelfish(boolean selfish) {
             this.selfish = selfish;
             return this;
         }
-        
-        public Builder setDestinationIds(long[] ids){
-            for(int index = 0; index < ids.length; index++){
+
+        public Builder setDestinationIds(long[] ids) {
+            for (int index = 0; index < ids.length; index++) {
                 destinationIds.add(ids[index]);
             }
             return this;
@@ -189,8 +250,11 @@ public class Node {
             node.x = x;
             node.y = y;
             node.isCheater = selfish;
-            node.SBI = 0;
+            node.sentPackets = 0;
+            node.forwardedPackets = 0;
             node.relayedPackets = 0;
+            node.ownDarwinPropability = 0;
+            node.totalPacketsSent = node.totalPacketsForwarded = 0;
             node.destinations.addAll(destinationIds);
             destinationIds.clear();
             destinationIds = null;

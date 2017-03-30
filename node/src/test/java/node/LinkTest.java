@@ -2,6 +2,8 @@ package node;
 
 import static org.junit.Assert.*;
 
+import java.util.Random;
+
 import org.junit.Test;
 
 import com.ntuaece.nikosapos.entities.Packet;
@@ -42,6 +44,15 @@ public class LinkTest {
 		}
 		
 		while(true);
+	}
+	
+	@Test
+	public void katiTesT(){
+	    int total = 0;
+	    for(int i = 0; i<= 100000; i++) {
+	        if (new Random().nextDouble() * 10000 < 20) total++;
+	    }
+	    System.out.println(total + "");
 	}
 
 }

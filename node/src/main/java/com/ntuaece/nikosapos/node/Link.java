@@ -10,13 +10,11 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ntuaece.nikosapos.entities.Packet;
 
 import deliver.DeliverServiceImpl;
 import deliver.DeliveryService;
-import distance.DistanceCalculator;
 import okhttp3.OkHttpClient;
 
 public class Link {
@@ -91,9 +89,10 @@ public class Link {
     }
 
     public void addPacketToUpLink(Node sender, Packet p) {
-        if (willDrop(p)) { return; }
-        // System.out.println("Node " + sender.getId() + " sending packet " +
-        // p.getId() + " to " + p.getDestinationNodeID());
+        if (willDrop(p)) {
+            System.out.println("Oups... Packet "  + p.getId() + " ack: " + p.isAck() + " dropped");
+            return; 
+        }
         if (sender.equals(firstEndPoint)) {
             firstEndPointUpLink.offer(p);
             setTimer(1);

@@ -15,7 +15,6 @@ public class DarwinUpdateTask implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Node " + node.getId() + " exchanging darwin info...");
         service.exchangeDarwinInfo();
     }
 }

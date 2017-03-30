@@ -13,23 +13,24 @@ import com.ntuaece.nikosapos.node.NodeThread;
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
 public class NodeApplication {
-	public static int ThreadsFinishedDiscovering = 0;
+    public static int ThreadsFinishedDiscovering = 0;
 
-	private static void initializeNodes() {
-		for (int i = 0; i < NodePosition.x.length; i++) {
-			Node node = new Node.Builder().setId(i).setX(NodePosition.x[i]).setY(NodePosition.y[i]).build();
-			NodeList.GetInstance().add(node);
-		}
-	}
+    private static void initializeNodes() {
+        for (int i = 0; i < NodePosition.x.length; i++) {
+            Node node = new Node.Builder().setId(i).setX(NodePosition.x[i]).setY(NodePosition.y[i]).build();
+            if (i == 2 || i == 12 || i == 19) node.setCheater(true);
+            NodeList.GetInstance().add(node);
+        }
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(NodeApplication.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(NodeApplication.class, args);
 
-		initializeNodes();
+        initializeNodes();
 
-		for (int i = 0; i < NodePosition.x.length; i++) {
-			 new NodeThread(NodeList.GetInstance().get(i)).start();
-		}
-	}
+        for (int i = 0; i < NodePosition.x.length; i++) {
+            new NodeThread(NodeList.GetInstance().get(i)).start();
+        }
+    }
 
 }

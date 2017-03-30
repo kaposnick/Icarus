@@ -26,16 +26,25 @@ public class NeighborStatsRecorderImpl implements NeighborStatsRecorder {
             }
             int neighborIndex = myNodeIndex + 1;
             if (neighborIndex >= packet.getPathlist().size()) { throw new RuntimeException("HERE FOR NODE "
-                    + node.getId() + " and packet " + packet.getId()); }
+                    + node.getId() + " and packet " + packet.getId() + " pathlisth: " + packet.getPathlist()); }
             Optional<Neighbor> neighbor = node.findNeighborById(packet.getPathlist().get(neighborIndex));
             if (neighbor.isPresent()) {
                 if (packet.isAck()) {
-                    neighbor.get().incrementForwardedPacketCounter();
+                    if (neighbor.get().getId() != packet.getDestinationNodeID()) {
+                        neighbor.get().incrementForwardedPacketCounter();
+                    }
+                    if (packet.getSourceNodeID() == node.getId()) {
+                        node.incrementForwardedPacketCounter();
+                    }
                 } else {
+                    if (neighbor.get().getId() != packet.getDestinationNodeID()) {
+                        neighbor.get().incrementSentPacketCounter();
+                    }
                     if (packet.getSourceNodeID() != node.getId()) {
                         node.incrementRelayedPacketCounter();
+                    } else {
+                        node.incrementSentPacketCounter();
                     }
-                    neighbor.get().incrementSentPacketCounter();
                 }
             }
         }

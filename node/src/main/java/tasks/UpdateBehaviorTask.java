@@ -18,7 +18,7 @@ public class UpdateBehaviorTask extends TimerTask {
 
 	@Override
 	public void run() {
-		System.out.println("Node " + node.getId() + " updating neighbor stats");
+//		System.out.println("Node " + node.getId() + " updating neighbor stats");
 		service.updateNeighborBehavior();
 	}
 
