@@ -9,7 +9,8 @@ import com.google.gson.annotations.SerializedName;
 import com.ntuaece.nikosapos.SimulationParameters;
 
 public class Packet {
-	private final static AtomicLong packetCounter = new AtomicLong();
+	public final static AtomicLong packetCounter = new AtomicLong();
+	public final static AtomicLong droppedPacketCounter = new AtomicLong();
 	@SerializedName("packetId")
 	@Expose
 	private long id;
@@ -46,7 +47,6 @@ public class Packet {
 
 	public void drop() {
 		pathlist.clear();
-		pathlist = null;
 	}
 
 	public long getId() {

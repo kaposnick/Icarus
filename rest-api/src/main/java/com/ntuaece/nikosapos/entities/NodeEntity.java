@@ -27,8 +27,8 @@ public class NodeEntity  {
 	private int tokens;
 	
 	// connectivity ratio from other neighbors
-	private HashMap<Long, Float> neighborConnectivityRatio;
-	private float nodeConnectivityRatio;
+	private HashMap<Long, Double> neighborConnectivityRatio;
+	private double nodeConnectivityRatio;
 	
 	private NodeStatus nodeStatus;
 	private boolean isDistant;
@@ -85,9 +85,9 @@ public class NodeEntity  {
 
     public void updateConnectivityRatioIfNecessary() {
         if (neighborConnectivityRatio.size() == totalNeighbors) {
-            float sum = 0;
+            double sum = 0.0f;
             int totalNonSelfishNeighbors = 0;
-            for (Entry<Long,Float> neighborEntry : neighborConnectivityRatio.entrySet()) {
+            for (Entry<Long,Double> neighborEntry : neighborConnectivityRatio.entrySet()) {
                 long neighborId = neighborEntry.getKey();
                 
                 // take into account only the non-selfish nodes
@@ -140,11 +140,11 @@ public class NodeEntity  {
         return relayedPackets;
     }
 
-    public HashMap<Long, Float> getNeighborConnectivityRatio() {
+    public HashMap<Long, Double> getNeighborConnectivityRatio() {
     	return neighborConnectivityRatio;
     }
 
-    public float getNodeConnectivityRatio() {
+    public double getNodeConnectivityRatio() {
     	return nodeConnectivityRatio;
     }
 

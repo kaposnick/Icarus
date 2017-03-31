@@ -37,7 +37,7 @@ public final class SimulationParameters {
 	 * Threshold used by nodes to determine if another node is 
 	 * selfish
 	 */
-	public static final float ESTIMATED_DROPPING_PROBABILITY = 0.85f;
+	public static final float EDP = 0.85f;
 	
 	/**
 	 * Initial amount of credits that are given to distant nodes

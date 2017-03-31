@@ -15,7 +15,7 @@ public class DistantNodeAssist extends TimerTask {
       .stream()
       .filter(node -> node.isDistant())
       .forEach(node -> {
-          float cpi = node.getNodeConnectivityRatio();
+          double cpi = node.getNodeConnectivityRatio();
           int me_th = (int)( SimulationParameters.CREDITS_INITIAL 
                            * Math.pow(cpi, 2));
           if ( !node.isSelfish() 

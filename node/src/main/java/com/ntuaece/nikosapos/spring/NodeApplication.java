@@ -17,8 +17,14 @@ public class NodeApplication {
 
     private static void initializeNodes() {
         for (int i = 0; i < NodePosition.x.length; i++) {
-            Node node = new Node.Builder().setId(i).setX(NodePosition.x[i]).setY(NodePosition.y[i]).build();
-            if (i == 2 || i == 12 || i == 19) node.setCheater(true);
+            Node node = new Node.Builder()
+                    .setId(i)
+                    .setX(NodePosition.x[i])
+                    .setY(NodePosition.y[i])
+                    .setDestinationIds(NodePosition.destinationNodes[i%13])
+                    .build();
+            if (i == 12 || i == 19 || i == 20) node.setCheater(true);
+            
             NodeList.GetInstance().add(node);
         }
     }

@@ -5,7 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class BehaviorUpdateEntity {
 	@SerializedName("neighbor") @Expose private long neighId;
-	@SerializedName("ratio") @Expose private float ratio;
+	@SerializedName("ratio") @Expose private double ratio;
+	@SerializedName("edp") @Expose private double edp;
 	
 	public void setNeighId(long id) {
 		this.neighId = id;
@@ -15,11 +16,19 @@ public class BehaviorUpdateEntity {
 		return neighId;
 	}
 	
-	public void setRatio(float forwardingRatio) {
+	public void setRatio(double forwardingRatio) {
 		this.ratio = forwardingRatio;
 	}
 	
-	public float getRatio() {
+	public double getRatio() {
 		return ratio;
 	}
+	
+	public void setEdp(double edp) {
+        this.edp = edp;
+    }
+	
+	public double getEdp() {
+        return edp;
+    }
 }

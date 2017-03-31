@@ -6,8 +6,8 @@ public class Neighbor {
     private long id;
     private int x;
     private int y;
-    private float connectivityRatio;
-    private float meanConnectivityRatio;
+    private double connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
+    private double meanConnectivityRatio;
     private int packetsSent;
     private int packetsForwarded;
     private int distance;
@@ -16,15 +16,16 @@ public class Neighbor {
     private int totalPacketsForwarded;
     private Link link;
 
-    private double neighborDarwin, neighborP, neighborQ;
-    private double edp;
+    private double neighborDarwinForMe = 0;
+    private double edp = 0;
 
     public static Neighbor FromNode(Node node) {
         Neighbor neighbor = new Neighbor();
         neighbor.id = node.getId();
         neighbor.x = node.getX();
         neighbor.y = node.getY();
-        neighbor.neighborDarwin = 1f;
+        neighbor.edp = 0;
+        neighbor.neighborDarwinForMe = 0;
         neighbor.packetsSent = neighbor.packetsForwarded = 0;
         neighbor.totalPacketsForwarded = neighbor.totalPacketsSent = 0;
         neighbor.connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
@@ -94,40 +95,28 @@ public class Neighbor {
         return distance;
     }
 
-    public float getConnectivityRatio() {
+    public double getConnectivityRatio() {
         return connectivityRatio;
     }
 
-    public void setMeanConnectivityRatio(float meanConnectivityRatio) {
+    public void setMeanConnectivityRatio(double meanConnectivityRatio) {
         this.meanConnectivityRatio = meanConnectivityRatio;
     }
 
-    public float getMeanConnectivityRatio() {
+    public double getMeanConnectivityRatio() {
         return meanConnectivityRatio;
     }
 
-    public void setNeighborDarwin(double neighborDarwin) {
-        this.neighborDarwin = neighborDarwin;
+    public void setNeighborDarwinForMe(double neighborDarwin) {
+        this.neighborDarwinForMe = neighborDarwin;
     }
 
-    public double getNeighborDarwin() {
-        return neighborDarwin;
+    public double getNeighborDarwinForMe() {
+        return neighborDarwinForMe;
     }
-
-    public void setNeighborP(double neighborP) {
-        this.neighborP = neighborP;
-    }
-
-    public double getNeighborP() {
-        return neighborP;
-    }
-
-    public void setNeighborQ(double neighborQ) {
-        this.neighborQ = neighborQ;
-    }
-
-    public double getNeighborQ() {
-        return neighborQ;
+    
+    public void setEdp(double edp) {
+        this.edp = edp;
     }
     
     public double getEdp() {

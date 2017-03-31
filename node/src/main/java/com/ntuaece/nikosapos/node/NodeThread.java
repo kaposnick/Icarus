@@ -44,7 +44,7 @@ public class NodeThread extends Thread {
         executeLinkTask();
 
         try {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 20; i++) {
                 neighborService.exchangeRoutingTables();
                 Thread.sleep(1000);
             }

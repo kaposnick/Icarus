@@ -23,7 +23,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
 
     private Map<Long, Link> idToLink = new HashMap<>();
     private Queue<Long> incomingPacketQueue = new ConcurrentLinkedQueue<>();
-    private int nextPacketDestination = 0;
+    private long nextPacketDestination = 0;
     private boolean canSend = false;
 
     public NodeRoutingThread(Node node, NeighborResponsible nService, IcasResponsible iService) {
@@ -36,7 +36,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             idToLink.put(neighbor.getLink().getId(), neighbor.getLink());
             neighbor.getLink().setPacketReceiver(node, this);
         });
-//         if (node.getId() <= 2) setTimer();
+        // if (node.getId() <= 2) setTimer();
         setTimer();
     }
 
@@ -65,9 +65,11 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         if (packet.isAck()) {
             // if it is the source of a packet sent
             if (packet.getSourceNodeID() == node.getId()) {
-//                System.out.println("Packet " + packet.getId() + " has reached source " + node.getId());
+                // System.out.println("Packet " + packet.getId() + " has reached
+                // source " + node.getId());
                 recorder.recordPacket(packet);
                 packet.drop();
+                Packet.droppedPacketCounter.incrementAndGet();
                 return;
             } else {
                 nextNode = router.routePacket(packet);
@@ -75,21 +77,25 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             }
         } else {
             if (packet.getDestinationNodeID() == node.getId()) {
-//                System.out.println("Packet " + packet.getId() + " dst path: " + packet.getPathlist());
-//                System.out.println("Packet " + packet.getId() + " has reached destination " + node.getId());
+                // System.out.println("Packet " + packet.getId() + " dst path: "
+                // + packet.getPathlist());
+                // System.out.println("Packet " + packet.getId() + " has reached
+                // destination " + node.getId());
                 packet.setAck(true);
                 icasService.confirmSuccessfulDelivery(packet);
                 nextNode = router.routePacket(packet);
                 recorder.recordPacket(packet);
             } else {
                 if (dropBecauseAmCheater(packet)) {
-                    System.out.println("Packet " + packet.getId() + " dropped by cheater " + node.getId() + " from source " + packet.getSourceNodeID()); 
+                    System.out.println("Packet " + packet.getId() + " dropped by cheater " + node.getId()
+                            + " from source " + packet.getSourceNodeID());
                     dropPacket(packet);
                     return;
                 } else if (packet.getHopsRemaining() == 0) {
-                    System.out.println("Packet " + packet.getId() + " dropped for hops by " + node.getId() + " for " + packet.getPathlist() ); 
+                    System.out.println("Packet " + packet.getId() + " dropped for hops by " + node.getId() + " for "
+                            + packet.getPathlist());
                     dropPacket(packet);
-                }else {
+                } else {
                     // send to next neighbor
                     nextNode = router.routePacket(packet);
                     if (nextNode != null) {
@@ -102,11 +108,12 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         if (nextNode != null) {
             nextNode.getLink().addPacketToUpLink(node, packet);
         } else {
-            System.out.println("Packet " + packet.getId() + " dropped by " + node.getId() +" for " + packet.getDestinationNodeID());
+            System.out.println("Packet " + packet.getId() + " dropped by " + node.getId() + " for "
+                    + packet.getDestinationNodeID());
             packet.drop();
         }
     }
-    
+
     private void dropPacket(Packet packet) {
         packet.addPathlist(node.getId());
         recorder.recordPacket(packet);
@@ -128,9 +135,15 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             @Override
             public void run() {
                 // choose a random node (maybe fixed)
+                int size = node.getDestinationList().size();
                 do {
-                    nextPacketDestination = new Random().nextInt(NodePosition.x.length);
+                    int randomIndex = new Random().nextInt(size);
+                    nextPacketDestination = node.getDestinationList().get(randomIndex);
                 } while (nextPacketDestination == node.getId());
+                // do {
+                // nextPacketDestination = new
+                // Random().nextInt(NodePosition.x.length);
+                // } while (nextPacketDestination == node.getId());
                 canSend = true;
                 if (!NodeRoutingThread.this.isInterrupted()) {
                     NodeRoutingThread.this.interrupt();

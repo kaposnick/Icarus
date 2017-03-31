@@ -49,10 +49,11 @@ public class RouterImpl implements Router {
                 }
             }
 
-            if (nextNeighborIndex > packet.getPathlist().size()) { throw new RuntimeException("Index too high!"); }
+            if (nextNeighborIndex >= packet.getPathlist().size()) { throw new RuntimeException("Index too high!"); }
 
             // next neighbor for an ack can be retrieved from the path list
             long nextNeighborID = packet.getPathlist().get(nextNeighborIndex);
+            
             Optional<Neighbor> neighbor = node.findNeighborById(nextNeighborID);
 
             if (neighbor.isPresent()) {
@@ -86,8 +87,8 @@ public class RouterImpl implements Router {
             // send packet to next node
             possibleNextNode = node.findNeighborById(nextNodeId + 1);
         } else {
-            System.out.println("Node " + node.getId() + ": " + (nextNodeId+1) + " is selfish");
-            System.out.println("Node " + node.getId() + " selfishNodes: " + node.getSelfishNodes());
+//            System.out.println("Node " + node.getId() + ": " + (nextNodeId+1) + " is selfish");
+//            System.out.println("Node " + node.getId() + " selfishNodes: " + node.getSelfishNodes());
             boolean newRouteToDstFound = false;
             long newNextNodeId = -1;
             int maxDistance = Integer.MAX_VALUE;
@@ -108,7 +109,7 @@ public class RouterImpl implements Router {
                     // +routingInformation.isFound());
                     // if more details not found continue to the next neighbor
                     if (routingInformation == null || !routingInformation.isFound()) {
-                        System.out.println("Node " + node.getId() +" seeking for " + destinationId + " through " + neighbor.getId() + " failed.");
+//                        System.out.println("Node " + node.getId() +" seeking for " + destinationId + " through " + neighbor.getId() + " failed.");
                         continue; 
                     }
                     int retrievedDistance = routingInformation.getDistance();
@@ -151,8 +152,8 @@ public class RouterImpl implements Router {
                         distantNode.setId(destinationId);
                         node.getDistantNodes().add(distantNode);
                     }
-                    System.out.println("Node " + node.getId() + " added routing entry for " + destinationId
-                            + " through " + newNextNodeId);
+                    /*System.out.println("Node " + node.getId() + " added routing entry for " + destinationId
+                            + " through " + newNextNodeId);*/
                     distantNode.setDistance(maxDistance);
                     distantNode.setTotalHops(maxHops);
                     distantNode.setRelayId(newNextNodeId);
@@ -170,7 +171,7 @@ public class RouterImpl implements Router {
                                                                                                     destinationId);
                         if (routingInformation != null && routingInformation.isFound()) {
                             nextRouteHasBeenFound = true;
-                            possibleNextNode = node.findNeighborById(routingInformation.getNodeId());
+                            possibleNextNode = Optional.of(neighbor);
                             break;
                         }
                     }

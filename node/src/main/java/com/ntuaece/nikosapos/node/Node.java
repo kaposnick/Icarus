@@ -20,6 +20,8 @@ public class Node {
     private int forwardedPackets;
     private int relayedPackets;
 
+    private static final int gamma = 2;
+
     private boolean isCheater;
 
     private List<Long> destinations = new ArrayList<Long>();
@@ -27,8 +29,6 @@ public class Node {
     private List<Neighbor> neighbors = new ArrayList<Neighbor>();
     private Set<Long> selfishNodes = new HashSet<Long>();
     private List<DarwinPacket> darwinPacketList = new ArrayList<DarwinPacket>();
-
-    private double ownDarwinPropability, ownP, ownQ;
 
     public boolean isNeighborWith(long maybeNeighborID) {
         return neighbors.stream().anyMatch(n -> n.getId() == maybeNeighborID);
@@ -58,19 +58,29 @@ public class Node {
     }
 
     public void computeNeighborMeanConnectivityRatioForNeighbors() {
+        final double ownP = 1 - computeOwnC();
         neighbors.stream().forEach(neighbor -> {
-            float c_i = 0;
-            float numerator = 0;
-            float fractor = 0;
+            double c_i = 0;
+            double numerator = 0;
+            double fractor = 0;
 
-            float c_im = 0;
-            float c_mj = 0;
+            double c_im = 0;
+            double c_mj = 0;
 
             for (DarwinPacket packet : darwinPacketList) {
                 if (packet.getId() == neighbor.getId()) {
+                    for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
+                        if (entity.getNeighId() == this.id) {
+                            // System.out.println("Node " + neighbor.getId() + "
+                            // for " + entity.getNeighId() + "= "
+                            // + entity.getEdp());
+                            neighbor.setNeighborDarwinForMe(entity.getEdp());
+                        }
+                    }
                     continue;
                     // m != j
                 }
+
                 for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
                     if (entity.getNeighId() == neighbor.getId()) {
                         c_mj = entity.getRatio();
@@ -89,23 +99,47 @@ public class Node {
 
             if (fractor > 0) c_i = numerator / fractor;
             else c_i = 1;
-            
-            double p_i = 1-c_i;
-            double q_i = p_i - neighbor.getNeighborDarwin();
-            q_i = DarwinUtils.normalizeValue(q_i);
-            
-            
-
             neighbor.setMeanConnectivityRatio(c_i);
-            if (c_i < 0.6) {
-//                System.out.println("Node " + id + " recognized " + neighbor.getId() + " as selfish.");
+
+            double p_i = 1 - c_i;
+
+            double q_minusI = p_i - neighbor.getNeighborDarwinForMe();
+            double q = ownP - neighbor.getEdp();
+
+            q_minusI = DarwinUtils.normalizeValue(q_minusI);
+
+            q = DarwinUtils.normalizeValue(q);
+
+            double newEdp = DarwinUtils.normalizeValue(gamma * (q_minusI - q));
+            neighbor.setEdp(newEdp);
+
+            if (newEdp > SimulationParameters.EDP) {
+                // System.out.println("Node " + id + " recognized " +
+                // neighbor.getId() + " as selfish.");
                 selfishNodes.add(neighbor.getId());
             } else {
-//                System.out.println("Node " + id + " removed " + neighbor.getId() + " from selfish.");
+                // System.out.println("Node " + id + " removed " +
+                // neighbor.getId() + " from selfish.");
                 selfishNodes.removeIf(id -> neighbor.getId() == id);
             }
-//            neighbor.clearCounters();
         });
+    }
+
+    private double computeOwnC() {
+        double fractor = 0;
+        double numerator = 0;
+        for (Neighbor neighbor : neighbors) {
+            for (DarwinPacket packet : darwinPacketList) {
+                for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
+                    if (entity.getNeighId() == this.id) {
+                        numerator += (entity.getRatio() * neighbor.getConnectivityRatio());
+                        fractor += neighbor.getConnectivityRatio();
+                        break;
+                    }
+                }
+            }
+        }
+        return (numerator/fractor);
     }
 
     public void incrementSentPacketCounter() {
@@ -193,21 +227,25 @@ public class Node {
     public List<Neighbor> getNeighbors() {
         return neighbors;
     }
-    
+
     public void setCheater(boolean isCheater) {
         this.isCheater = isCheater;
     }
-    
+
     public int getTotalPacketsSent() {
         return totalPacketsSent;
     }
-    
+
     public int getTotalPacketsForwarded() {
         return totalPacketsForwarded;
     }
-    
+
     public boolean isCheater() {
         return isCheater;
+    }
+
+    public List<Long> getDestinationList() {
+        return destinations;
     }
 
     public static class Builder {
@@ -253,7 +291,6 @@ public class Node {
             node.sentPackets = 0;
             node.forwardedPackets = 0;
             node.relayedPackets = 0;
-            node.ownDarwinPropability = 0;
             node.totalPacketsSent = node.totalPacketsForwarded = 0;
             node.destinations.addAll(destinationIds);
             destinationIds.clear();
