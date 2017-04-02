@@ -17,7 +17,7 @@ public class DiscoveryTask implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Node: " + node.getId() + " discovering neighbor nodes...");
+        System.out.println(node + " discovering neighbor nodes...");
         responsible.discoverNeigbors();
     }
 }

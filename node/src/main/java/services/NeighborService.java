@@ -13,6 +13,7 @@ import com.ntuaece.nikosapos.node.Neighbor;
 import com.ntuaece.nikosapos.node.Node;
 import com.ntuaece.nikosapos.node.RouteDetails;
 
+import distance.DistanceCalculator;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -51,6 +52,10 @@ public class NeighborService extends CommunicationService implements NeighborRes
                             neighbor.setId(discoverResponse.getSourceID());
                             neighbor.setX(discoverResponse.getSourceX());
                             neighbor.setY(discoverResponse.getSourceY());
+                            neighbor.setDistance(DistanceCalculator.calculateDistance(node.getX(),
+                                                                                      node.getY(),
+                                                                                      neighbor.getX(),
+                                                                                      neighbor.getY()));
                             node.addNeighbor(neighbor);
                         }
                     }
@@ -98,7 +103,7 @@ public class NeighborService extends CommunicationService implements NeighborRes
             nodeRoutingInfo.setHops(1);
             routingPacket.getNodeRoutingTable().add(nodeRoutingInfo);
         }
-        
+
         for (Distant distant : node.getDistantNodes()) {
             NodeRoutingInfo nodeRoutingInfo = new NodeRoutingInfo();
             nodeRoutingInfo.setId(distant.getId());
@@ -106,7 +111,7 @@ public class NeighborService extends CommunicationService implements NeighborRes
             nodeRoutingInfo.setHops(distant.getTotalHops());
             routingPacket.getNodeRoutingTable().add(nodeRoutingInfo);
         }
-        
+
         String body = gson.toJson(routingPacket);
         Request.Builder builder = new Request.Builder().post(RequestBody.create(JSON, body));
         node.getNeighbors().stream().forEach(neighbor -> {
@@ -121,7 +126,8 @@ public class NeighborService extends CommunicationService implements NeighborRes
 
     @Override
     public RouteDetails exchangeRoutingInformationForNode(Neighbor neighbor, long nodeId) {
-        Request request = new Request.Builder().url(NEIGHBOR_URL + ACTION_ROUTING_EXCHANGE_NODE + neighbor.getId() + "/" + nodeId).build();
+        Request request = new Request.Builder().url(NEIGHBOR_URL + ACTION_ROUTING_EXCHANGE_NODE + neighbor.getId() + "/"
+                + nodeId).build();
         try {
             Response response = httpClient.newCall(request).execute();
             if (response.isSuccessful()) {
@@ -129,7 +135,7 @@ public class NeighborService extends CommunicationService implements NeighborRes
             } else {
                 return null;
             }
-            
+
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

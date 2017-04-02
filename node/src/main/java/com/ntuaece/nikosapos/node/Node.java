@@ -58,9 +58,9 @@ public class Node {
     }
 
     public void computeNeighborMeanConnectivityRatioForNeighbors() {
-        final double ownP = 1 - computeOwnC();
+        final double p_i = 1 - computeOwnC();
         neighbors.stream().forEach(neighbor -> {
-            double c_i = 0;
+            double c_minusI = 0;
             double numerator = 0;
             double fractor = 0;
 
@@ -71,14 +71,12 @@ public class Node {
                 if (packet.getId() == neighbor.getId()) {
                     for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
                         if (entity.getNeighId() == this.id) {
-                            // System.out.println("Node " + neighbor.getId() + "
-                            // for " + entity.getNeighId() + "= "
-                            // + entity.getEdp());
-                            neighbor.setNeighborDarwinForMe(entity.getEdp());
+                            neighbor.setNeighborDarwinForMe(entity.getNeighborDarwinForMe());
+                            break;
                         }
                     }
-                    continue;
                     // m != j
+                    continue;
                 }
 
                 for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
@@ -92,28 +90,25 @@ public class Node {
                 }
 
             }
+            
             c_im = 1;
             c_mj = neighbor.getConnectivityRatio();
             numerator += (c_im * c_mj);
             fractor += c_im;
 
-            if (fractor > 0) c_i = numerator / fractor;
-            else c_i = 1;
-            neighbor.setMeanConnectivityRatio(c_i);
+            if (fractor > 0) c_minusI = numerator / fractor;
+            else c_minusI = 1;
+            neighbor.setMeanConnectivityRatio(c_minusI);
 
-            double p_i = 1 - c_i;
-
-            double q_minusI = p_i - neighbor.getNeighborDarwinForMe();
-            double q = ownP - neighbor.getEdp();
-
-            q_minusI = DarwinUtils.normalizeValue(q_minusI);
-
-            q = DarwinUtils.normalizeValue(q);
-
-            double newEdp = DarwinUtils.normalizeValue(gamma * (q_minusI - q));
-            neighbor.setEdp(newEdp);
-
-            if (newEdp > SimulationParameters.EDP) {
+            double p_minusI = 1 - c_minusI;
+            
+            double q_minusI = DarwinUtils.normalizeValue(p_minusI - neighbor.getNeighborDarwin());
+            double q_i = DarwinUtils.normalizeValue(p_i - neighbor.getNeighborDarwinForMe());
+            double newDarwin = DarwinUtils.normalizeValue(gamma * (q_minusI - q_i));
+            
+            neighbor.setNeighborDarwin(newDarwin);
+            neighbor.setEdp(p_minusI);
+            if (neighbor.getEdp() > SimulationParameters.EDP) {
                 // System.out.println("Node " + id + " recognized " +
                 // neighbor.getId() + " as selfish.");
                 selfishNodes.add(neighbor.getId());
@@ -139,7 +134,7 @@ public class Node {
                 }
             }
         }
-        return (numerator/fractor);
+        return (numerator / fractor);
     }
 
     public void incrementSentPacketCounter() {
@@ -301,7 +296,7 @@ public class Node {
 
     @Override
     public String toString() {
-        return String.format("Node: ID= %d (%f,%f)", id, x, y);
+        return "Node [" + id + "]";
     }
 
     @Override

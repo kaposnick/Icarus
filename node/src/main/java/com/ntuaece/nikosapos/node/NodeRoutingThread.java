@@ -87,14 +87,13 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
                 recorder.recordPacket(packet);
             } else {
                 if (dropBecauseAmCheater(packet)) {
-                    System.out.println("Packet " + packet.getId() + " dropped by cheater " + node.getId()
-                            + " from source " + packet.getSourceNodeID());
+                    System.out.println(packet + " dropped by cheater " + node + " " + packet.getPathlist());
                     dropPacket(packet);
                     return;
                 } else if (packet.getHopsRemaining() == 0) {
-                    System.out.println("Packet " + packet.getId() + " dropped for hops by " + node.getId() + " for "
-                            + packet.getPathlist());
+                    System.out.println(packet + " dropped for hops by " + node + " " + packet.getPathlist());
                     dropPacket(packet);
+                    return;
                 } else {
                     // send to next neighbor
                     nextNode = router.routePacket(packet);
@@ -108,8 +107,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         if (nextNode != null) {
             nextNode.getLink().addPacketToUpLink(node, packet);
         } else {
-            System.out.println("Packet " + packet.getId() + " dropped by " + node.getId() + " for "
-                    + packet.getDestinationNodeID());
+            System.out.println(packet + " dropped by " + node + " " + packet.getPathlist());
             packet.drop();
         }
     }
@@ -129,7 +127,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     }
 
     private void setTimer() {
-        Timer timer = new Timer("Node " + node.getId() + " packet generator");
+        Timer timer = new Timer(node + " packet generator");
         timer.scheduleAtFixedRate(new TimerTask() {
 
             @Override

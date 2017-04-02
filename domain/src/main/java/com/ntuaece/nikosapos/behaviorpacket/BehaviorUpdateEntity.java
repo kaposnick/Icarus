@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class BehaviorUpdateEntity {
 	@SerializedName("neighbor") @Expose private long neighId;
 	@SerializedName("ratio") @Expose private double ratio;
-	@SerializedName("edp") @Expose private double edp;
+	@SerializedName("darwinForNeighbor") @Expose private double neighborDarwin;
 	
 	public void setNeighId(long id) {
 		this.neighId = id;
@@ -24,11 +24,11 @@ public class BehaviorUpdateEntity {
 		return ratio;
 	}
 	
-	public void setEdp(double edp) {
-        this.edp = edp;
+	public void setNeighborDarwin(double edp) {
+        this.neighborDarwin = edp;
     }
 	
-	public double getEdp() {
-        return edp;
+	public double getNeighborDarwinForMe() {
+        return neighborDarwin;
     }
 }

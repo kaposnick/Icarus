@@ -2,6 +2,7 @@ package com.ntuaece.nikosapos.node;
 
 import java.util.Optional;
 
+import com.ntuaece.nikosapos.SimulationParameters;
 import com.ntuaece.nikosapos.entities.Packet;
 
 import services.NeighborResponsible;
@@ -53,7 +54,7 @@ public class RouterImpl implements Router {
 
             // next neighbor for an ack can be retrieved from the path list
             long nextNeighborID = packet.getPathlist().get(nextNeighborIndex);
-            
+
             Optional<Neighbor> neighbor = node.findNeighborById(nextNeighborID);
 
             if (neighbor.isPresent()) {
@@ -74,29 +75,24 @@ public class RouterImpl implements Router {
         // boolean nextNodeSpecifiedByOldRoute = false;
         // either one will return -1
         nextNodeId = destinationNodeIsNeighbor(p);
-        if (nextNodeId != -1){
-            return node.findNeighborById(nextNodeId).get();
-        } 
-        
+        if (nextNodeId != -1) { return node.findNeighborById(nextNodeId).get(); }
+
         nextNodeId += destinationNodeProvidedByNeighbor(p);
 
         // or if path not specified by any old route then -->
         // nextNodeSpecifiedeByOldRoute = -2
-        boolean nextNodeSpecifiedByOldRoute = nextNodeId > -2;
+        final boolean nextNodeSpecifiedByOldRoute = nextNodeId > -2;
         if (nextNodeSpecifiedByOldRoute && !isSelfishNode(nextNodeId + 1) && !nodeExistsInPath(p, nextNodeId + 1)) {
             // send packet to next node
             possibleNextNode = node.findNeighborById(nextNodeId + 1);
         } else {
-//            System.out.println("Node " + node.getId() + ": " + (nextNodeId+1) + " is selfish");
-//            System.out.println("Node " + node.getId() + " selfishNodes: " + node.getSelfishNodes());
             boolean newRouteToDstFound = false;
             long newNextNodeId = -1;
             int maxDistance = Integer.MAX_VALUE;
-            int maxHops = 15; // = MAX_HOPS;
+            int maxHops = SimulationParameters.MAX_HOPS;
 
             // iterate through neighbors
             for (Neighbor neighbor : node.getNeighbors()) {
-                // System.out.println("Searching for neighbors...");
                 long neighborId = neighbor.getId();
                 int neighborDistance = neighbor.getDistance();
 
@@ -105,27 +101,18 @@ public class RouterImpl implements Router {
                     // ask neighbor for more details
                     RouteDetails routingInformation = service.exchangeRoutingInformationForNode(neighbor,
                                                                                                 destinationId);
-                    // System.out.println("IsFound: "
-                    // +routingInformation.isFound());
-                    // if more details not found continue to the next neighbor
-                    if (routingInformation == null || !routingInformation.isFound()) {
-//                        System.out.println("Node " + node.getId() +" seeking for " + destinationId + " through " + neighbor.getId() + " failed.");
-                        continue; 
-                    }
+                    if (routingInformation == null || !routingInformation.isFound()) continue;
+                    
                     int retrievedDistance = routingInformation.getDistance();
                     int retrievedHops = routingInformation.getMaxHops();
-                    // System.out.println(retrievedDistance + " " +
-                    // retrievedHops);
-                    // trying to find the optimal route. first check
-                    // totalDistance and then totalHops
-                    if (neighborDistance + retrievedDistance < maxDistance) {
-                        // System.out.println("New route to dst found...");
-                        // new route has been found with the new relay node
+                    
+                    if (neighborDistance + retrievedDistance < maxDistance 
+                            // remaining hops <= MAX_HOPS
+                            && p.getPathlist().size() + retrievedHops <= SimulationParameters.MAX_HOPS) {
                         newRouteToDstFound = true;
                         newNextNodeId = neighborId;
                         maxDistance = neighborDistance + retrievedDistance;
                         maxHops = retrievedHops + 1;
-
                     }
                 }
             }
@@ -139,9 +126,9 @@ public class RouterImpl implements Router {
                 if (!nextNodeSpecifiedByOldRoute || (nextNodeSpecifiedByOldRoute && isSelfishNode(nextNodeId + 1))) {
                     Distant distantNode = null;
 
-                    for (Distant node : this.node.getDistantNodes()) {
-                        if (node.getId() == destinationId) {
-                            distantNode = node;
+                    for (Distant maybeDistantNode : this.node.getDistantNodes()) {
+                        if (maybeDistantNode.getId() == destinationId) {
+                            distantNode = maybeDistantNode;
                             break;
                         }
                     }
@@ -152,8 +139,7 @@ public class RouterImpl implements Router {
                         distantNode.setId(destinationId);
                         node.getDistantNodes().add(distantNode);
                     }
-                    /*System.out.println("Node " + node.getId() + " added routing entry for " + destinationId
-                            + " through " + newNextNodeId);*/
+
                     distantNode.setDistance(maxDistance);
                     distantNode.setTotalHops(maxHops);
                     distantNode.setRelayId(newNextNodeId);
@@ -161,7 +147,7 @@ public class RouterImpl implements Router {
             } else {
                 if (nextNodeSpecifiedByOldRoute && !nodeExistsInPath(p, nextNodeId + 1)) {
                     // in this case we don't care if the next node is selfish
-                    System.out.println("Node " + node.getId() + " sending packet to selfish " + (nextNodeId + 1));
+                    System.out.println(node + " sending packet to selfish " + (nextNodeId + 1));
                     possibleNextNode = node.findNeighborById(nextNodeId + 1);
                 } else {
                     boolean nextRouteHasBeenFound = false;

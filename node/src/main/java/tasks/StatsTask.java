@@ -9,7 +9,7 @@ public class StatsTask implements Runnable {
     @Override
     public void run() {
         NodeList.GetInstance().stream().forEach(node -> {
-            System.out.println("Node " + node.getId() + " selfish Nodes: " + node.getSelfishNodes());
+            System.out.println(node +" selfish Nodes: " + node.getSelfishNodes());
         });
 //        NodeList.GetInstance().stream().forEach(node -> {
 //            for (Neighbor neighbor : node.getNeighbors()) {

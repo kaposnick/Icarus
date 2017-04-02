@@ -90,7 +90,7 @@ public class Link {
 
     public void addPacketToUpLink(Node sender, Packet p) {
         if (willDrop(p)) {
-            System.out.println("Oups... Packet "  + p.getId() + " ack: " + p.isAck() + " dropped");
+            System.out.println("Oups... " + p + " dropped");
             return; 
         }
         if (sender.equals(firstEndPoint)) {

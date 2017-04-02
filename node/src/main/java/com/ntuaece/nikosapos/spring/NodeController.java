@@ -23,6 +23,7 @@ import com.ntuaece.nikosapos.node.Node;
 import com.ntuaece.nikosapos.node.NodeList;
 import com.ntuaece.nikosapos.node.RouteDetails;
 
+import distance.DistanceCalculator;
 import distance.NeighborValidator;
 import distance.NeighborValidatorImpl;
 import route.NodeRoutingInfo;
@@ -62,6 +63,8 @@ public class NodeController {
 
         if (neighborValidator.areNeighbors(sourceNode, targetNode)) {
             if (!targetNode.isNeighborWith(sourceNode.getId())) {
+                Neighbor neighbor = Neighbor.FromNode(sourceNode);
+                neighbor.setDistance(DistanceCalculator.calculateDistance(sourceNode, targetNode));
                 targetNode.addNeighbor(Neighbor.FromNode(sourceNode));
             }
             DiscoverResponse response = new DiscoverResponse();

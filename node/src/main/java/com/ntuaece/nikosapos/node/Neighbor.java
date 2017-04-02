@@ -17,6 +17,7 @@ public class Neighbor {
     private Link link;
 
     private double neighborDarwinForMe = 0;
+    private double neighborDarwin = 0;
     private double edp = 0;
 
     public static Neighbor FromNode(Node node) {
@@ -25,7 +26,7 @@ public class Neighbor {
         neighbor.x = node.getX();
         neighbor.y = node.getY();
         neighbor.edp = 0;
-        neighbor.neighborDarwinForMe = 0;
+        neighbor.neighborDarwinForMe = neighbor.neighborDarwin = 0;
         neighbor.packetsSent = neighbor.packetsForwarded = 0;
         neighbor.totalPacketsForwarded = neighbor.totalPacketsSent = 0;
         neighbor.connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
@@ -45,7 +46,7 @@ public class Neighbor {
     }
 
     private void updateConnectivityRatio() {
-        if (packetsSent == 0) connectivityRatio = 1;
+        if (packetsSent == 0) connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
         else connectivityRatio = packetsForwarded / (packetsSent * 1.0f);
     }
 
@@ -129,5 +130,13 @@ public class Neighbor {
     
     public int getPacketsForwarded() {
         return packetsForwarded;
+    }
+    
+    public void setNeighborDarwin(double neighborDarwin) {
+        this.neighborDarwin = neighborDarwin;
+    }
+    
+    public double getNeighborDarwin() {
+        return neighborDarwin;
     }
 }
