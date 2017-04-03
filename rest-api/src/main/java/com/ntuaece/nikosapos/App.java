@@ -21,8 +21,8 @@ public class App
         SpringApplication.run(App.class, args);
         
         Timer icasTimer = new Timer("Icas Timer");
-//        icasTimer.scheduleAtFixedRate(new SelfishNodesPublish(), 10000, 10000);
-//        icasTimer.scheduleAtFixedRate(new DistantNodeAssist(), 50000, 50000);
+        icasTimer.scheduleAtFixedRate(new SelfishNodesPublish(), 10000, 10000);
         icasTimer.scheduleAtFixedRate(new UpdateNodeStatus(), 10000, 10000);
+        icasTimer.scheduleAtFixedRate(new DistantNodeAssist(), 50000, 50000);
     }
 }

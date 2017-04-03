@@ -18,14 +18,14 @@ public class Neighbor {
 
     private double neighborDarwinForMe = 0;
     private double neighborDarwin = 0;
-    private double edp = 0;
+    private double p = 0;
 
     public static Neighbor FromNode(Node node) {
         Neighbor neighbor = new Neighbor();
         neighbor.id = node.getId();
         neighbor.x = node.getX();
         neighbor.y = node.getY();
-        neighbor.edp = 0;
+        neighbor.p = 0;
         neighbor.neighborDarwinForMe = neighbor.neighborDarwin = 0;
         neighbor.packetsSent = neighbor.packetsForwarded = 0;
         neighbor.totalPacketsForwarded = neighbor.totalPacketsSent = 0;
@@ -116,12 +116,12 @@ public class Neighbor {
         return neighborDarwinForMe;
     }
     
-    public void setEdp(double edp) {
-        this.edp = edp;
+    public void setP(double edp) {
+        this.p = edp;
     }
     
-    public double getEdp() {
-        return edp;
+    public double getP() {
+        return p;
     }
     
     public int getPacketsSent() {

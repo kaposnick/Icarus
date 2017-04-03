@@ -44,7 +44,7 @@ public class NodeThread extends Thread {
         executeLinkTask();
 
         try {
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 10; i++) {
                 neighborService.exchangeRoutingTables();
                 Thread.sleep(1000);
             }
@@ -52,20 +52,21 @@ public class NodeThread extends Thread {
             e.printStackTrace();
         }
 
-//        if (node.getId() == 1) NodeList.GetInstance().stream().forEach(node -> {
-//            node.getDistantNodes().forEach(distant -> System.out.println(node.getId() + " " + distant));
-//        });
+        // if (node.getId() == 1) NodeList.GetInstance().stream().forEach(node
+        // -> {
+        // node.getDistantNodes().forEach(distant ->
+        // System.out.println(node.getId() + " " + distant));
+        // });
 
-        // executeRegistrationTask();
-         scheduleDarwinTask();
-        // scheduleUpdateIcasForNeighborBehaviorTask();
+        executeRegistrationTask();
+        scheduleDarwinTask();
+        scheduleUpdateIcasForNeighborBehaviorTask();
 
-         if (node.getId() == 1)
-             scheduledExecutorService.scheduleAtFixedRate(new StatsTask(), 10000,
-                                                          10000, TimeUnit.MILLISECONDS);
+        if (node.getId() == 1)
+            scheduledExecutorService.scheduleAtFixedRate(new StatsTask(), 10000, 10000, TimeUnit.MILLISECONDS);
 
         NodeRoutingThread routingThread = new NodeRoutingThread(node, neighborService, icasService);
-         routingThread.start();
+        routingThread.start();
     }
 
     private void scheduleUpdateIcasForNeighborBehaviorTask() {
@@ -79,8 +80,8 @@ public class NodeThread extends Thread {
     private void prepareResources() {
         OkHttpClient httpClient = new OkHttpClient.Builder().readTimeout(50, TimeUnit.SECONDS).build();
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        // icasService = new IcasService(node, httpClient, gson);
-        icasService = new TestIcasService();
+//        icasService = new IcasService(node, httpClient, gson);
+         icasService = new TestIcasService();
         neighborService = new NeighborService(node, httpClient, gson);
         scheduledExecutorService = Executors.newScheduledThreadPool(2);
     }
@@ -113,10 +114,10 @@ public class NodeThread extends Thread {
         while (!discoveryFutureResult.isDone());
 
         // Schedule discover neighbor task
-//        scheduledExecutorService.scheduleAtFixedRate(discoveryTask,
-//                                                     NodeScheduledTask.DISCOVERY_PERIOD + node.getId() * 10,
-//                                                     NodeScheduledTask.DISCOVERY_PERIOD,
-//                                                     TimeUnit.MILLISECONDS);
+        // scheduledExecutorService.scheduleAtFixedRate(discoveryTask,
+        // NodeScheduledTask.DISCOVERY_PERIOD + node.getId() * 10,
+        // NodeScheduledTask.DISCOVERY_PERIOD,
+        // TimeUnit.MILLISECONDS);
     }
 
 }

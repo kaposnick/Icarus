@@ -91,6 +91,8 @@ public class Link {
     public void addPacketToUpLink(Node sender, Packet p) {
         if (willDrop(p)) {
             System.out.println("Oups... " + p + " dropped");
+            p.drop();
+            Packet.incrementDroppedPackets();
             return; 
         }
         if (sender.equals(firstEndPoint)) {
@@ -135,11 +137,12 @@ public class Link {
      */
 
     private boolean willDrop(Packet packet) {
-        if (packet.isAck()) {
+        /*if (packet.isAck()) {
             return new Random().nextDouble() * 10000 < 2; // 0.02%
         } else {
             return new Random().nextDouble() * 10000 < 20; // 0.2%
-        }
+        }*/
+        return false;
     }
 
     /**

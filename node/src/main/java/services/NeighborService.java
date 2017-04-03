@@ -2,6 +2,7 @@ package services;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.google.gson.Gson;
 import com.ntuaece.nikosapos.node.DarwinPacket;
@@ -104,7 +105,8 @@ public class NeighborService extends CommunicationService implements NeighborRes
             routingPacket.getNodeRoutingTable().add(nodeRoutingInfo);
         }
 
-        for (Distant distant : node.getDistantNodes()) {
+        for (Iterator<Distant> iterator = node.getDistantNodes().iterator(); iterator.hasNext();) {
+            Distant distant = iterator.next();
             NodeRoutingInfo nodeRoutingInfo = new NodeRoutingInfo();
             nodeRoutingInfo.setId(distant.getId());
             nodeRoutingInfo.setDistance(distant.getDistance());
@@ -137,7 +139,6 @@ public class NeighborService extends CommunicationService implements NeighborRes
             }
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;

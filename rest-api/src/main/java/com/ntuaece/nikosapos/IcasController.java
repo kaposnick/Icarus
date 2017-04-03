@@ -48,7 +48,7 @@ public class IcasController {
                                                             .setY(registerPacket.getY())
                                                             .setTotalNeighbors(registerPacket.getTotalNeighbors())
                                                             .build();
-            NodeEntity.NodeEntityList.add(nodeEntity);
+            NodeEntity.AddNode(nodeEntity);
             System.out.println("Node " + nodeEntity.getId() + " registered");
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
@@ -68,7 +68,6 @@ public class IcasController {
                     case ANY_SEND:
                         return new ResponseEntity<>(HttpStatus.OK);
                     case NEIGHBOR_SEND:
-                        // if is neighbor
                         if (node.get()
                                 .getNeighborConnectivityRatio()
                                 .containsKey(permissionPacket.getDestinationNodeId())) { return new ResponseEntity<>(HttpStatus.OK); }
@@ -134,8 +133,9 @@ public class IcasController {
 
         // update the relayed packets field so that it gets computed for the
         // distant nodes
-        NodeEntity.GetNodeEntityById(senderNodeId).get().setRelayedPackets(behaviorPacket.getRelayedPackets());
-        NodeEntity.GetNodeEntityById(senderNodeId).get().setTotalNeighbors(behaviorPacket.getTotalNeighbors());
+        NodeEntity sendindNode = NodeEntity.GetNodeEntityById(senderNodeId).get();
+        sendindNode.setRelayedPackets(behaviorPacket.getRelayedPackets());
+        sendindNode.setTotalNeighbors(behaviorPacket.getTotalNeighbors());
 
         // iterate through all the neighbors
         for (BehaviorUpdateEntity behaviorUpdateEntity : behaviorPacket.getNeighborList()) {

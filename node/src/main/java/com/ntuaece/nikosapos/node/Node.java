@@ -2,12 +2,16 @@ package com.ntuaece.nikosapos.node;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.ntuaece.nikosapos.SimulationParameters;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
+
+import darwin.Darwin;
 
 public class Node {
     private long id;
@@ -20,18 +24,22 @@ public class Node {
     private int forwardedPackets;
     private int relayedPackets;
 
-    private static final int gamma = 2;
 
+    private Darwin darwin;
     private boolean isCheater;
 
     private List<Long> destinations = new ArrayList<Long>();
     private List<Distant> distants = new ArrayList<Distant>();
     private List<Neighbor> neighbors = new ArrayList<Neighbor>();
-    private Set<Long> selfishNodes = new HashSet<Long>();
     private List<DarwinPacket> darwinPacketList = new ArrayList<DarwinPacket>();
 
+    private Set<Long> darwinSelfishNodes = new HashSet<Long>();
+    private Set<Long> icasSelfishNodes = new HashSet<Long>();
+
     public boolean isNeighborWith(long maybeNeighborID) {
-        return neighbors.stream().anyMatch(n -> n.getId() == maybeNeighborID);
+        synchronized (this) {
+            return neighbors.stream().anyMatch(n -> n.getId() == maybeNeighborID);
+        }
     }
 
     public Optional<Neighbor> findNeighborById(long id) {
@@ -39,102 +47,43 @@ public class Node {
     }
 
     public Optional<Distant> findDistantById(long id) {
-        return distants.stream().filter(dst -> dst.getId() == id).findFirst();
+        Distant mDistant = null;;
+        for (Distant distant : distants) {
+            if (distant.getId() == id) {
+                mDistant = distant;
+                break;
+            }
+        }
+        return Optional.ofNullable(mDistant);
     }
 
     public void updateSelfishNodeList(Set<Long> updatedList) {
-        selfishNodes.clear();
-        selfishNodes.addAll(updatedList);
+        icasSelfishNodes.clear();
+        icasSelfishNodes.addAll(updatedList);
+    }
+    
+    public void setDarwinImpl(Darwin darwin) {
+        this.darwin = darwin;
     }
 
-    public boolean rejectPacket() {
-        boolean SBI = sentPackets - forwardedPackets <= SimulationParameters.IFN;
-        boolean condition = isCheater && SBI;
-        if (sentPackets > SimulationParameters.IFN + 1) {
-            clearSentPacketCounter();
-            clearForwardedPacketCounter();
-        }
-        return condition;
+    public void executeDarwinAlgorithm() {
+       if (darwin != null) {
+           darwin.computeDarwin(darwinPacketList);
+       } else {
+           throw new NullPointerException("Darwin calculator should not be null");
+       }
     }
 
-    public void computeNeighborMeanConnectivityRatioForNeighbors() {
-        final double p_i = 1 - computeOwnC();
-        neighbors.stream().forEach(neighbor -> {
-            double c_minusI = 0;
-            double numerator = 0;
-            double fractor = 0;
-
-            double c_im = 0;
-            double c_mj = 0;
-
-            for (DarwinPacket packet : darwinPacketList) {
-                if (packet.getId() == neighbor.getId()) {
-                    for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
-                        if (entity.getNeighId() == this.id) {
-                            neighbor.setNeighborDarwinForMe(entity.getNeighborDarwinForMe());
-                            break;
-                        }
-                    }
-                    // m != j
-                    continue;
-                }
-
-                for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
-                    if (entity.getNeighId() == neighbor.getId()) {
-                        c_mj = entity.getRatio();
-                        c_im = findNeighborById(packet.getId()).get().getConnectivityRatio();
-                        numerator += (c_im * c_mj);
-                        fractor += c_im;
-                        break;
-                    }
-                }
-
-            }
-            
-            c_im = 1;
-            c_mj = neighbor.getConnectivityRatio();
-            numerator += (c_im * c_mj);
-            fractor += c_im;
-
-            if (fractor > 0) c_minusI = numerator / fractor;
-            else c_minusI = 1;
-            neighbor.setMeanConnectivityRatio(c_minusI);
-
-            double p_minusI = 1 - c_minusI;
-            
-            double q_minusI = DarwinUtils.normalizeValue(p_minusI - neighbor.getNeighborDarwin());
-            double q_i = DarwinUtils.normalizeValue(p_i - neighbor.getNeighborDarwinForMe());
-            double newDarwin = DarwinUtils.normalizeValue(gamma * (q_minusI - q_i));
-            
-            neighbor.setNeighborDarwin(newDarwin);
-            neighbor.setEdp(p_minusI);
-            if (neighbor.getEdp() > SimulationParameters.EDP) {
-                // System.out.println("Node " + id + " recognized " +
-                // neighbor.getId() + " as selfish.");
-                selfishNodes.add(neighbor.getId());
-            } else {
-                // System.out.println("Node " + id + " removed " +
-                // neighbor.getId() + " from selfish.");
-                selfishNodes.removeIf(id -> neighbor.getId() == id);
-            }
-        });
+    public void addDarwinSelfishNode(Long nodeId) {
+        darwinSelfishNodes.add(nodeId);
+    }
+    
+    public boolean removeDarwinSelfishNode(Long nodeId) {
+        return darwinSelfishNodes.removeIf(id -> id == nodeId);
     }
 
-    private double computeOwnC() {
-        double fractor = 0;
-        double numerator = 0;
-        for (Neighbor neighbor : neighbors) {
-            for (DarwinPacket packet : darwinPacketList) {
-                for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
-                    if (entity.getNeighId() == this.id) {
-                        numerator += (entity.getRatio() * neighbor.getConnectivityRatio());
-                        fractor += neighbor.getConnectivityRatio();
-                        break;
-                    }
-                }
-            }
-        }
-        return (numerator / fractor);
+    public boolean existsInSelfishNodeList(Long id) {
+        return darwinSelfishNodes.contains(id) || icasSelfishNodes.contains(id);
     }
 
     public void incrementSentPacketCounter() {
@@ -168,7 +117,7 @@ public class Node {
     }
 
     public Set<Long> getSelfishNodes() {
-        return selfishNodes;
+        return darwinSelfishNodes;
     }
 
     public List<Distant> getDistantNodes() {
@@ -306,6 +255,12 @@ public class Node {
         Node node = (Node) obj;
         if (node.getId() == this.id) return true;
         return false;
+    }
+
+    public void addDistant(Distant distant) {
+        synchronized (this) {
+            distants.add(distant);
+        }
     }
 
 }

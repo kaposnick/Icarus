@@ -10,6 +10,8 @@ import com.ntuaece.nikosapos.node.NodeList;
 import com.ntuaece.nikosapos.node.NodePosition;
 import com.ntuaece.nikosapos.node.NodeThread;
 
+import darwin.DarwinCalculator;
+
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
 public class NodeApplication {
@@ -23,8 +25,8 @@ public class NodeApplication {
                     .setY(NodePosition.y[i])
                     .setDestinationIds(NodePosition.destinationNodes[i%13])
                     .build();
-            if (i == 12 || i == 19 || i == 20) node.setCheater(true);
-            
+            if (i == 12 || i == 19 || i == 20 ) node.setCheater(true);
+            node.setDarwinImpl(new DarwinCalculator(node));           
             NodeList.GetInstance().add(node);
         }
     }

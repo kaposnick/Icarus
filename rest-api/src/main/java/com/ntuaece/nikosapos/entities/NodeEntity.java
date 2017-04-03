@@ -37,6 +37,10 @@ public class NodeEntity  {
 	private int relayedPackets;
 	private int totalNeighbors;
 	
+	public synchronized static void AddNode(NodeEntity entity){
+	    NodeEntityList.add(entity);
+	}
+	
 	public static class Builder {
     	private long id;
     	private int x,y;

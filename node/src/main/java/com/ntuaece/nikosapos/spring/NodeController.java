@@ -1,7 +1,9 @@
 package com.ntuaece.nikosapos.spring;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -96,7 +98,7 @@ public class NodeController {
             Node node = mayNode.get();
             node.addDarwinPacket(packet);
             if (node.allDarwinPacketsArrived()) {
-                node.computeNeighborMeanConnectivityRatioForNeighbors();
+                node.executeDarwinAlgorithm();
                 node.clearDarwinPacketList();
             }
             return new ResponseEntity<>(HttpStatus.OK);
@@ -172,11 +174,19 @@ public class NodeController {
                 distant.setRelayId(routingInfoPacket.getNodeId());
                 distant.setDistance(nodeInfo.getDistance() + maybeNeighbor.get().getDistance());
                 distant.setTotalHops(1 + nodeInfo.getHops());
-                node.get().getDistantNodes().add(distant);
+                node.get().addDistant(distant);
             }
         }
         
         return new ResponseEntity<>(HttpStatus.OK);
 
+    }
+    
+    @RequestMapping(method = RequestMethod.POST , value = "selfishBroadcast/{id}")
+    public ResponseEntity<?> onSelfishUpdate(@PathVariable("id") String nodeID, @RequestBody Set<Long> selfishNodes) {
+        Optional<Node> node = NodeList.GetNodeById(nodeID);
+        if (!node.isPresent()) return new ResponseEntity<String>("Node " + nodeID + " not active",HttpStatus.BAD_REQUEST);
+        node.get().updateSelfishNodeList(selfishNodes);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

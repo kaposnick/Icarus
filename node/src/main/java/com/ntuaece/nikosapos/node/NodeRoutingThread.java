@@ -67,9 +67,9 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             if (packet.getSourceNodeID() == node.getId()) {
                 // System.out.println("Packet " + packet.getId() + " has reached
                 // source " + node.getId());
+                Packet.incrementDeliveredPackets();
                 recorder.recordPacket(packet);
                 packet.drop();
-                Packet.droppedPacketCounter.incrementAndGet();
                 return;
             } else {
                 nextNode = router.routePacket(packet);
@@ -77,10 +77,6 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             }
         } else {
             if (packet.getDestinationNodeID() == node.getId()) {
-                // System.out.println("Packet " + packet.getId() + " dst path: "
-                // + packet.getPathlist());
-                // System.out.println("Packet " + packet.getId() + " has reached
-                // destination " + node.getId());
                 packet.setAck(true);
                 icasService.confirmSuccessfulDelivery(packet);
                 nextNode = router.routePacket(packet);
@@ -109,6 +105,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         } else {
             System.out.println(packet + " dropped by " + node + " " + packet.getPathlist());
             packet.drop();
+            Packet.incrementDroppedPackets();
         }
     }
 
@@ -116,6 +113,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         packet.addPathlist(node.getId());
         recorder.recordPacket(packet);
         packet.drop();
+        Packet.incrementDroppedPackets();
     }
 
     private boolean dropBecauseAmCheater(Packet p) {
@@ -130,13 +128,15 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         Timer timer = new Timer(node + " packet generator");
         timer.scheduleAtFixedRate(new TimerTask() {
 
+            final int size = node.getDestinationList().size();
+            int i = 0;
+
             @Override
             public void run() {
-                // choose a random node (maybe fixed)
-                int size = node.getDestinationList().size();
                 do {
-                    int randomIndex = new Random().nextInt(size);
-                    nextPacketDestination = node.getDestinationList().get(randomIndex);
+                    i++;
+                    i %= size;
+                    nextPacketDestination = node.getDestinationList().get(i);
                 } while (nextPacketDestination == node.getId());
                 // do {
                 // nextPacketDestination = new

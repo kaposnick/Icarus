@@ -102,17 +102,23 @@ public class RouterImpl implements Router {
                     RouteDetails routingInformation = service.exchangeRoutingInformationForNode(neighbor,
                                                                                                 destinationId);
                     if (routingInformation == null || !routingInformation.isFound()) continue;
-                    
+
                     int retrievedDistance = routingInformation.getDistance();
                     int retrievedHops = routingInformation.getMaxHops();
-                    
-                    if (neighborDistance + retrievedDistance < maxDistance 
-                            // remaining hops <= MAX_HOPS
-                            && p.getPathlist().size() + retrievedHops <= SimulationParameters.MAX_HOPS) {
-                        newRouteToDstFound = true;
-                        newNextNodeId = neighborId;
-                        maxDistance = neighborDistance + retrievedDistance;
-                        maxHops = retrievedHops + 1;
+
+                    if (p.getPathlist().size() + retrievedHops <= SimulationParameters.MAX_HOPS) {
+                        if (newRouteToDstFound) {
+                            if (retrievedDistance + neighborDistance <= maxDistance) {
+                                newNextNodeId = neighborId;
+                                maxDistance = neighborDistance + retrievedDistance;
+                                maxHops = retrievedHops + 1;
+                            }
+                        } else {
+                            newRouteToDstFound = true;
+                            newNextNodeId = neighborId;
+                            maxDistance = neighborDistance + retrievedDistance;
+                            maxHops = retrievedHops + 1;
+                        }
                     }
                 }
             }
@@ -191,7 +197,7 @@ public class RouterImpl implements Router {
     }
 
     private boolean isSelfishNode(long id) {
-        return node.getSelfishNodes().contains(id);
+        return node.existsInSelfishNodeList(id);
     }
 
     private static boolean nodeExistsInPath(Packet p, long nodeId) {

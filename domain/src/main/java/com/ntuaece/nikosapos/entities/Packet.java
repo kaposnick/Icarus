@@ -10,7 +10,8 @@ import com.ntuaece.nikosapos.SimulationParameters;
 
 public class Packet {
     public final static AtomicLong packetCounter = new AtomicLong();
-    public final static AtomicLong droppedPacketCounter = new AtomicLong();
+    private final static AtomicLong droppedPacketCounter = new AtomicLong();
+    private final static AtomicLong deliveredPacketCounter = new AtomicLong();
     @SerializedName("packetId") @Expose private long id;
     @SerializedName("src") @Expose private long sourceNodeID;
     @SerializedName("dst") @Expose private long destinationNodeID;
@@ -57,6 +58,22 @@ public class Packet {
 
     public byte getData() {
         return data;
+    }
+    
+    public static void incrementDroppedPackets(){
+        droppedPacketCounter.incrementAndGet();
+    }
+    
+    public static void incrementDeliveredPackets(){
+        deliveredPacketCounter.incrementAndGet();
+    }
+    
+    public static long getDroppedPackets(){
+        return droppedPacketCounter.get();
+    }
+    
+    public static long getDeliveredPackets(){
+        return deliveredPacketCounter.get();
     }
 
     public void setAck(boolean isAck) {

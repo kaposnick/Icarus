@@ -42,8 +42,7 @@ public class IcasService extends CommunicationService implements IcasResponsible
                                                .build();
         try {
             Response response = httpClient.newCall(request).execute();
-            if (response.isSuccessful()) return true;
-            else return false;
+            return response.isSuccessful();
         } catch (IOException e) {
             e.printStackTrace();
             return true;
@@ -61,13 +60,11 @@ public class IcasService extends CommunicationService implements IcasResponsible
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                // TODO Auto-generated method stub
 
             }
 
             @Override
             public void onFailure(Call call, IOException e) {
-                // TODO Auto-generated method stub
 
             }
         });
@@ -86,11 +83,18 @@ public class IcasService extends CommunicationService implements IcasResponsible
         Request request = new Request.Builder().post(RequestBody.create(JSON, packetBody))
                                                .url(URL_ICAS + ACTION_REGISTER)
                                                .build();
-        try {
-            httpClient.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        httpClient.newCall(request).enqueue(new Callback() {
+            
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                
+            }
+            
+            @Override
+            public void onFailure(Call call, IOException e) {
+                
+            }
+        });
     }
 
     @Override
@@ -107,21 +111,26 @@ public class IcasService extends CommunicationService implements IcasResponsible
             entity.setNeighId(neighbor.getId());
             entity.setRatio(neighbor.getConnectivityRatio());
             mList.add(entity);
-            neighbor.clearCounters();
+//            neighbor.clearCounters();
         }
         packet.setNeighborList(mList);
         String packetBody = gson.toJson(packet);
-        System.out.println(packet);
+//        System.out.println(packet);
         Request request = new Request.Builder().post(RequestBody.create(JSON, packetBody))
                                                .url(URL_ICAS + ACTION_UPDATE)
                                                .build();
-        try {
-            httpClient.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (mList != null) mList.clear();
-        }
+        httpClient.newCall(request).enqueue(new Callback() {
+            
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                
+            }
+            
+            @Override
+            public void onFailure(Call call, IOException e) {
+                
+            }
+        });
 
     }
 
