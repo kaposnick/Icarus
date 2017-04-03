@@ -22,6 +22,9 @@ public class DarwinCalculator implements Darwin {
     private Map<Long, Double> p_minusI(List<DarwinPacket> darwinPacketList) {
         Map<Long, Double> neighborProbMap = new HashMap<>(darwinPacketList.size());
 
+        double c_minusI = 0;
+        double p_minusI = 0;
+
         for (Neighbor neighbor : node.getNeighbors()) {
             double c_mj = 0;
             double c_im = 0;
@@ -46,10 +49,10 @@ public class DarwinCalculator implements Darwin {
             numerator += c_im * c_mj;
             fractor += c_im;
 
-            double c_minusI = numerator / fractor;
+            c_minusI = numerator / fractor;
             neighbor.setMeanConnectivityRatio(c_minusI);
 
-            double p_minusI = 1 - c_minusI;
+            p_minusI = 1 - c_minusI;
             neighbor.setP(p_minusI);
             neighborProbMap.put(neighbor.getId(), p_minusI);
         }
@@ -75,12 +78,28 @@ public class DarwinCalculator implements Darwin {
         return 1 - c_I;
     }
 
+    private double p_I_alt(List<DarwinPacket> darwiPacketList) {
+        double numerator = 0;
+        double fractor = 0;
+        for (DarwinPacket packet : darwiPacketList) {
+            Neighbor neighbor = node.findNeighborById(packet.getId()).get();
+            for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
+                if (entity.getNeighId() == this.node.getId()) {
+                    neighbor.setNeighborDarwinForMe(entity.getNeighborDarwinForMe());
+                    numerator += entity.getP();
+                    fractor++;
+                }
+            }
+        }
+        return (fractor > 0) ? (double)(1 - (numerator / fractor)) : 1f;
+    }
+
     private double p_DarwinI(Neighbor neighbor) {
-        return neighbor.getNeighborDarwinForMe();
+        return neighbor.getNeighborDarwin();
     }
 
     private double p_DarwinMinusI(Neighbor neighbor) {
-        return neighbor.getNeighborDarwin();
+        return neighbor.getNeighborDarwinForMe();
     }
 
     @Override
@@ -91,7 +110,7 @@ public class DarwinCalculator implements Darwin {
         double p_DarwinI = 0;
         double p_DarwinMinusI = 0;
         double p_minusI = 0;
-        double q = 0;
+        double q_I = 0;
         double q_minusI = 0;
         double p_DarwinNew = 0;
 
@@ -100,24 +119,26 @@ public class DarwinCalculator implements Darwin {
             p_DarwinMinusI = p_DarwinMinusI(neighbor);
             p_minusI = neighProbMap.get(neighbor.getId());
 
-            q = DarwinUtils.normalizeValue(p_I - p_DarwinI);
+            q_I = DarwinUtils.normalizeValue(p_I - p_DarwinI);
             q_minusI = DarwinUtils.normalizeValue(p_minusI - p_DarwinMinusI);
-            p_DarwinNew = DarwinUtils.normalizeValue(gamma * (q_minusI - q));
+            p_DarwinNew = DarwinUtils.normalizeValue(gamma * (q_minusI - q_I));
             neighbor.setNeighborDarwin(p_DarwinNew);
 
-            if (neighbor.getP() > SimulationParameters.EDP) {
+            if (neighbor.getP() >= SimulationParameters.EDP) {
                 node.addDarwinSelfishNode(neighbor.getId());
             } else {
                 node.removeDarwinSelfishNode(neighbor.getId());
             }
+//            neighbor.clearCounters();
         }
-        printResults(node);
+        neighProbMap.clear();
     }
 
     private static synchronized void printResults(Node node) {
         System.out.println(node);
         node.getNeighbors().forEach(neighbor -> {
-            System.out.println("Neighbor [" + neighbor.getId()+ "]\t P(-1): " + neighbor.getP() + "\tDarwin(-1): " + neighbor.getNeighborDarwin());
+            System.out.println("Neighbor [" + neighbor.getId() + "]\t P(-1): " + neighbor.getP() + "\tDarwin(-1): "
+                    + neighbor.getNeighborDarwin());
         });
     }
 }

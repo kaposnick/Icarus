@@ -30,17 +30,17 @@ public class StatsTask implements Runnable {
 
     @Override
     public void run() {
-        /*NodeList.GetInstance().stream().forEach(node -> {
-            // System.out.println(node + " selfish Nodes: " +
-            // node.getSelfishNodes());
-            System.out.println(node);
-            node.getNeighbors().forEach(neighbor -> {
-                System.out.println("Neighbor [" + neighbor.getId() + "] Sent for Forwarded " + neighbor.getPacketsSent()
-                        + " \t Forwarded " + neighbor.getPacketsForwarded() + "\t Ratio "
-                        + neighbor.getConnectivityRatio());
-            });
-            System.out.println("------------");
-        });*/
+        NodeList.GetInstance().stream().forEach(node -> {
+             System.out.println(node + " selfish Nodes: " +
+             node.getSelfishNodes());
+//            System.out.println(node);
+//            node.getNeighbors().forEach(neighbor -> {
+//                System.out.println("Neighbor [" + neighbor.getId() + "] Sent for Forwarded " + neighbor.getPacketsSent()
+//                        + " \t Forwarded " + neighbor.getPacketsForwarded() + "\t Ratio "
+//                        + neighbor.getConnectivityRatio());
+//            });
+//            System.out.println("------------");
+        });
 
         try {
             FileWriter writer = new FileWriter(file, true);

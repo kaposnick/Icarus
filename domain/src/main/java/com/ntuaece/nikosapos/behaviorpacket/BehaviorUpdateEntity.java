@@ -7,6 +7,7 @@ public class BehaviorUpdateEntity {
 	@SerializedName("neighbor") @Expose private long neighId;
 	@SerializedName("ratio") @Expose private double ratio;
 	@SerializedName("darwinForNeighbor") @Expose private double neighborDarwin;
+	@SerializedName("p") @Expose private double p;
 	
 	public void setNeighId(long id) {
 		this.neighId = id;
@@ -30,5 +31,13 @@ public class BehaviorUpdateEntity {
 	
 	public double getNeighborDarwinForMe() {
         return neighborDarwin;
+    }
+	
+	public void setP(double p) {
+        this.p = p;
+    }
+	
+	public double getP() {
+        return p;
     }
 }

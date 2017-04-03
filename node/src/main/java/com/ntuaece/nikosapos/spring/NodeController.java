@@ -163,7 +163,7 @@ public class NodeController {
             if (maybeDistant.isPresent() && maybeNeighbor.isPresent()) {
                 Distant distant = maybeDistant.get();
                 Neighbor neighbor = maybeNeighbor.get();
-                if (distant.getDistance() > nodeInfo.getDistance() + neighbor.getDistance()) {
+                if (distant.getTotalHops() > nodeInfo.getHops() + 1) {
                     distant.setRelayId(routingInfoPacket.getNodeId());
                     distant.setDistance(nodeInfo.getDistance() + neighbor.getDistance());
                     distant.setTotalHops(1 + nodeInfo.getHops());

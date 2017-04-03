@@ -1,5 +1,7 @@
 package com.ntuaece.nikosapos.node;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Neighbor {
     private final static float CONNECTIVITY_RATIO_DEFAULT = 1.0f;
 
@@ -8,8 +10,8 @@ public class Neighbor {
     private int y;
     private double connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
     private double meanConnectivityRatio;
-    private int packetsSent;
-    private int packetsForwarded;
+    private AtomicInteger packetsSent = new AtomicInteger();
+    private AtomicInteger packetsForwarded = new AtomicInteger();
     private int distance;
 
     private int totalPacketsSent;
@@ -27,32 +29,32 @@ public class Neighbor {
         neighbor.y = node.getY();
         neighbor.p = 0;
         neighbor.neighborDarwinForMe = neighbor.neighborDarwin = 0;
-        neighbor.packetsSent = neighbor.packetsForwarded = 0;
+        neighbor.packetsSent = neighbor.packetsForwarded = new AtomicInteger();
         neighbor.totalPacketsForwarded = neighbor.totalPacketsSent = 0;
         neighbor.connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
         return neighbor;
     }
 
     public void incrementSentPacketCounter() {
-        packetsSent++;
+        packetsSent.incrementAndGet();
         totalPacketsSent++;
         updateConnectivityRatio();
     }
 
     public void incrementForwardedPacketCounter() {
-        packetsForwarded++;
+        packetsForwarded.incrementAndGet();
         totalPacketsForwarded++;
         updateConnectivityRatio();
     }
 
     private void updateConnectivityRatio() {
-        if (packetsSent == 0) connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
-        else connectivityRatio = packetsForwarded / (packetsSent * 1.0f);
+        if (packetsSent.get() == 0) connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
+        else connectivityRatio = packetsForwarded.get() / (packetsSent.get() * 1.0f);
     }
 
     public void clearCounters() {
-        packetsSent = 0;
-        packetsForwarded = 0;
+        packetsSent.set(0);
+        packetsForwarded.set(0);
         updateConnectivityRatio();
     }
 
@@ -125,11 +127,11 @@ public class Neighbor {
     }
     
     public int getPacketsSent() {
-        return packetsSent;
+        return packetsSent.get();
     }
     
     public int getPacketsForwarded() {
-        return packetsForwarded;
+        return packetsForwarded.get();
     }
     
     public void setNeighborDarwin(double neighborDarwin) {

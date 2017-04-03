@@ -3,6 +3,7 @@ package com.ntuaece.nikosapos.node;
 public class Distant {
     private long id;
     private long relayId = -1;
+    private long alternateRelayId = -1;
     private int totalHops;
     private int distance;
     
@@ -38,8 +39,16 @@ public class Distant {
         return distance;
     }
     
+    public void setAlternateRelayId(long alternateRelayId) {
+        this.alternateRelayId = alternateRelayId;
+    }
+    
+    public long getAlternateRelayId() {
+        return alternateRelayId;
+    }
+    
     @Override
     public String toString() {
-        return id + " distance: " + distance + " through " + relayId + " total hops: " + totalHops;
+        return "Distant [" + id + "] distance: " + distance + " through " + relayId + " total hops: " + totalHops;
     }
 }

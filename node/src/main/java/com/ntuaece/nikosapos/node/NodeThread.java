@@ -1,5 +1,8 @@
 package com.ntuaece.nikosapos.node;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Future;
@@ -52,21 +55,30 @@ public class NodeThread extends Thread {
             e.printStackTrace();
         }
 
-        // if (node.getId() == 1) NodeList.GetInstance().stream().forEach(node
-        // -> {
-        // node.getDistantNodes().forEach(distant ->
-        // System.out.println(node.getId() + " " + distant));
-        // });
+        /*if (node.getId() == 1) NodeList.GetInstance().stream().forEach(node -> {
+            node.getDistantNodes().forEach(distant -> System.out.println(node + " --- " + distant));
+        });*/
 
         executeRegistrationTask();
-        scheduleDarwinTask();
+         scheduleDarwinTask();
         scheduleUpdateIcasForNeighborBehaviorTask();
+        scheduleUpdateRoutingTablesTask();
 
         if (node.getId() == 1)
             scheduledExecutorService.scheduleAtFixedRate(new StatsTask(), 10000, 10000, TimeUnit.MILLISECONDS);
 
         NodeRoutingThread routingThread = new NodeRoutingThread(node, neighborService, icasService);
         routingThread.start();
+    }
+
+    private void scheduleUpdateRoutingTablesTask() {
+        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+
+            @Override
+            public void run() {
+                neighborService.exchangeRoutingTables();
+            }
+        }, 60, 60, TimeUnit.SECONDS);
     }
 
     private void scheduleUpdateIcasForNeighborBehaviorTask() {
@@ -80,8 +92,8 @@ public class NodeThread extends Thread {
     private void prepareResources() {
         OkHttpClient httpClient = new OkHttpClient.Builder().readTimeout(50, TimeUnit.SECONDS).build();
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-//        icasService = new IcasService(node, httpClient, gson);
-         icasService = new TestIcasService();
+        // icasService = new IcasService(node, httpClient, gson);
+        icasService = new TestIcasService();
         neighborService = new NeighborService(node, httpClient, gson);
         scheduledExecutorService = Executors.newScheduledThreadPool(2);
     }

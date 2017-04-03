@@ -14,11 +14,12 @@ public class DarwinPacket {
 
     public DarwinPacket(Node node) {
         this.id = node.getId();
-        node.getNeighbors().stream().forEach(neighbor -> {
+        node.getNeighbors().forEach(neighbor -> {
             BehaviorUpdateEntity entity = new BehaviorUpdateEntity();
             entity.setNeighId(neighbor.getId());
             entity.setRatio(neighbor.getConnectivityRatio());
             entity.setNeighborDarwin(neighbor.getNeighborDarwin());
+            entity.setP(neighbor.getP());
             neighborRatioList.add(entity);
         });
     }

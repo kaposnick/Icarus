@@ -27,9 +27,9 @@ public class RouterImpl implements Router {
 
         if (!packet.isAck()) {
             // check if last node was selfish. If yes drop it
-            long lastNodeId = packet.getPathlist().get(packet.getPathlist().size() - 1);
-            if (isSelfishNode(lastNodeId)) {
-                System.out.println("Packet " + packet.getId() + " came from selfish ");
+            long sourcePacketNode = packet.getPathlist().get(0);
+            if (isSelfishNode(sourcePacketNode)) {
+//                System.out.println(node + " packet " + packet.getId() + " came from selfish " + sourcePacketNode );
                 return null;
             }
 
@@ -106,9 +106,10 @@ public class RouterImpl implements Router {
                     int retrievedDistance = routingInformation.getDistance();
                     int retrievedHops = routingInformation.getMaxHops();
 
+                    // to get sure that will find a new route
                     if (p.getPathlist().size() + retrievedHops <= SimulationParameters.MAX_HOPS) {
                         if (newRouteToDstFound) {
-                            if (retrievedDistance + neighborDistance <= maxDistance) {
+                            if (retrievedHops + 1 < maxHops) {
                                 newNextNodeId = neighborId;
                                 maxDistance = neighborDistance + retrievedDistance;
                                 maxHops = retrievedHops + 1;
@@ -129,7 +130,7 @@ public class RouterImpl implements Router {
 
                 // if the old next node is selfish then replace with the new
                 // route or if there is no next node
-                if (!nextNodeSpecifiedByOldRoute || (nextNodeSpecifiedByOldRoute && isSelfishNode(nextNodeId + 1))) {
+                if (!nextNodeSpecifiedByOldRoute || isSelfishNode(nextNodeId + 1)) {
                     Distant distantNode = null;
 
                     for (Distant maybeDistantNode : this.node.getDistantNodes()) {
@@ -143,7 +144,7 @@ public class RouterImpl implements Router {
                         // not existing already in distant node list
                         distantNode = new Distant();
                         distantNode.setId(destinationId);
-                        node.getDistantNodes().add(distantNode);
+                        node.addDistant(distantNode);
                     }
 
                     distantNode.setDistance(maxDistance);
@@ -200,7 +201,7 @@ public class RouterImpl implements Router {
         return node.existsInSelfishNodeList(id);
     }
 
-    private static boolean nodeExistsInPath(Packet p, long nodeId) {
+    private boolean nodeExistsInPath(Packet p, long nodeId) {
         return p.getPathlist().contains(nodeId);
     }
 

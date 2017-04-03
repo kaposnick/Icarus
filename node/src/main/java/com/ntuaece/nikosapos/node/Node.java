@@ -26,6 +26,7 @@ public class Node {
 
 
     private Darwin darwin;
+    private double ownDarwin;
     private boolean isCheater;
 
     private List<Long> destinations = new ArrayList<Long>();
@@ -166,6 +167,14 @@ public class Node {
 
     public void addNeighbor(Neighbor node) {
         neighbors.add(node);
+    }
+    
+    public void setOwnDarwin(double ownDarwin) {
+        this.ownDarwin = ownDarwin;
+    }
+    
+    public double getOwnDarwin() {
+        return ownDarwin;
     }
 
     public List<Neighbor> getNeighbors() {
