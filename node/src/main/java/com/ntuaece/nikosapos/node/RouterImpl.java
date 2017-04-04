@@ -29,7 +29,8 @@ public class RouterImpl implements Router {
             // check if last node was selfish. If yes drop it
             long sourcePacketNode = packet.getPathlist().get(0);
             if (isSelfishNode(sourcePacketNode)) {
-//                System.out.println(node + " packet " + packet.getId() + " came from selfish " + sourcePacketNode );
+                // System.out.println(node + " packet " + packet.getId() + "
+                // came from selfish " + sourcePacketNode );
                 return null;
             }
 
@@ -75,7 +76,7 @@ public class RouterImpl implements Router {
         // boolean nextNodeSpecifiedByOldRoute = false;
         // either one will return -1
         nextNodeId = destinationNodeIsNeighbor(p);
-        if (nextNodeId != -1) { return node.findNeighborById(nextNodeId).get(); }
+        if (nextNodeId != -1) return node.findNeighborById(nextNodeId).get();
 
         nextNodeId += destinationNodeProvidedByNeighbor(p);
 
@@ -105,31 +106,26 @@ public class RouterImpl implements Router {
 
                     int retrievedDistance = routingInformation.getDistance();
                     int retrievedHops = routingInformation.getMaxHops();
+                    long retrievedNeighborId = routingInformation.getNodeId();
 
                     // to get sure that will find a new route
-                    if (p.getPathlist().size() + retrievedHops <= SimulationParameters.MAX_HOPS) {
-                        if (newRouteToDstFound) {
-                            if (retrievedHops + 1 < maxHops) {
-                                newNextNodeId = neighborId;
-                                maxDistance = neighborDistance + retrievedDistance;
-                                maxHops = retrievedHops + 1;
-                            }
-                        } else {
-                            newRouteToDstFound = true;
-                            newNextNodeId = neighborId;
-                            maxDistance = neighborDistance + retrievedDistance;
-                            maxHops = retrievedHops + 1;
-                        }
+                    if (!newRouteToDstFound || retrievedHops + 1 < maxHops) {
+                        newRouteToDstFound = true;
+                        newNextNodeId = retrievedNeighborId;
+                        maxDistance = neighborDistance + retrievedDistance;
+                        maxHops = retrievedHops + 1;
                     }
+
                 }
             }
 
             if (newRouteToDstFound) {
                 // we have found new route
+                System.out.println(node + " added route entry for " + destinationId + " through " + newNextNodeId);
                 possibleNextNode = node.findNeighborById(newNextNodeId);
 
                 // if the old next node is selfish then replace with the new
-                // route or if there is no next node
+                // route or if there is no old next route
                 if (!nextNodeSpecifiedByOldRoute || isSelfishNode(nextNodeId + 1)) {
                     Distant distantNode = null;
 
@@ -157,24 +153,19 @@ public class RouterImpl implements Router {
                     System.out.println(node + " sending packet to selfish " + (nextNodeId + 1));
                     possibleNextNode = node.findNeighborById(nextNodeId + 1);
                 } else {
-                    boolean nextRouteHasBeenFound = false;
                     for (Neighbor neighbor : node.getNeighbors()) {
                         if (nodeExistsInPath(p, neighbor.getId())) continue;
                         RouteDetails routingInformation = service.exchangeRoutingInformationForNode(neighbor,
                                                                                                     destinationId);
-                        if (routingInformation != null && routingInformation.isFound()) {
-                            nextRouteHasBeenFound = true;
-                            possibleNextNode = Optional.of(neighbor);
-                            break;
-                        }
+                        if (routingInformation != null && routingInformation.isFound()) return neighbor;
                     }
-                    if (!nextRouteHasBeenFound) { return null; }
+                    return null;
                 }
             }
         }
 
-        if (possibleNextNode != null && possibleNextNode.isPresent()) { return possibleNextNode.get(); }
-        return null;
+        if (possibleNextNode != null && possibleNextNode.isPresent()) return possibleNextNode.get();
+        else return null;
     }
 
     private long destinationNodeIsNeighbor(Packet p) {

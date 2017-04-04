@@ -36,8 +36,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             idToLink.put(neighbor.getLink().getId(), neighbor.getLink());
             neighbor.getLink().setPacketReceiver(node, this);
         });
-        // if (node.getId() <= 2) setTimer();
-        setTimer();
+        if (node.getId() <= 50) setTimer();
     }
 
     private void checkLinks() {
@@ -65,8 +64,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         if (packet.isAck()) {
             // if it is the source of a packet sent
             if (packet.getSourceNodeID() == node.getId()) {
-                // System.out.println("Packet " + packet.getId() + " has reached
-                // source " + node.getId());
+                 System.out.println(packet + " OK " + packet.getPathlist());
                 Packet.incrementDeliveredPackets();
                 recorder.recordPacket(packet);
                 packet.drop();

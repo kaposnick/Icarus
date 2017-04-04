@@ -10,6 +10,7 @@ import java.nio.file.Files;
 
 import com.ntuaece.nikosapos.entities.Packet;
 import com.ntuaece.nikosapos.node.Neighbor;
+import com.ntuaece.nikosapos.node.Node;
 import com.ntuaece.nikosapos.node.NodeList;
 
 public class StatsTask implements Runnable {
@@ -44,12 +45,27 @@ public class StatsTask implements Runnable {
 
         try {
             FileWriter writer = new FileWriter(file, true);
-            long delivered = Packet.getDeliveredPackets();
-            long dropped = Packet.getDroppedPackets();
-            long generated = Packet.packetCounter.get();
-            writer.write("Generated: " + String.valueOf(generated) + " Delivered: " + String.valueOf(delivered)
-                    + " Dropped: " + String.valueOf(dropped) + " Ratio: " + ((double) delivered / generated) * 100
-                    + "\n");
+//            long delivered = Packet.getDeliveredPackets();
+//            long dropped = Packet.getDroppedPackets();
+//            long generated = Packet.packetCounter.get();
+//            writer.write("Generated: " + String.valueOf(generated) + " Delivered: " + String.valueOf(delivered)
+//                    + " Dropped: " + String.valueOf(dropped) + " Ratio: " + ((double) delivered / generated) * 100
+//                    + "\n");
+            int cooperativeNodesForwarded = 0; 
+            int selfishNodesForwarded = 0;
+            int cooperativeNodesSent = 0;
+            int selfishNodesSent = 0;
+            for (Node node : NodeList.GetInstance()) {
+                if (node.isCheater()) {
+                    selfishNodesSent += node.getTotalPacketsSent();
+                    selfishNodesForwarded += node.getTotalPacketsForwarded();
+                } else {
+                    cooperativeNodesSent += node.getTotalPacketsSent();
+                    cooperativeNodesForwarded += node.getTotalPacketsForwarded();
+                }
+            }
+            writer.write("Cooperative Nodes forwarding ratio: " + (float) cooperativeNodesForwarded / cooperativeNodesSent 
+                     + "\tSelfish Nodes forwarding ratio: " + (float) selfishNodesForwarded / selfishNodesSent + "\n");
             writer.close();
         } catch (IOException e1) {
             // TODO Auto-generated catch block

@@ -24,7 +24,6 @@ public class Node {
     private int forwardedPackets;
     private int relayedPackets;
 
-
     private Darwin darwin;
     private double ownDarwin;
     private boolean isCheater;
@@ -62,25 +61,32 @@ public class Node {
         icasSelfishNodes.clear();
         icasSelfishNodes.addAll(updatedList);
     }
-    
+
     public void setDarwinImpl(Darwin darwin) {
         this.darwin = darwin;
     }
 
     public void executeDarwinAlgorithm() {
-       if (darwin != null) {
-           darwin.computeDarwin(darwinPacketList);
-       } else {
-           throw new NullPointerException("Darwin calculator should not be null");
-       }
+        if (darwin != null) {
+            darwin.computeDarwin(darwinPacketList);
+        } else {
+            throw new NullPointerException("Darwin calculator should not be null");
+        }
     }
 
     public void addDarwinSelfishNode(Long nodeId) {
-        darwinSelfishNodes.add(nodeId);
+        boolean alreadyContained = darwinSelfishNodes.add(nodeId);
+        if (alreadyContained) {
+            System.out.println(this + " added selfish node [" + nodeId + "]");
+        }
     }
-    
+
     public boolean removeDarwinSelfishNode(Long nodeId) {
-        return darwinSelfishNodes.removeIf(id -> id == nodeId);
+        boolean deleted = darwinSelfishNodes.removeIf(id -> id == nodeId);
+        if (deleted) {
+            System.out.println(this + " removed selfish node [" + nodeId + "]");
+        }
+        return deleted;
     }
 
     public boolean existsInSelfishNodeList(Long id) {
@@ -168,11 +174,11 @@ public class Node {
     public void addNeighbor(Neighbor node) {
         neighbors.add(node);
     }
-    
+
     public void setOwnDarwin(double ownDarwin) {
         this.ownDarwin = ownDarwin;
     }
-    
+
     public double getOwnDarwin() {
         return ownDarwin;
     }

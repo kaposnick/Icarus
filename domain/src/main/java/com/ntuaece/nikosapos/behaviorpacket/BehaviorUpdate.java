@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class BehaviorUpdate  {
 	@SerializedName("nodeId") @Expose private long nodeId;
-	@SerializedName("neighborList") private List<BehaviorUpdateEntity> neighborList = new ArrayList<>();
+	@SerializedName("neighborList") private List<BehaviorUpdateEntity> neighborList = new ArrayList<BehaviorUpdateEntity>();
 	@SerializedName("relayedPackets") private int relayedPackets;
 	@SerializedName("totalNeighbors") private int totalNeighbors;
 	

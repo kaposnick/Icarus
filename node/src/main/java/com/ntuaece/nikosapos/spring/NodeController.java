@@ -148,17 +148,20 @@ public class NodeController {
             @RequestBody RoutingPacket routingInfoPacket) {
         Optional<Node> node = NodeList.GetNodeById(nodeID);
         if (!node.isPresent()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        
-        
+
+        // we do not accept information by selfish nodes
+        if (node.get().existsInSelfishNodeList(routingInfoPacket.getNodeId()))
+            return new ResponseEntity<>(HttpStatus.OK);
         Optional<Neighbor> maybeNeighbor = node.get().findNeighborById(routingInfoPacket.getNodeId());
-        for(NodeRoutingInfo nodeInfo : routingInfoPacket.getNodeRoutingTable()) {
+
+        for (NodeRoutingInfo nodeInfo : routingInfoPacket.getNodeRoutingTable()) {
             // same node
             if (nodeInfo.getId() == Long.parseLong(nodeID)) continue;
-            long distantNodeId  = nodeInfo.getId();
-            
-            // common neighbors 
+            long distantNodeId = nodeInfo.getId();
+
+            // common neighbors
             if (node.get().isNeighborWith(distantNodeId)) continue;
-            
+
             Optional<Distant> maybeDistant = node.get().findDistantById(distantNodeId);
             if (maybeDistant.isPresent() && maybeNeighbor.isPresent()) {
                 Distant distant = maybeDistant.get();
@@ -177,15 +180,16 @@ public class NodeController {
                 node.get().addDistant(distant);
             }
         }
-        
+
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
-    
-    @RequestMapping(method = RequestMethod.POST , value = "selfishBroadcast/{id}")
+
+    @RequestMapping(method = RequestMethod.POST, value = "selfishBroadcast/{id}")
     public ResponseEntity<?> onSelfishUpdate(@PathVariable("id") String nodeID, @RequestBody Set<Long> selfishNodes) {
         Optional<Node> node = NodeList.GetNodeById(nodeID);
-        if (!node.isPresent()) return new ResponseEntity<String>("Node " + nodeID + " not active",HttpStatus.BAD_REQUEST);
+        if (!node.isPresent())
+            return new ResponseEntity<String>("Node " + nodeID + " not active", HttpStatus.BAD_REQUEST);
         node.get().updateSelfishNodeList(selfishNodes);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -117,7 +117,7 @@ public class Packet {
             packet.destinationNodeID = this.destinationID;
             packet.hopsRemaining = SimulationParameters.MAX_HOPS;
             packet.data = this.data;
-            packet.pathlist = new ArrayList<>();
+            packet.pathlist = new ArrayList<Long>();
             return packet;
         }
 
