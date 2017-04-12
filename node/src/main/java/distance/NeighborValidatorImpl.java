@@ -1,7 +1,8 @@
 package distance;
 
 import com.ntuaece.nikosapos.SimulationParameters;
-import com.ntuaece.nikosapos.node.Node;
+
+import node.Node;
 
 public class NeighborValidatorImpl implements NeighborValidator {
 

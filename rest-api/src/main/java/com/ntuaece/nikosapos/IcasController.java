@@ -127,15 +127,15 @@ public class IcasController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/neighborUpdate")
     public ResponseEntity<?> updateNeighborBehavior(@RequestBody BehaviorUpdate behaviorPacket) {
-
         // the sender node id
+
         long senderNodeId = behaviorPacket.getNodeID();
 
         // update the relayed packets field so that it gets computed for the
         // distant nodes
-        NodeEntity sendindNode = NodeEntity.GetNodeEntityById(senderNodeId).get();
-        sendindNode.setRelayedPackets(behaviorPacket.getRelayedPackets());
-        sendindNode.setTotalNeighbors(behaviorPacket.getTotalNeighbors());
+        NodeEntity sendingNode = NodeEntity.GetNodeEntityById(senderNodeId).get();
+        sendingNode.setRelayedPackets(behaviorPacket.getRelayedPackets());
+        sendingNode.setTotalNeighbors(behaviorPacket.getTotalNeighbors());
 
         // iterate through all the neighbors
         for (BehaviorUpdateEntity behaviorUpdateEntity : behaviorPacket.getNeighborList()) {
@@ -146,6 +146,7 @@ public class IcasController {
             if (neighborNode.isPresent()) {
                 neighborNode.get().getNeighborConnectivityRatio().put(senderNodeId, behaviorUpdateEntity.getRatio());
             } else {
+                System.out.println(neighborId + " not registered");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 

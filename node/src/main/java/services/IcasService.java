@@ -8,11 +8,11 @@ import com.google.gson.Gson;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdate;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
 import com.ntuaece.nikosapos.entities.Packet;
-import com.ntuaece.nikosapos.node.Neighbor;
-import com.ntuaece.nikosapos.node.Node;
 import com.ntuaece.nikosapos.permission.PermissionPacket;
 import com.ntuaece.nikosapos.registerpacket.RegisterPacket;
 
+import node.Neighbor;
+import node.Node;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -123,12 +123,12 @@ public class IcasService extends CommunicationService implements IcasResponsible
             
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                
+//                System.out.println("OK FROM " + IcasService.this.node);
             }
             
             @Override
             public void onFailure(Call call, IOException e) {
-                
+                System.out.println("ERROR FROM " + IcasService.this.node + " " + e.getMessage());
             }
         });
 

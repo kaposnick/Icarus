@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.node;
+package node;
 
 public final class NodePosition {
     public final static int[] x1 = new int[] {

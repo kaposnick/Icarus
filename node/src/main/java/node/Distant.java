@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.node;
+package node;
 
 public class Distant {
     private long id;

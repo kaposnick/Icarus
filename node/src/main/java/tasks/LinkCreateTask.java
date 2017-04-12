@@ -1,11 +1,10 @@
 package tasks;
 
-import com.ntuaece.nikosapos.node.Link;
-import com.ntuaece.nikosapos.node.Neighbor;
-import com.ntuaece.nikosapos.node.Node;
-import com.ntuaece.nikosapos.node.NodeList;
-
 import distance.DistanceCalculator;
+import node.Link;
+import node.Neighbor;
+import node.Node;
+import node.NodeList;
 
 public class LinkCreateTask implements Runnable {
     

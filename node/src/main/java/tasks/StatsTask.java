@@ -9,21 +9,28 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 
 import com.ntuaece.nikosapos.entities.Packet;
-import com.ntuaece.nikosapos.node.Neighbor;
-import com.ntuaece.nikosapos.node.Node;
-import com.ntuaece.nikosapos.node.NodeList;
+
+import node.Neighbor;
+import node.Node;
+import node.NodeList;
 
 public class StatsTask implements Runnable {
-    File file;
+    File coopFile;
+    File selfFile;
     BufferedWriter bf;
 
     public StatsTask() {
-        file = new File("/home/nickapostol/Desktop/stats.txt");
-        if (file.exists()) {
-            file.delete();
+        coopFile = new File("/home/nickapostol/Desktop/darwin/coop.txt");
+        selfFile = new File("/home/nickapostol/Desktop/darwin/self.txt");
+        if (coopFile.exists()) {
+            coopFile.delete();
+        }
+        if (selfFile.exists()) {
+            selfFile.delete();
         }
         try {
-            file.createNewFile();
+            coopFile.createNewFile();
+            selfFile.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,7 +51,8 @@ public class StatsTask implements Runnable {
         });
 
         try {
-            FileWriter writer = new FileWriter(file, true);
+            FileWriter coopwriter = new FileWriter(coopFile, true);
+            FileWriter selfwriter = new FileWriter(selfFile, true);
 //            long delivered = Packet.getDeliveredPackets();
 //            long dropped = Packet.getDroppedPackets();
 //            long generated = Packet.packetCounter.get();
@@ -64,9 +72,12 @@ public class StatsTask implements Runnable {
                     cooperativeNodesForwarded += node.getTotalPacketsForwarded();
                 }
             }
-            writer.write("Cooperative Nodes forwarding ratio: " + (float) cooperativeNodesForwarded / cooperativeNodesSent 
-                     + "\tSelfish Nodes forwarding ratio: " + (float) selfishNodesForwarded / selfishNodesSent + "\n");
-            writer.close();
+//            coopwriter.write("Cooperative Nodes forwarding ratio: " + (float) cooperativeNodesForwarded / cooperativeNodesSent 
+//                     + "\tSelfish Nodes forwarding ratio: " + (float) selfishNodesForwarded / selfishNodesSent + "\n");
+            coopwriter.write((float) cooperativeNodesForwarded/ cooperativeNodesSent + "\n");
+            selfwriter.write((float) selfishNodesForwarded / selfishNodesSent + "\n");
+            coopwriter.close();
+            selfwriter.close();
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();

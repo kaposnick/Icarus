@@ -2,8 +2,7 @@ package tasks;
 
 import java.util.TimerTask;
 
-import com.ntuaece.nikosapos.node.Node;
-
+import node.Node;
 import services.IcasResponsible;
 
 public class UpdateBehaviorTask extends TimerTask {

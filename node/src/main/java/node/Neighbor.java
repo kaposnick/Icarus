@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.node;
+package node;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,6 +19,7 @@ public class Neighbor {
     private Link link;
 
     private double neighborDarwinForMe = 0;
+    private double pForMe = 0;
     private double neighborDarwin = 0;
     private double p = 0;
 
@@ -27,7 +28,7 @@ public class Neighbor {
         neighbor.id = node.getId();
         neighbor.x = node.getX();
         neighbor.y = node.getY();
-        neighbor.p = 0;
+        neighbor.p = neighbor.pForMe = 0;
         neighbor.neighborDarwinForMe = neighbor.neighborDarwin = 0;
         neighbor.packetsSent = neighbor.packetsForwarded = new AtomicInteger();
         neighbor.totalPacketsForwarded = neighbor.totalPacketsSent = 0;
@@ -110,11 +111,11 @@ public class Neighbor {
         return meanConnectivityRatio;
     }
 
-    public void setNeighborDarwinForMe(double neighborDarwin) {
+    public void setDarwinForMe(double neighborDarwin) {
         this.neighborDarwinForMe = neighborDarwin;
     }
 
-    public double getNeighborDarwinForMe() {
+    public double getDarwinForMe() {
         return neighborDarwinForMe;
     }
     
@@ -124,6 +125,14 @@ public class Neighbor {
     
     public double getP() {
         return p;
+    }
+    
+    public void setPForMe(double pForMe) {
+        this.pForMe = pForMe;
+    }
+    
+    public double getPForMe() {
+        return pForMe;
     }
     
     public int getPacketsSent() {

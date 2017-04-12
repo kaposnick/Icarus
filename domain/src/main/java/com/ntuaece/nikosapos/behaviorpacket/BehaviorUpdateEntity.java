@@ -37,7 +37,7 @@ public class BehaviorUpdateEntity {
         this.p = p;
     }
 	
-	public double getP() {
+	public double getΡForMe() {
         return p;
     }
 }

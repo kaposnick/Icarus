@@ -1,8 +1,8 @@
 package services;
 
 import com.google.gson.Gson;
-import com.ntuaece.nikosapos.node.Node;
 
+import node.Node;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 

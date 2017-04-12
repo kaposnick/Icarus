@@ -5,7 +5,7 @@ public class UpdateNodeStatus extends TimerTask {
 
     @Override
     public void run() {
-        System.out.println("Updating node status based on credits...");
+//        System.out.println("Updating node status based on credits...");
         NodeEntity
             .NodeEntityList
             .stream()

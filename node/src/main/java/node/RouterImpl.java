@@ -1,6 +1,7 @@
-package com.ntuaece.nikosapos.node;
+package node;
 
 import java.util.Optional;
+import java.util.Random;
 
 import com.ntuaece.nikosapos.SimulationParameters;
 import com.ntuaece.nikosapos.entities.Packet;
@@ -11,10 +12,12 @@ public class RouterImpl implements Router {
 
     private final Node node;
     private final NeighborResponsible service;
+    private final Random randomGenerator;
 
     public RouterImpl(Node node, NeighborResponsible service) {
         this.node = node;
         this.service = service;
+        randomGenerator = new Random();
     }
 
     @Override
@@ -29,9 +32,8 @@ public class RouterImpl implements Router {
             // check if last node was selfish. If yes drop it
             long sourcePacketNode = packet.getPathlist().get(0);
             if (isSelfishNode(sourcePacketNode)) {
-                // System.out.println(node + " packet " + packet.getId() + "
-                // came from selfish " + sourcePacketNode );
-                return null;
+                if (node.findNeighborById(sourcePacketNode).get().getNeighborDarwin() >= randomGenerator.nextDouble())
+                    return null;
             }
 
             nextNode = findNextNeighbor(packet);
@@ -109,7 +111,10 @@ public class RouterImpl implements Router {
                     long retrievedNeighborId = routingInformation.getNodeId();
 
                     // to get sure that will find a new route
-                    if (!newRouteToDstFound || retrievedHops + 1 < maxHops) {
+                    if (!newRouteToDstFound 
+                    || retrievedHops + 1 < maxHops
+                    ||  (   retrievedHops + 1 == maxHops 
+                         && retrievedDistance + neighborDistance < maxDistance)) {
                         newRouteToDstFound = true;
                         newNextNodeId = retrievedNeighborId;
                         maxDistance = neighborDistance + retrievedDistance;
@@ -121,7 +126,7 @@ public class RouterImpl implements Router {
 
             if (newRouteToDstFound) {
                 // we have found new route
-                System.out.println(node + " added route entry for " + destinationId + " through " + newNextNodeId);
+                
                 possibleNextNode = node.findNeighborById(newNextNodeId);
 
                 // if the old next node is selfish then replace with the new
@@ -146,11 +151,12 @@ public class RouterImpl implements Router {
                     distantNode.setDistance(maxDistance);
                     distantNode.setTotalHops(maxHops);
                     distantNode.setRelayId(newNextNodeId);
+//                    System.out.println(node + " added route entry for " + destinationId + " through " + newNextNodeId);
                 }
             } else {
                 if (nextNodeSpecifiedByOldRoute && !nodeExistsInPath(p, nextNodeId + 1)) {
                     // in this case we don't care if the next node is selfish
-                    System.out.println(node + " sending packet to selfish " + (nextNodeId + 1));
+//                    System.out.println(node + " sending packet to selfish " + (nextNodeId + 1));
                     possibleNextNode = node.findNeighborById(nextNodeId + 1);
                 } else {
                     for (Neighbor neighbor : node.getNeighbors()) {

@@ -1,7 +1,6 @@
 package tasks;
 
-import com.ntuaece.nikosapos.node.Node;
-
+import node.Node;
 import services.IcasResponsible;
 
 public class RegistrationTask implements Runnable {

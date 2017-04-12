@@ -1,6 +1,6 @@
 package tasks;
 
-import com.ntuaece.nikosapos.node.Node;
+import node.Node;
 import services.NeighborResponsible;
 
 public class DarwinUpdateTask implements Runnable {

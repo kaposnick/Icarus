@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.node;
+package node;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +25,8 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     private Queue<Long> incomingPacketQueue = new ConcurrentLinkedQueue<>();
     private long nextPacketDestination = 0;
     private boolean canSend = false;
+    
+    private Random randomGenerator;
 
     public NodeRoutingThread(Node node, NeighborResponsible nService, IcasResponsible iService) {
         super("Node routing " + node.getId());
@@ -36,6 +38,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             idToLink.put(neighbor.getLink().getId(), neighbor.getLink());
             neighbor.getLink().setPacketReceiver(node, this);
         });
+        randomGenerator = new Random();
         if (node.getId() <= 50) setTimer();
     }
 
@@ -64,7 +67,9 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         if (packet.isAck()) {
             // if it is the source of a packet sent
             if (packet.getSourceNodeID() == node.getId()) {
-                 System.out.println(packet + " OK " + packet.getPathlist());
+                if (node.isCheater()) {
+//                    System.out.println(packet + " OK " + packet.getPathlist());
+                }
                 Packet.incrementDeliveredPackets();
                 recorder.recordPacket(packet);
                 packet.drop();
@@ -80,12 +85,12 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
                 nextNode = router.routePacket(packet);
                 recorder.recordPacket(packet);
             } else {
-                if (dropBecauseAmCheater(packet)) {
-                    System.out.println(packet + " dropped by cheater " + node + " " + packet.getPathlist());
+                if (dropBecauseAmCheater(packet) && randomGenerator.nextDouble() <= 1.0f) {
+//                    System.out.println(packet + " dropped by cheater " + node + " " + packet.getPathlist());
                     dropPacket(packet);
                     return;
                 } else if (packet.getHopsRemaining() == 0) {
-                    System.out.println(packet + " dropped for hops by " + node + " " + packet.getPathlist());
+//                    System.out.println(packet + " dropped for hops by " + node + " " + packet.getPathlist());
                     dropPacket(packet);
                     return;
                 } else {
@@ -101,7 +106,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         if (nextNode != null) {
             nextNode.getLink().addPacketToUpLink(node, packet);
         } else {
-            System.out.println(packet + " dropped by " + node + " " + packet.getPathlist());
+//            System.out.println(packet + " dropped by " + node + " " + packet.getPathlist());
             packet.drop();
             Packet.incrementDroppedPackets();
         }

@@ -1,7 +1,9 @@
-package com.ntuaece.nikosapos.node;
+package darwin;
 
 import com.google.gson.annotations.SerializedName;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
+
+import node.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +12,11 @@ import com.google.gson.annotations.Expose;
 
 public class DarwinPacket {
     @SerializedName("id") @Expose private long id;
-    @SerializedName("neigh") @Expose private List<BehaviorUpdateEntity> neighborRatioList = new ArrayList<>();
+    @SerializedName("neigh") @Expose private List<BehaviorUpdateEntity> neighborRatioList;
 
     public DarwinPacket(Node node) {
         this.id = node.getId();
+        this.neighborRatioList = new ArrayList<>();
         node.getNeighbors().forEach(neighbor -> {
             BehaviorUpdateEntity entity = new BehaviorUpdateEntity();
             entity.setNeighId(neighbor.getId());

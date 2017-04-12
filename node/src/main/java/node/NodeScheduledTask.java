@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.node;
+package node;
 
 public final class NodeScheduledTask {
 	
@@ -10,6 +10,6 @@ public final class NodeScheduledTask {
 	
 	public final static int DARWIN_UPDATE_PERIOD = 10000;
 	
-	public final static int PACKET_SENT_PERIOD = 2500;
+	public final static int PACKET_SENT_PERIOD = 5000;
 	public final static int PACKET_SENT_INITIAL_DELAY = 500;
 }

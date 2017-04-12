@@ -38,7 +38,7 @@ public class BehaviorUpdate  {
     }
 	
 	public void setNeighborList(List<BehaviorUpdateEntity> neighborBehaviorList) {
-		this.neighborList.addAll(neighborBehaviorList);
+		this.neighborList = neighborBehaviorList;
 	}
 	
 	public List<BehaviorUpdateEntity> getNeighborList() {

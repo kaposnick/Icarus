@@ -1,16 +1,9 @@
-package com.ntuaece.nikosapos.node;
+package node;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-
-import javax.swing.Timer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -55,20 +48,32 @@ public class NodeThread extends Thread {
             e.printStackTrace();
         }
 
-        /*if (node.getId() == 1) NodeList.GetInstance().stream().forEach(node -> {
-            node.getDistantNodes().forEach(distant -> System.out.println(node + " --- " + distant));
-        });*/
-
         executeRegistrationTask();
-         scheduleDarwinTask();
+
+        if (!node.isCheater() || true) {
+            scheduleDarwinTask();
+            scheduleExecuteDarwinAlgorithmTask();
+        }
+
         scheduleUpdateIcasForNeighborBehaviorTask();
-        scheduleUpdateRoutingTablesTask();
+        // scheduleUpdateRoutingTablesTask();
 
         if (node.getId() == 1)
             scheduledExecutorService.scheduleAtFixedRate(new StatsTask(), 10000, 10000, TimeUnit.MILLISECONDS);
 
         NodeRoutingThread routingThread = new NodeRoutingThread(node, neighborService, icasService);
         routingThread.start();
+    }
+
+    private void scheduleExecuteDarwinAlgorithmTask() {
+        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+
+            @Override
+            public void run() {
+                if (node.getId() == 0) System.out.println("Executing Darwin Algorithm");
+                node.executeDarwinAlgorithm();
+            }
+        }, 60000, 60000, TimeUnit.MILLISECONDS);
     }
 
     private void scheduleUpdateRoutingTablesTask() {

@@ -1,6 +1,5 @@
 package com.ntuaece.nikosapos.spring;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
@@ -14,20 +13,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ntuaece.nikosapos.entities.Packet;
-import com.ntuaece.nikosapos.node.DarwinPacket;
-import com.ntuaece.nikosapos.node.DiscoverPacket;
-import com.ntuaece.nikosapos.node.DiscoverResponse;
-import com.ntuaece.nikosapos.node.Distant;
-import com.ntuaece.nikosapos.node.InterCarrier;
-import com.ntuaece.nikosapos.node.InterCarrierImpl;
-import com.ntuaece.nikosapos.node.Neighbor;
-import com.ntuaece.nikosapos.node.Node;
-import com.ntuaece.nikosapos.node.NodeList;
-import com.ntuaece.nikosapos.node.RouteDetails;
 
+import darwin.DarwinPacket;
 import distance.DistanceCalculator;
 import distance.NeighborValidator;
 import distance.NeighborValidatorImpl;
+import node.DiscoverPacket;
+import node.DiscoverResponse;
+import node.Distant;
+import node.InterCarrier;
+import node.InterCarrierImpl;
+import node.Neighbor;
+import node.Node;
+import node.NodeList;
+import node.RouteDetails;
 import route.NodeRoutingInfo;
 import route.RoutingPacket;
 
@@ -98,8 +97,8 @@ public class NodeController {
             Node node = mayNode.get();
             node.addDarwinPacket(packet);
             if (node.allDarwinPacketsArrived()) {
-                node.executeDarwinAlgorithm();
-                node.clearDarwinPacketList();
+//                node.executeDarwinAlgorithm();
+//                node.clearDarwinPacketList();
             }
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
@@ -166,7 +165,9 @@ public class NodeController {
             if (maybeDistant.isPresent() && maybeNeighbor.isPresent()) {
                 Distant distant = maybeDistant.get();
                 Neighbor neighbor = maybeNeighbor.get();
-                if (distant.getTotalHops() > nodeInfo.getHops() + 1) {
+                if ((distant.getTotalHops() > nodeInfo.getHops() + 1)
+               || ((distant.getTotalHops() == (nodeInfo.getHops() + 1)
+               && (distant.getDistance() > neighbor.getDistance() + nodeInfo.getDistance())))) {
                     distant.setRelayId(routingInfoPacket.getNodeId());
                     distant.setDistance(nodeInfo.getDistance() + neighbor.getDistance());
                     distant.setTotalHops(1 + nodeInfo.getHops());

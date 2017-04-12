@@ -1,6 +1,6 @@
 package distance;
 
-import com.ntuaece.nikosapos.node.Node;
+import node.Node;
 
 public class DistanceCalculator {
 	public static int calculateDistance(Node node1, Node node2){

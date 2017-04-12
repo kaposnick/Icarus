@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.google.gson.Gson;
-import com.ntuaece.nikosapos.node.DarwinPacket;
-import com.ntuaece.nikosapos.node.DiscoverPacket;
-import com.ntuaece.nikosapos.node.DiscoverResponse;
-import com.ntuaece.nikosapos.node.Distant;
-import com.ntuaece.nikosapos.node.Link;
-import com.ntuaece.nikosapos.node.Neighbor;
-import com.ntuaece.nikosapos.node.Node;
-import com.ntuaece.nikosapos.node.RouteDetails;
 
+import darwin.DarwinPacket;
 import distance.DistanceCalculator;
+import node.DiscoverPacket;
+import node.DiscoverResponse;
+import node.Distant;
+import node.Link;
+import node.Neighbor;
+import node.Node;
+import node.RouteDetails;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;

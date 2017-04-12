@@ -1,4 +1,4 @@
-package com.ntuaece.nikosapos.node;
+package node;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,6 +12,7 @@ import com.ntuaece.nikosapos.SimulationParameters;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
 
 import darwin.Darwin;
+import darwin.DarwinPacket;
 
 public class Node {
     private long id;
@@ -77,14 +78,14 @@ public class Node {
     public void addDarwinSelfishNode(Long nodeId) {
         boolean alreadyContained = darwinSelfishNodes.add(nodeId);
         if (alreadyContained) {
-            System.out.println(this + " added selfish node [" + nodeId + "]");
+//            System.out.println(this + " added selfish node [" + nodeId + "]");
         }
     }
 
     public boolean removeDarwinSelfishNode(Long nodeId) {
         boolean deleted = darwinSelfishNodes.removeIf(id -> id == nodeId);
         if (deleted) {
-            System.out.println(this + " removed selfish node [" + nodeId + "]");
+//            System.out.println(this + " removed selfish node [" + nodeId + "]");
         }
         return deleted;
     }
