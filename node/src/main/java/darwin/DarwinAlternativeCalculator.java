@@ -26,6 +26,8 @@ public class DarwinAlternativeCalculator implements Darwin {
         p_I = calculatePI(darwinPacketList);
 
         for (Neighbor neighbor : this.node.getNeighbors()) {
+            neighbor.setPI(p_I);
+            
             p_minusI = neighbor.getPMinusI();
             p_DarwinI = neighbor.getDarwinI();
             p_DarwinMinusI = neighbor.getDarwinMinusI();
@@ -39,7 +41,7 @@ public class DarwinAlternativeCalculator implements Darwin {
             p_NewDarwinMinusI = DarwinUtils.normalizeValue(gamma * (q_I - q_minusI));
             neighbor.setDarwinMinusI(p_NewDarwinMinusI);
 
-            if (neighbor.getPMinusI() >= SimulationParameters.EDP) {
+            if (neighbor.getDarwinI() >= SimulationParameters.EDP) {
                 node.addDarwinSelfishNode(neighbor.getId());
             } else {
                 node.removeDarwinSelfishNode(neighbor.getId());
@@ -62,7 +64,6 @@ public class DarwinAlternativeCalculator implements Darwin {
                 }
             }
         }
-        String kati = "";
         return (denominator > 0) ? (double) (1 - numerator / denominator) : 0;
     }
 
@@ -73,7 +74,7 @@ public class DarwinAlternativeCalculator implements Darwin {
         for (Neighbor neighbor : node.getNeighbors()) {
             double c_mj = 0;
             double c_im = 0;
-            double fractor = 0;
+            double denominator = 0;
             double numerator = 0;
 
             for (DarwinPacket packet : darwinPacketList) {
@@ -84,7 +85,7 @@ public class DarwinAlternativeCalculator implements Darwin {
                             c_im = node.findNeighborById(packet.getId()).get().getConnectivityRatio();
 
                             numerator += c_im * c_mj;
-                            fractor += c_im;
+                            denominator += c_im;
                         }
                     }
                 }
@@ -93,9 +94,9 @@ public class DarwinAlternativeCalculator implements Darwin {
             c_im = 1;
             c_mj = neighbor.getConnectivityRatio();
             numerator += c_im * c_mj;
-            fractor += c_im;
+            denominator += c_im;
 
-            c_minusI = numerator / fractor;
+            c_minusI = numerator / denominator;
             neighbor.setMeanConnectivityRatio(c_minusI);
 
             p_minusI = 1 - c_minusI;
