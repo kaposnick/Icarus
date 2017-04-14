@@ -2,6 +2,7 @@ package node;
 
 import java.util.Optional;
 
+import com.google.gson.Gson;
 import com.ntuaece.nikosapos.entities.Packet;
 
 public class NeighborStatsRecorderImpl implements NeighborStatsRecorder {
@@ -17,14 +18,17 @@ public class NeighborStatsRecorderImpl implements NeighborStatsRecorder {
         // if packet has reached destination no action should be done
         if (packet.getDestinationNodeID() != node.getId()) {
 
-            int myNodeIndex = 0;
-            for (int i = 0; i < packet.getPathlist().size(); i++) {
-                if (packet.getPathlist().get(i) == node.getId()) {
-                    myNodeIndex = i;
-                    break;
-                }
-            }
-            int neighborIndex = myNodeIndex + 1;
+//            int myNodeIndex = 0;
+//            for (int i = 0; i < packet.getPathlist().size(); i++) {
+//                if (packet.getPathlist().get(i) == node.getId()) {
+//                    myNodeIndex = i;
+//                    break;
+//                }
+//            }
+//            int neighborIndex = myNodeIndex + 1;
+            
+            int neighborIndex = packet.getPathlist().indexOf(node.getId()) + 1;
+            
             if (neighborIndex >= packet.getPathlist().size()) { throw new RuntimeException("HERE FOR NODE "
                     + node.getId() + " and packet " + packet.getId() + " pathlisth: " + packet.getPathlist()); }
             Optional<Neighbor> neighbor = node.findNeighborById(packet.getPathlist().get(neighborIndex));
@@ -52,6 +56,9 @@ public class NeighborStatsRecorderImpl implements NeighborStatsRecorder {
                         node.incrementSentPacketCounter();
                     }
                 }
+            } else {
+                throw new RuntimeException(node + " neighbor [" + neighborIndex + "] not found");
+                
             }
         }
     }

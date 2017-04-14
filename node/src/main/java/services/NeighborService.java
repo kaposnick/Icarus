@@ -133,7 +133,9 @@ public class NeighborService extends CommunicationService implements NeighborRes
         try {
             Response response = httpClient.newCall(request).execute();
             if (response.isSuccessful()) {
-                return gson.fromJson(response.body().charStream(), RouteDetails.class);
+                RouteDetails details = gson.fromJson(response.body().charStream(), RouteDetails.class);
+                response.body().close();
+                return details;
             } else {
                 return null;
             }

@@ -15,6 +15,8 @@ import node.Node;
 import node.NodeList;
 
 public class StatsTask implements Runnable {
+    int i = 0;
+
     File coopFile;
     File selfFile;
     BufferedWriter bf;
@@ -38,28 +40,35 @@ public class StatsTask implements Runnable {
 
     @Override
     public void run() {
-        NodeList.GetInstance().stream().forEach(node -> {
-             System.out.println(node + " selfish Nodes: " +
-             node.getSelfishNodes());
-//            System.out.println(node);
-//            node.getNeighbors().forEach(neighbor -> {
-//                System.out.println("Neighbor [" + neighbor.getId() + "] Sent for Forwarded " + neighbor.getPacketsSent()
-//                        + " \t Forwarded " + neighbor.getPacketsForwarded() + "\t Ratio "
-//                        + neighbor.getConnectivityRatio());
-//            });
-//            System.out.println("------------");
-        });
+        if ((i++) % 6 == 0) {
+            NodeList.GetInstance().stream().forEach(node -> {
+                System.out.println(node + " selfish Nodes: " + node.getSelfishNodes());
+
+                // System.out.println(node);
+                // node.getNeighbors().forEach(neighbor -> {
+                // System.out.println("Neighbor [" + neighbor.getId() + "] Sent
+                // for
+                // Forwarded " + neighbor.getPacketsSent()
+                // + " \t Forwarded " + neighbor.getPacketsForwarded() + "\t
+                // Ratio "
+                // + neighbor.getConnectivityRatio());
+                // });
+                // System.out.println("------------");
+            });
+        }
 
         try {
             FileWriter coopwriter = new FileWriter(coopFile, true);
             FileWriter selfwriter = new FileWriter(selfFile, true);
-//            long delivered = Packet.getDeliveredPackets();
-//            long dropped = Packet.getDroppedPackets();
-//            long generated = Packet.packetCounter.get();
-//            writer.write("Generated: " + String.valueOf(generated) + " Delivered: " + String.valueOf(delivered)
-//                    + " Dropped: " + String.valueOf(dropped) + " Ratio: " + ((double) delivered / generated) * 100
-//                    + "\n");
-            int cooperativeNodesForwarded = 0; 
+            // long delivered = Packet.getDeliveredPackets();
+            // long dropped = Packet.getDroppedPackets();
+            // long generated = Packet.packetCounter.get();
+            // writer.write("Generated: " + String.valueOf(generated) + "
+            // Delivered: " + String.valueOf(delivered)
+            // + " Dropped: " + String.valueOf(dropped) + " Ratio: " + ((double)
+            // delivered / generated) * 100
+            // + "\n");
+            int cooperativeNodesForwarded = 0;
             int selfishNodesForwarded = 0;
             int cooperativeNodesSent = 0;
             int selfishNodesSent = 0;
@@ -72,9 +81,11 @@ public class StatsTask implements Runnable {
                     cooperativeNodesForwarded += node.getTotalPacketsForwarded();
                 }
             }
-//            coopwriter.write("Cooperative Nodes forwarding ratio: " + (float) cooperativeNodesForwarded / cooperativeNodesSent 
-//                     + "\tSelfish Nodes forwarding ratio: " + (float) selfishNodesForwarded / selfishNodesSent + "\n");
-            coopwriter.write((float) cooperativeNodesForwarded/ cooperativeNodesSent + "\n");
+            // coopwriter.write("Cooperative Nodes forwarding ratio: " + (float)
+            // cooperativeNodesForwarded / cooperativeNodesSent
+            // + "\tSelfish Nodes forwarding ratio: " + (float)
+            // selfishNodesForwarded / selfishNodesSent + "\n");
+            coopwriter.write((float) cooperativeNodesForwarded / cooperativeNodesSent + "\n");
             selfwriter.write((float) selfishNodesForwarded / selfishNodesSent + "\n");
             coopwriter.close();
             selfwriter.close();

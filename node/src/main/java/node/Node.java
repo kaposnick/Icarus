@@ -1,6 +1,8 @@
 package node;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -75,19 +77,12 @@ public class Node {
         }
     }
 
-    public void addDarwinSelfishNode(Long nodeId) {
-        boolean alreadyContained = darwinSelfishNodes.add(nodeId);
-        if (alreadyContained) {
-//            System.out.println(this + " added selfish node [" + nodeId + "]");
-        }
+    public boolean addDarwinSelfishNode(Long nodeId) {
+        return darwinSelfishNodes.add(nodeId);
     }
 
     public boolean removeDarwinSelfishNode(Long nodeId) {
-        boolean deleted = darwinSelfishNodes.removeIf(id -> id == nodeId);
-        if (deleted) {
-//            System.out.println(this + " removed selfish node [" + nodeId + "]");
-        }
-        return deleted;
+        return darwinSelfishNodes.removeIf(id -> id == nodeId);
     }
 
     public boolean existsInSelfishNodeList(Long id) {
@@ -125,6 +120,8 @@ public class Node {
     }
 
     public Set<Long> getSelfishNodes() {
+//        Set<Long> allSelfishNodes = new HashSet<Long>(darwinSelfishNodes);
+//        allSelfishNodes.addAll(icasSelfishNodes);
         return darwinSelfishNodes;
     }
 

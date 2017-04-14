@@ -21,8 +21,8 @@ public class DarwinPacket {
             BehaviorUpdateEntity entity = new BehaviorUpdateEntity();
             entity.setNeighId(neighbor.getId());
             entity.setRatio(neighbor.getConnectivityRatio());
-            entity.setNeighborDarwin(neighbor.getNeighborDarwin());
-            entity.setP(neighbor.getP());
+            entity.setNeighborDarwin(neighbor.getDarwinMinusI());
+            entity.setP(neighbor.getPMinusI());
             neighborRatioList.add(entity);
         });
     }

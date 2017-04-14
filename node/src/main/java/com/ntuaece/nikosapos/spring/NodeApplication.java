@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 
+import darwin.DarwinAlternativeCalculator;
 import darwin.DarwinCalculator;
 import node.Node;
 import node.NodeList;
@@ -24,8 +25,8 @@ public class NodeApplication {
                                           .setY(NodePosition.y[i])
                                           .setDestinationIds(NodePosition.destinationNodes[i % 13])
                                           .build();
-            if (i == 12 || i == 19 || i == 20) node.setCheater(true);
-            node.setDarwinImpl(new DarwinCalculator(node));
+//            if (i == 12 /*|| i == 19 || i == 20 */) node.setCheater(true);
+            node.setDarwinImpl(new DarwinAlternativeCalculator(node));
             NodeList.GetInstance().add(node);
         }
     }
@@ -47,19 +48,20 @@ public class NodeApplication {
                 if (mNode.isPresent()) {
                     Node node = mNode.get();
                     node.getNeighbors().forEach(neigbor -> {
-                        String outputString = String.format("Neighbor [%d]\tDarwin: %.2f\tP: %.2f\tDarwin4Me: %.2f\tP4Me: %.2f\t Ratio: %.2f",
+                        String outputString = String.format("Neighbor [%d]\tDarwinΙ: %.2f\tPMinusI: %.2f\tDarwinMinusI: %.2f\t Ratio: %.2f\t Forwarded :%d\t Sent :%d",
                                                             neigbor.getId(),
-                                                            neigbor.getNeighborDarwin(),
-                                                            neigbor.getP(),
-                                                            neigbor.getDarwinForMe(),
-                                                            neigbor.getPForMe(),
-                                                            neigbor.getConnectivityRatio());
+                                                            neigbor.getDarwinI(),
+                                                            neigbor.getPMinusI(),
+                                                            neigbor.getDarwinMinusI(),
+                                                            neigbor.getConnectivityRatio(),
+                                                            neigbor.getPacketsForwarded(),
+                                                            neigbor.getPacketsSent());
                         System.out.println(outputString);
                     });
                 }
             } catch (Exception ie) {
                 ie.printStackTrace();
-            }
+            } 
         }
     }
 

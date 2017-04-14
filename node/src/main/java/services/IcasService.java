@@ -115,7 +115,6 @@ public class IcasService extends CommunicationService implements IcasResponsible
         }
         packet.setNeighborList(mList);
         String packetBody = gson.toJson(packet);
-//        System.out.println(packet);
         Request request = new Request.Builder().post(RequestBody.create(JSON, packetBody))
                                                .url(URL_ICAS + ACTION_UPDATE)
                                                .build();

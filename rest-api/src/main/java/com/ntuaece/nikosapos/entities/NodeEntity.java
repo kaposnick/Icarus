@@ -11,11 +11,11 @@ import com.ntuaece.nikosapos.SimulationParameters;
 public class NodeEntity {
     public static final List<NodeEntity> NodeEntityList = new ArrayList<>();
 
-    public static Optional<NodeEntity> GetNodeEntityById(long id) {
+    public synchronized static Optional<NodeEntity> GetNodeEntityById(long id) {
         return NodeEntityList.stream().filter(entity -> entity.getId() == id).findFirst();
     }
 
-    public static boolean NodeExists(long id) {
+    public synchronized static boolean NodeExists(long id) {
         return NodeEntityList.stream().anyMatch(entity -> entity.getId() == id);
     }
 
@@ -83,27 +83,27 @@ public class NodeEntity {
     }
 
     public void updateConnectivityRatioIfNecessary() {
-        // if (neighborConnectivityRatio.size() == totalNeighbors) {
-        double sum = 0.0f;
-        int totalNonSelfishNeighbors = 0;
-        for (Entry<Long, Double> neighborEntry : neighborConnectivityRatio.entrySet()) {
-            long neighborId = neighborEntry.getKey();
+        if (neighborConnectivityRatio.size() == totalNeighbors) {
+            double sum = 0.0f;
+            int totalNonSelfishNeighbors = 0;
+            for (Entry<Long, Double> neighborEntry : neighborConnectivityRatio.entrySet()) {
+                long neighborId = neighborEntry.getKey();
 
-            // take into account only the non-selfish nodes
-            if (!NodeEntity.GetNodeEntityById(neighborId).get().isSelfish()) {
-                totalNonSelfishNeighbors++;
-                sum += neighborEntry.getValue();
+                // take into account only the non-selfish nodes
+                if (!NodeEntity.GetNodeEntityById(neighborId).get().isSelfish()) {
+                    totalNonSelfishNeighbors++;
+                    sum += neighborEntry.getValue();
+                }
             }
-        }
 
-        if (totalNonSelfishNeighbors > 0) {
-            nodeConnectivityRatio = sum / totalNonSelfishNeighbors;
-        } else {
-            nodeConnectivityRatio = 1;
+            if (totalNonSelfishNeighbors > 0) {
+                nodeConnectivityRatio = sum / totalNonSelfishNeighbors;
+            } else {
+                nodeConnectivityRatio = 1;
+            }
+            setSelfish();
+            neighborConnectivityRatio.clear();
         }
-        setSelfish();
-        // neighborConnectivityRatio.clear();
-        // }
     }
 
     public void setTotalNeighbors(int neighbors) {
@@ -169,7 +169,8 @@ public class NodeEntity {
 
     private void setSelfish() {
         isSelfish = nodeConnectivityRatio < SimulationParameters.CONNECTIVITY_RATIO_ICAS_THRESHOLD;
-        System.out.println("Updating selfish for node " + id + " : " + isSelfish);
+        // System.out.println("Updating selfish for node " + id + " : " +
+        // isSelfish);
     }
 
 }

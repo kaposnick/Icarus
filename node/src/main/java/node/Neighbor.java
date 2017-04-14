@@ -3,6 +3,7 @@ package node;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Neighbor {
+    // TODO:
     private final static float CONNECTIVITY_RATIO_DEFAULT = 1.0f;
 
     private long id;
@@ -18,19 +19,20 @@ public class Neighbor {
     private int totalPacketsForwarded;
     private Link link;
 
-    private double neighborDarwinForMe = 0;
-    private double pForMe = 0;
-    private double neighborDarwin = 0;
-    private double p = 0;
+    private double darwinI = 0;
+    private double pI = 0;
+    private double darwinMinusI = 0;
+    private double pMinusI = 0;
 
     public static Neighbor FromNode(Node node) {
         Neighbor neighbor = new Neighbor();
         neighbor.id = node.getId();
         neighbor.x = node.getX();
         neighbor.y = node.getY();
-        neighbor.p = neighbor.pForMe = 0;
-        neighbor.neighborDarwinForMe = neighbor.neighborDarwin = 0;
-        neighbor.packetsSent = neighbor.packetsForwarded = new AtomicInteger();
+        neighbor.pMinusI = neighbor.pI = 0;
+        neighbor.darwinI = neighbor.darwinMinusI = 0;
+        neighbor.packetsSent = new AtomicInteger();
+        neighbor.packetsForwarded = new AtomicInteger();
         neighbor.totalPacketsForwarded = neighbor.totalPacketsSent = 0;
         neighbor.connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
         return neighbor;
@@ -50,7 +52,7 @@ public class Neighbor {
 
     private void updateConnectivityRatio() {
         if (packetsSent.get() == 0) connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
-        else connectivityRatio = packetsForwarded.get() / (packetsSent.get() * 1.0f);
+        else connectivityRatio = (1.0f * packetsForwarded.get() / packetsSent.get());
     }
 
     private void clearCounters() {
@@ -111,43 +113,43 @@ public class Neighbor {
         return meanConnectivityRatio;
     }
 
-    public void setDarwinForMe(double neighborDarwin) {
-        this.neighborDarwinForMe = neighborDarwin;
+    public void setDarwinI(double neighborDarwin) {
+        this.darwinI = neighborDarwin;
     }
 
-    public double getDarwinForMe() {
-        return neighborDarwinForMe;
+    public double getDarwinI() {
+        return darwinI;
     }
-    
-    public void setP(double edp) {
-        this.p = edp;
+
+    public void setPMinusI(double edp) {
+        this.pMinusI = edp;
     }
-    
-    public double getP() {
-        return p;
+
+    public double getPMinusI() {
+        return pMinusI;
     }
-    
-    public void setPForMe(double pForMe) {
-        this.pForMe = pForMe;
+
+    public void setPI(double pForMe) {
+        this.pI = pForMe;
     }
-    
-    public double getPForMe() {
-        return pForMe;
+
+    public double getPI() {
+        return pI;
     }
-    
+
     public int getPacketsSent() {
         return packetsSent.get();
     }
-    
+
     public int getPacketsForwarded() {
         return packetsForwarded.get();
     }
-    
-    public void setNeighborDarwin(double neighborDarwin) {
-        this.neighborDarwin = neighborDarwin;
+
+    public void setDarwinMinusI(double neighborDarwin) {
+        this.darwinMinusI = neighborDarwin;
     }
-    
-    public double getNeighborDarwin() {
-        return neighborDarwin;
+
+    public double getDarwinMinusI() {
+        return darwinMinusI;
     }
 }

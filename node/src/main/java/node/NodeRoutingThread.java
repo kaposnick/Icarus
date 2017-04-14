@@ -66,10 +66,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         Neighbor nextNode = null;
         if (packet.isAck()) {
             // if it is the source of a packet sent
-            if (packet.getSourceNodeID() == node.getId()) {
-                if (node.isCheater()) {
-//                    System.out.println(packet + " OK " + packet.getPathlist());
-                }
+            if (packet.getSourceNodeID() == this.node.getId()) {
                 Packet.incrementDeliveredPackets();
                 recorder.recordPacket(packet);
                 packet.drop();
@@ -85,12 +82,12 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
                 nextNode = router.routePacket(packet);
                 recorder.recordPacket(packet);
             } else {
-                if (dropBecauseAmCheater(packet) && randomGenerator.nextDouble() <= 1.0f) {
-//                    System.out.println(packet + " dropped by cheater " + node + " " + packet.getPathlist());
+                if (dropBecauseAmCheater(packet)) {
+                    System.out.println(packet + " dropped by cheater " + node + " " + packet.getPathlist());
                     dropPacket(packet);
                     return;
                 } else if (packet.getHopsRemaining() == 0) {
-//                    System.out.println(packet + " dropped for hops by " + node + " " + packet.getPathlist());
+                    System.out.println(packet + " dropped for hops by " + node + " " + packet.getPathlist());
                     dropPacket(packet);
                     return;
                 } else {
@@ -106,15 +103,15 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         if (nextNode != null) {
             nextNode.getLink().addPacketToUpLink(node, packet);
         } else {
-//            System.out.println(packet + " dropped by " + node + " " + packet.getPathlist());
+            System.out.println(packet + " dropped by " + node + " " + packet.getPathlist());
             packet.drop();
-            Packet.incrementDroppedPackets();
+//            Packet.incrementDroppedPackets();
         }
     }
 
     private void dropPacket(Packet packet) {
-        packet.addPathlist(node.getId());
-        recorder.recordPacket(packet);
+//        packet.addPathlist(node.getId());
+//        recorder.recordPacket(packet);
         packet.drop();
         Packet.incrementDroppedPackets();
     }

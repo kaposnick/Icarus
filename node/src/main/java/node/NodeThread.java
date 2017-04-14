@@ -73,7 +73,7 @@ public class NodeThread extends Thread {
                 if (node.getId() == 0) System.out.println("Executing Darwin Algorithm");
                 node.executeDarwinAlgorithm();
             }
-        }, 60000, 60000, TimeUnit.MILLISECONDS);
+        }, 10000, 10000, TimeUnit.MILLISECONDS);
     }
 
     private void scheduleUpdateRoutingTablesTask() {
