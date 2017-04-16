@@ -2,6 +2,7 @@ package node;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +28,9 @@ public class NodeThread extends Thread {
     private IcasResponsible icasService;
     private NeighborResponsible neighborService;
     private ScheduledExecutorService scheduledExecutorService;
+    private ScheduledFuture<?> darwinComputation, updateRoutingTablesTask, updateIcasNeighborTask,
+            darwinPacketDeliveryTask, statsTask;
+    private NodeRoutingThread routingThread;
 
     public NodeThread(Node node) {
         super("Node main " + String.valueOf(node.getId()));
@@ -59,25 +63,46 @@ public class NodeThread extends Thread {
         // scheduleUpdateRoutingTablesTask();
 
         if (node.getId() == 1)
-            scheduledExecutorService.scheduleAtFixedRate(new StatsTask(), 10000, 10000, TimeUnit.MILLISECONDS);
+            statsTask = scheduledExecutorService.scheduleAtFixedRate(new StatsTask(),
+                                                                     10000,
+                                                                     10000,
+                                                                     TimeUnit.MILLISECONDS);
 
-        NodeRoutingThread routingThread = new NodeRoutingThread(node, neighborService, icasService);
+        routingThread = new NodeRoutingThread(node, neighborService, icasService);
         routingThread.start();
     }
 
+    public void kill() {
+        if (darwinComputation != null && !darwinComputation.isCancelled()) darwinComputation.cancel(true);
+        if (updateRoutingTablesTask != null && !updateRoutingTablesTask.isCancelled())
+            updateRoutingTablesTask.cancel(true);
+        if (updateIcasNeighborTask != null && !updateIcasNeighborTask.isCancelled())
+            updateIcasNeighborTask.cancel(true);
+        if (darwinPacketDeliveryTask != null && !darwinPacketDeliveryTask.isCancelled())
+            darwinPacketDeliveryTask.cancel(true);
+        if (statsTask != null && !statsTask.isCancelled()) statsTask.cancel(true);
+        if (routingThread != null && routingThread.isAlive()) {
+            routingThread.stopThread();
+            routingThread = null;
+        }
+        scheduledExecutorService.shutdownNow();
+    }
+
     private void scheduleExecuteDarwinAlgorithmTask() {
-        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+        darwinComputation = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override
             public void run() {
-                if (node.getId() == 0) System.out.println("Executing Darwin Algorithm");
+                if (node.getId() == 0) {
+                    System.out.println("Executing Darwin Algorithm");
+                }
                 node.executeDarwinAlgorithm();
             }
-        }, 10000, 10000, TimeUnit.MILLISECONDS);
+        }, 10500, 10500, TimeUnit.MILLISECONDS);
     }
 
     private void scheduleUpdateRoutingTablesTask() {
-        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+        updateRoutingTablesTask = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override
             public void run() {
@@ -87,10 +112,10 @@ public class NodeThread extends Thread {
     }
 
     private void scheduleUpdateIcasForNeighborBehaviorTask() {
-        scheduledExecutorService.scheduleAtFixedRate(new UpdateBehaviorTask(node, icasService),
-                                                     NodeScheduledTask.DARWIN_UPDATE_PERIOD,
-                                                     NodeScheduledTask.DARWIN_UPDATE_PERIOD,
-                                                     TimeUnit.MILLISECONDS);
+        updateIcasNeighborTask = scheduledExecutorService.scheduleAtFixedRate(new UpdateBehaviorTask(node, icasService),
+                                                                              NodeScheduledTask.DARWIN_UPDATE_PERIOD,
+                                                                              NodeScheduledTask.DARWIN_UPDATE_PERIOD,
+                                                                              TimeUnit.MILLISECONDS);
 
     }
 
@@ -105,10 +130,10 @@ public class NodeThread extends Thread {
 
     private void scheduleDarwinTask() {
         DarwinUpdateTask darwinUpdateTask = new DarwinUpdateTask(node, neighborService);
-        scheduledExecutorService.scheduleAtFixedRate(darwinUpdateTask,
-                                                     NodeScheduledTask.DARWIN_UPDATE_PERIOD,
-                                                     NodeScheduledTask.DARWIN_UPDATE_PERIOD,
-                                                     TimeUnit.MILLISECONDS);
+        darwinPacketDeliveryTask = scheduledExecutorService.scheduleAtFixedRate(darwinUpdateTask,
+                                                                                NodeScheduledTask.DARWIN_UPDATE_PERIOD,
+                                                                                NodeScheduledTask.DARWIN_UPDATE_PERIOD,
+                                                                                TimeUnit.MILLISECONDS);
     }
 
     private void executeLinkTask() {
