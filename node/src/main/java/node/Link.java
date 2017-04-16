@@ -40,7 +40,8 @@ public class Link {
         });
 
         LinkList.add(link);
-//        System.out.println("Created Link " + node1.getId() + " - " + node2.getId() + " distance " + distance);     
+        // System.out.println("Created Link " + node1.getId() + " - " +
+        // node2.getId() + " distance " + distance);
     }
 
     private final long id;
@@ -93,7 +94,7 @@ public class Link {
             System.out.println("Oups... " + p + " dropped");
             p.drop();
             Packet.incrementDroppedPackets();
-            return; 
+            return;
         }
         if (sender.equals(firstEndPoint)) {
             firstEndPointUpLink.offer(p);
@@ -137,11 +138,11 @@ public class Link {
      */
 
     private boolean willDrop(Packet packet) {
-        /*if (packet.isAck()) {
-            return new Random().nextDouble() * 10000 < 2; // 0.02%
-        } else {
-            return new Random().nextDouble() * 10000 < 20; // 0.2%
-        }*/
+        /*
+         * if (packet.isAck()) { return new Random().nextDouble() * 10000 < 2;
+         * // 0.02% } else { return new Random().nextDouble() * 10000 < 20; //
+         * 0.2% }
+         */
         return false;
     }
 
@@ -206,8 +207,7 @@ public class Link {
         return false;
     }
 
-    @Override
-    protected void finalize() throws Throwable {
+    public void destroyLink() {
         timer.cancel();
         firstEndPointUpLink.clear();
         firstEndPointDownLink.clear();
@@ -215,6 +215,5 @@ public class Link {
         secondEndPointDownLink.clear();
         firstEndPointPacketReceiver = null;
         secondEndPointPacketReceiver = null;
-        super.finalize();
     }
 }
