@@ -28,9 +28,12 @@ public class NeighborService extends CommunicationService implements NeighborRes
     private final static String ACTION_DARWIN = "darwin/";
     private final static String ACTION_ROUTING_EXCHANGE = "routing/";
     private final static String ACTION_ROUTING_EXCHANGE_NODE = "routingnode/";
+    
+    private int round;
 
     public NeighborService(Node node, OkHttpClient client, Gson gson) {
         super(node, client, gson);
+        round = 0;
     }
 
     @Override
@@ -79,7 +82,7 @@ public class NeighborService extends CommunicationService implements NeighborRes
 
     @Override
     public void exchangeDarwinInfo() {
-        DarwinPacket packet = new DarwinPacket(node);
+        DarwinPacket packet = new DarwinPacket(node, round++);
         String body = gson.toJson(packet);
         Request.Builder builder = new Request.Builder().post(RequestBody.create(JSON, body));
         node.getNeighbors().stream().forEach(neighbor -> {
