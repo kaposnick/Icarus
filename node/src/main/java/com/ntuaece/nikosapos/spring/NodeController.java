@@ -96,10 +96,6 @@ public class NodeController {
         if (mayNode.isPresent()) {
             Node node = mayNode.get();
             node.addDarwinPacket(packet);
-            if (node.allDarwinPacketsArrived()) {
-//                node.executeDarwinAlgorithm();
-//                node.clearDarwinPacketList();
-            }
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

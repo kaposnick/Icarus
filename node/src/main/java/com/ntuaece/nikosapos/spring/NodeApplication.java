@@ -2,6 +2,8 @@ package com.ntuaece.nikosapos.spring;
 
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -9,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 
 import darwin.DarwinAlternativeCalculator;
-import darwin.DarwinCalculator;
+import node.Link;
 import node.Node;
 import node.NodeList;
 import node.NodePosition;
@@ -25,7 +27,7 @@ public class NodeApplication {
                                           .setY(NodePosition.y[i])
                                           .setDestinationIds(NodePosition.destinationNodes[i % 13])
                                           .build();
-//            if (i == 12 /*|| i == 19 || i == 20 */) node.setCheater(true);
+            if (i == 12  || i == 19  || i == 20 ) node.setCheater(true);
             node.setDarwinImpl(new DarwinAlternativeCalculator(node));
             NodeList.GetInstance().add(node);
         }
@@ -36,9 +38,27 @@ public class NodeApplication {
 
         initializeNodes();
 
+        NodeThread threadArray[] = new NodeThread[NodePosition.x.length];
+
         for (int i = 0; i < NodePosition.x.length; i++) {
-            new NodeThread(NodeList.GetInstance().get(i)).start();
+            threadArray[i] = new NodeThread(NodeList.GetInstance().get(i));
+            threadArray[i].start();
         }
+
+        Timer timer = new Timer("Kill Timer");
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                for (int i = 0; i < threadArray.length; i++) {
+                    threadArray[i].kill();
+                }
+
+                for (Link link : Link.LinkList) {
+                    link.destroyLink();
+                }
+            }
+        }, 400000);
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -47,7 +67,9 @@ public class NodeApplication {
                 Optional<Node> mNode = NodeList.GetNodeById(nodeId);
                 if (mNode.isPresent()) {
                     Node node = mNode.get();
+                    System.out.println(node + " darwinPackets: " + node.getDarwinPacketList().values().size());
                     node.getNeighbors().forEach(neigbor -> {
+                        
                         String outputString = String.format("Neighbor [%d]\tDarwinΙ: %.2f\tPMinusI: %.2f\tDarwinMinusI: %.2f\t Ratio: %.2f\t Forwarded :%d\t Sent :%d",
                                                             neigbor.getId(),
                                                             neigbor.getDarwinI(),
@@ -61,7 +83,7 @@ public class NodeApplication {
                 }
             } catch (Exception ie) {
                 ie.printStackTrace();
-            } 
+            }
         }
     }
 

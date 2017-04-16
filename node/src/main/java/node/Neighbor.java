@@ -55,7 +55,7 @@ public class Neighbor {
         else connectivityRatio = (1.0f * packetsForwarded.get() / packetsSent.get());
     }
 
-    private void clearCounters() {
+    public void clearCounters() {
         packetsSent.set(0);
         packetsForwarded.set(0);
         updateConnectivityRatio();
