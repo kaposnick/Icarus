@@ -1,7 +1,7 @@
 package darwin;
 
-import java.util.List;
+import java.util.Map;
 
 public interface Darwin {
-    void computeDarwin(List<DarwinPacket> darwinPacketList);
+    void computeDarwin(Map<Long,DarwinPacket> darwinPacketList);
 }
