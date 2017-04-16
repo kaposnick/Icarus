@@ -15,7 +15,7 @@ public class RegistrationTask implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Node: " + node.getId() + " registrating to ICAS...");
+		System.out.println("Node: " + node.getId() + " registering to ICAS...");
 		icasService.registerToIcas();
 	}
 
