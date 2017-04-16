@@ -3,6 +3,7 @@ package darwin;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.ntuaece.nikosapos.SimulationParameters;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
@@ -18,7 +19,7 @@ public class DarwinCalculator implements Darwin {
         this.node = node;
     }
 
-    private void p_minusI(List<DarwinPacket> darwinPacketList) {
+    private void p_minusI(Map<Long,DarwinPacket> darwinPacketList) {
         int strategy = 0;
 
         double c_minusI = 0;
@@ -30,7 +31,7 @@ public class DarwinCalculator implements Darwin {
             double fractor = 0;
             double numerator = 0;
 
-            for (DarwinPacket packet : darwinPacketList) {
+            for (DarwinPacket packet : darwinPacketList.values()) {
                 if (packet.getId() != neighbor.getId()) {
                     for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
                         if (entity.getNeighId() == neighbor.getId()) {
@@ -61,10 +62,10 @@ public class DarwinCalculator implements Darwin {
         }
     }
 
-    private double p_I(List<DarwinPacket> darwinPacketList) {
+    private double p_I(Map<Long,DarwinPacket> darwinPacketList) {
         double numerator = 0;
         double factor = 0;
-        for (DarwinPacket packet : darwinPacketList) {
+        for (DarwinPacket packet : darwinPacketList.values()) {
             Neighbor neighbor = node.findNeighborById(packet.getId()).get();
             for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
                 if (entity.getNeighId() == this.node.getId()) {
@@ -94,7 +95,7 @@ public class DarwinCalculator implements Darwin {
     }
 
     @Override
-    public void computeDarwin(List<DarwinPacket> darwinPacketList) {
+    public void computeDarwin(Map<Long,DarwinPacket> darwinPacketList) {
         double p_I = p_I(darwinPacketList);
         double p_DarwinMinusI = p_DarwinMinusI();
 
@@ -126,10 +127,10 @@ public class DarwinCalculator implements Darwin {
         }
     }
 
-    private double p_I_new_alt(List<DarwinPacket> darwinPacketList) {
+    private double p_I_new_alt(Map<Long,DarwinPacket> darwinPacketList) {
         double numerator = 0;
         double fractor = 0;
-        for (DarwinPacket packet : darwinPacketList) {
+        for (DarwinPacket packet : darwinPacketList.values()) {
             Neighbor neighbor = node.findNeighborById(packet.getId()).get();
             for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
                 if (entity.getNeighId() == node.getId()) {
@@ -145,10 +146,10 @@ public class DarwinCalculator implements Darwin {
         return 1 - c_I;
     }
 
-    private double p_I_alt(List<DarwinPacket> darwiPacketList) {
+    private double p_I_alt(Map<Long,DarwinPacket> darwiPacketList) {
         double numerator = 0;
         double fractor = 0;
-        for (DarwinPacket packet : darwiPacketList) {
+        for (DarwinPacket packet : darwiPacketList.values()) {
             Neighbor neighbor = node.findNeighborById(packet.getId()).get();
             for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
                 if (entity.getNeighId() == this.node.getId()) {
