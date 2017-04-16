@@ -1,17 +1,12 @@
 package node;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.ntuaece.nikosapos.SimulationParameters;
-import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
+import java.util.concurrent.ConcurrentHashMap;
 
 import darwin.Darwin;
 import darwin.DarwinPacket;
@@ -34,8 +29,8 @@ public class Node {
     private List<Long> destinations = new ArrayList<Long>();
     private List<Distant> distants = new ArrayList<Distant>();
     private List<Neighbor> neighbors = new ArrayList<Neighbor>();
-    private List<DarwinPacket> darwinPacketList = new ArrayList<DarwinPacket>();
 
+    private Map<Long,DarwinPacket> darwinPacketList = new ConcurrentHashMap<Long,DarwinPacket>();
     private Set<Long> darwinSelfishNodes = new HashSet<Long>();
     private Set<Long> icasSelfishNodes = new HashSet<Long>();
 
@@ -75,6 +70,10 @@ public class Node {
         } else {
             throw new NullPointerException("Darwin calculator should not be null");
         }
+    }
+
+    public void addDarwinPacket(DarwinPacket packet) {
+        darwinPacketList.put(packet.getId(), packet);
     }
 
     public boolean addDarwinSelfishNode(Long nodeId) {
@@ -120,8 +119,6 @@ public class Node {
     }
 
     public Set<Long> getSelfishNodes() {
-//        Set<Long> allSelfishNodes = new HashSet<Long>(darwinSelfishNodes);
-//        allSelfishNodes.addAll(icasSelfishNodes);
         return darwinSelfishNodes;
     }
 
@@ -153,15 +150,11 @@ public class Node {
         return y;
     }
 
-    public void addDarwinPacket(DarwinPacket packet) {
-        darwinPacketList.add(packet);
-    }
-
-    public List<DarwinPacket> getDarwinPacketList() {
+    public Map<Long, DarwinPacket> getDarwinPacketList() {
         return darwinPacketList;
     }
 
-    public void clearDarwinPacketList() {
+    private void clearDarwinPacketList() {
         darwinPacketList.clear();
     }
 
