@@ -25,13 +25,15 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     private Queue<Long> incomingPacketQueue = new ConcurrentLinkedQueue<>();
     private long nextPacketDestination = 0;
     private boolean canSend = false;
-    
+    private Timer timer;
+
     private Random randomGenerator;
 
     public NodeRoutingThread(Node node, NeighborResponsible nService, IcasResponsible iService) {
         super("Node routing " + node.getId());
         this.node = node;
         this.icasService = iService;
+        this.timer = new Timer(node + " packet generator");
         this.router = new RouterImpl(node, nService);
         this.recorder = new NeighborStatsRecorderImpl(node);
         node.getNeighbors().stream().forEach(neighbor -> {
@@ -39,6 +41,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             neighbor.getLink().setPacketReceiver(node, this);
         });
         randomGenerator = new Random();
+        thisThread = this;
         if (node.getId() <= 50) setTimer();
     }
 
@@ -49,6 +52,8 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             if (maybePacket.isPresent()) {
                 Packet packet = maybePacket.get();
                 managePacket(packet);
+            } else {
+                throw new RuntimeException(node + " packet from " + linkId + " should not be null");
             }
         }
     }
@@ -105,13 +110,13 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         } else {
             System.out.println(packet + " dropped by " + node + " " + packet.getPathlist());
             packet.drop();
-//            Packet.incrementDroppedPackets();
+            // Packet.incrementDroppedPackets();
         }
     }
 
     private void dropPacket(Packet packet) {
-//        packet.addPathlist(node.getId());
-//        recorder.recordPacket(packet);
+        // packet.addPathlist(node.getId());
+        // recorder.recordPacket(packet);
         packet.drop();
         Packet.incrementDroppedPackets();
     }
@@ -125,7 +130,6 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     }
 
     private void setTimer() {
-        Timer timer = new Timer(node + " packet generator");
         timer.scheduleAtFixedRate(new TimerTask() {
 
             final int size = node.getDestinationList().size();
@@ -138,10 +142,6 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
                     i %= size;
                     nextPacketDestination = node.getDestinationList().get(i);
                 } while (nextPacketDestination == node.getId());
-                // do {
-                // nextPacketDestination = new
-                // Random().nextInt(NodePosition.x.length);
-                // } while (nextPacketDestination == node.getId());
                 canSend = true;
                 if (!NodeRoutingThread.this.isInterrupted()) {
                     NodeRoutingThread.this.interrupt();
@@ -150,9 +150,12 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         }, NodeScheduledTask.PACKET_SENT_INITIAL_DELAY, NodeScheduledTask.PACKET_SENT_PERIOD);
     }
 
+    private volatile Thread thisThread;
+
     @Override
     public void run() {
-        while (true) {
+        Thread blinker = Thread.currentThread();
+        while (blinker == thisThread) {
             try {
                 sleep(Long.MAX_VALUE);
             } catch (InterruptedException e) {
@@ -171,4 +174,8 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         if (!isInterrupted()) interrupt();
     }
 
+    public void stopThread() {
+        thisThread = null;
+        timer.cancel();
+    }
 }
