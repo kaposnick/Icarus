@@ -11,20 +11,26 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 
 public class DarwinPacket {
+    @SerializedName("round") @Expose private int round;
     @SerializedName("id") @Expose private long id;
     @SerializedName("neigh") @Expose private List<BehaviorUpdateEntity> neighborRatioList;
 
-    public DarwinPacket(Node node) {
+    public DarwinPacket(Node node, int round) {
         this.id = node.getId();
+        this.round = round;
         this.neighborRatioList = new ArrayList<>();
         node.getNeighbors().forEach(neighbor -> {
             BehaviorUpdateEntity entity = new BehaviorUpdateEntity();
             entity.setNeighId(neighbor.getId());
             entity.setRatio(neighbor.getConnectivityRatio());
-            entity.setNeighborDarwin(neighbor.getDarwinMinusI());
+            entity.setNeighborDarwin(neighbor.getDarwinI());
             entity.setP(neighbor.getPMinusI());
             neighborRatioList.add(entity);
         });
+    }
+    
+    public int getRound() {
+        return round;
     }
 
     public long getId() {
@@ -35,4 +41,17 @@ public class DarwinPacket {
         return neighborRatioList;
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        DarwinPacket another = (DarwinPacket) obj;
+        if (another.getId() == this.id) return true;
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) id;
+    }
 }
