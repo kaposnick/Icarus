@@ -143,9 +143,9 @@ public class NeighborService extends CommunicationService implements NeighborRes
                 return null;
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
+        } 
         return null;
     }
 
