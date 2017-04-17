@@ -21,6 +21,8 @@ public class InterCarrierImpl implements InterCarrier {
                 if (neighbor.isPresent()) {
                     // previous neighbor add packet to downlink
                     neighbor.get().getLink().addPacketToDownLink(nextNode.get(), packet);
+                } else {
+                    throw new RuntimeException(nextNode.get() + " throwed exception because neighbor was not present");
                 }
             } else {
                 int sizeOfPathList = packet.getPathlist().size();
@@ -39,8 +41,12 @@ public class InterCarrierImpl implements InterCarrier {
                 if (neighbor.isPresent()) {
                     // previous neighbor add packet to downlink
                     neighbor.get().getLink().addPacketToDownLink(nextNode.get(), packet);
+                } else {
+                    throw new RuntimeException(nextNode.get() + " throwed exception because neighbor was not present");
                 }
             }
+        } else {
+            throw new RuntimeException("Node " + id + " not present");
         }
     }
 
