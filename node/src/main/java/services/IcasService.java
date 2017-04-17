@@ -111,7 +111,6 @@ public class IcasService extends CommunicationService implements IcasResponsible
             entity.setNeighId(neighbor.getId());
             entity.setRatio(neighbor.getConnectivityRatio());
             mList.add(entity);
-//            neighbor.clearCounters();
         }
         packet.setNeighborList(mList);
         String packetBody = gson.toJson(packet);
@@ -122,12 +121,10 @@ public class IcasService extends CommunicationService implements IcasResponsible
             
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-//                System.out.println("OK FROM " + IcasService.this.node);
             }
             
             @Override
             public void onFailure(Call call, IOException e) {
-                System.out.println("ERROR FROM " + IcasService.this.node + " " + e.getMessage());
             }
         });
 
