@@ -14,7 +14,7 @@ import services.IcasResponsible;
 import services.IcasService;
 import services.NeighborResponsible;
 import services.NeighborService;
-import services.TestIcasService;
+import services.MockIcasService;
 import tasks.DarwinUpdateTask;
 import tasks.DiscoveryTask;
 import tasks.LinkCreateTask;
@@ -120,10 +120,13 @@ public class NodeThread extends Thread {
     }
 
     private void prepareResources() {
-        OkHttpClient httpClient = new OkHttpClient.Builder().readTimeout(50, TimeUnit.SECONDS).build();
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                        .readTimeout(50, TimeUnit.SECONDS)
+                        .writeTimeout(30, TimeUnit.SECONDS)
+                        .build();
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         // icasService = new IcasService(node, httpClient, gson);
-        icasService = new TestIcasService();
+        icasService = new MockIcasService();
         neighborService = new NeighborService(node, httpClient, gson);
         scheduledExecutorService = Executors.newScheduledThreadPool(2);
     }
