@@ -30,7 +30,7 @@ public class Node {
     private List<Distant> distants = new ArrayList<Distant>();
     private List<Neighbor> neighbors = new ArrayList<Neighbor>();
 
-    private Map<Long,DarwinPacket> darwinPacketList = new ConcurrentHashMap<Long,DarwinPacket>();
+    private Map<Long, DarwinPacket> darwinPacketList = new ConcurrentHashMap<Long, DarwinPacket>();
     private Set<Long> darwinSelfishNodes = new HashSet<Long>();
     private Set<Long> icasSelfishNodes = new HashSet<Long>();
 
@@ -45,14 +45,16 @@ public class Node {
     }
 
     public Optional<Distant> findDistantById(long id) {
-        Distant mDistant = null;;
-        for (Distant distant : distants) {
-            if (distant.getId() == id) {
-                mDistant = distant;
-                break;
+        synchronized (this) {
+            Distant mDistant = null;;
+            for (Distant distant : distants) {
+                if (distant.getId() == id) {
+                    mDistant = distant;
+                    break;
+                }
             }
+            return Optional.ofNullable(mDistant);
         }
-        return Optional.ofNullable(mDistant);
     }
 
     public void updateSelfishNodeList(Set<Long> updatedList) {
