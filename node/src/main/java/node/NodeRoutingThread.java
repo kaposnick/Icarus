@@ -126,7 +126,11 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     }
 
     private boolean icasPermits(long id) {
-        return icasService.askForSendPermission(id);
+        try {
+            return icasService.askForSendPermission(id);
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     private void setTimer() {
@@ -155,6 +159,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     @Override
     public void run() {
         Thread blinker = Thread.currentThread();
+
         while (blinker == thisThread) {
             try {
                 sleep(Long.MAX_VALUE);
