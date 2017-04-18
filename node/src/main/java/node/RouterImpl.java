@@ -30,7 +30,8 @@ public class RouterImpl implements Router {
 
         if (!packet.isAck()) {
             // check if last node was selfish. If yes drop it
-            long sourcePacketNode = packet.getPathlist().get(0);
+            int lastNodeIndex = packet.getPathlist().size()-1;
+            long sourcePacketNode = packet.getPathlist().get(lastNodeIndex);
             if (sourcePacketNode != node.getId()) {
                 if (isSelfishNode(sourcePacketNode)) {
                     if (node.findNeighborById(sourcePacketNode)
