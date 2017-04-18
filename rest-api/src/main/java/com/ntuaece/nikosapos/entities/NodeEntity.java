@@ -2,14 +2,17 @@ package com.ntuaece.nikosapos.entities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.ntuaece.nikosapos.SimulationParameters;
 
 public class NodeEntity {
-    public static final List<NodeEntity> NodeEntityList = new ArrayList<>();
+    public static final Set<NodeEntity> NodeEntityList = new HashSet<>();
 
     public synchronized static Optional<NodeEntity> GetNodeEntityById(long id) {
         return NodeEntityList.stream().filter(entity -> entity.getId() == id).findFirst();
@@ -24,7 +27,7 @@ public class NodeEntity {
     private int tokens;
 
     // connectivity ratio from other neighbors
-    private HashMap<Long, Double> neighborConnectivityRatio;
+    private ConcurrentHashMap<Long, Double> neighborConnectivityRatio;
     private double nodeConnectivityRatio;
 
     private NodeStatus nodeStatus;
@@ -69,7 +72,7 @@ public class NodeEntity {
             entity.x = x;
             entity.y = y;
             entity.tokens = SimulationParameters.CREDITS_INITIAL;
-            entity.neighborConnectivityRatio = new HashMap<>();
+            entity.neighborConnectivityRatio = new ConcurrentHashMap<>();
             entity.nodeConnectivityRatio = 1.0f;
             entity.nodeStatus = NodeStatus.ANY_SEND;
             entity.isDistant = totalNeighbors <= 1;
@@ -139,7 +142,7 @@ public class NodeEntity {
         return relayedPackets;
     }
 
-    public HashMap<Long, Double> getNeighborConnectivityRatio() {
+    public ConcurrentHashMap<Long, Double> getNeighborConnectivityRatio() {
         return neighborConnectivityRatio;
     }
 
@@ -169,8 +172,21 @@ public class NodeEntity {
 
     private void setSelfish() {
         isSelfish = nodeConnectivityRatio < SimulationParameters.CONNECTIVITY_RATIO_ICAS_THRESHOLD;
-        // System.out.println("Updating selfish for node " + id + " : " +
-        // isSelfish);
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        NodeEntity another = (NodeEntity) obj;
+        if (this.id == another.getId()) return true;
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return (int) this.id;
     }
 
 }
