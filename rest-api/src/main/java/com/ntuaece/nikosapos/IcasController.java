@@ -52,6 +52,7 @@ public class IcasController {
             System.out.println("Node " + nodeEntity.getId() + " registered");
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
+            System.err.println("Node " + registerPacket.getId() + " COULDN'T REGISTER!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
