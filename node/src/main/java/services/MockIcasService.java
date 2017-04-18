@@ -2,7 +2,7 @@ package services;
 
 import com.ntuaece.nikosapos.entities.Packet;
 
-public class TestIcasService implements IcasResponsible {
+public class MockIcasService implements IcasResponsible {
 
     @Override
     public boolean askForSendPermission(long destinationNodeId) {
