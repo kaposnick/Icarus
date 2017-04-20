@@ -46,6 +46,12 @@ public class DarwinAlternativeCalculator implements Darwin {
             } else {
                 node.removeDarwinSelfishNode(neighbor.getId());
             }
+
+            if (neighbor.getConnectivityRatio() <= SimulationParameters.CP_THRESHOLD) {
+                node.addCpSelfishNode(neighbor.getId());
+            } else {
+                node.removeCpSelfishNode(neighbor.getId());
+            }
         }
 
     }
@@ -60,13 +66,13 @@ public class DarwinAlternativeCalculator implements Darwin {
                     // cii * cji
                     numerator += entity.getRatio() * neighbor.getConnectivityRatio();
                     denominator += neighbor.getConnectivityRatio();
-//                     numerator += entity.getΡForMe();
-//                     denominator++;
-//                     neighbor.setDarwinMinusI(entity.getNeighborDarwinForMe());
+                    // numerator += entity.getΡForMe();
+                    // denominator++;
+                    // neighbor.setDarwinMinusI(entity.getNeighborDarwinForMe());
                 }
             }
         }
-//         return (denominator > 0) ? numerator / denominator : 0;
+        // return (denominator > 0) ? numerator / denominator : 0;
         return (denominator > 0) ? (double) (1 - numerator / denominator) : 0;
     }
 

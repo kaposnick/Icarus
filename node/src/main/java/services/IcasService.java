@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdate;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
 import com.ntuaece.nikosapos.entities.Packet;
@@ -43,8 +44,7 @@ public class IcasService extends CommunicationService implements IcasResponsible
         try {
             Response response = httpClient.newCall(request).execute();
             return response.isSuccessful();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
             return true;
         }
     }
@@ -84,15 +84,15 @@ public class IcasService extends CommunicationService implements IcasResponsible
                                                .url(URL_ICAS + ACTION_REGISTER)
                                                .build();
         httpClient.newCall(request).enqueue(new Callback() {
-            
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                
+
             }
-            
+
             @Override
             public void onFailure(Call call, IOException e) {
-                
+
             }
         });
     }
@@ -118,11 +118,11 @@ public class IcasService extends CommunicationService implements IcasResponsible
                                                .url(URL_ICAS + ACTION_UPDATE)
                                                .build();
         httpClient.newCall(request).enqueue(new Callback() {
-            
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
             }
-            
+
             @Override
             public void onFailure(Call call, IOException e) {
             }

@@ -12,12 +12,10 @@ public class RouterImpl implements Router {
 
     private final Node node;
     private final NeighborResponsible service;
-    private final Random randomGenerator;
 
     public RouterImpl(Node node, NeighborResponsible service) {
         this.node = node;
         this.service = service;
-        randomGenerator = new Random();
     }
 
     @Override
@@ -29,18 +27,6 @@ public class RouterImpl implements Router {
         }
 
         if (!packet.isAck()) {
-            // check if last node was selfish. If yes drop it
-            int lastNodeIndex = packet.getPathlist().size()-1;
-            long sourcePacketNode = packet.getPathlist().get(lastNodeIndex);
-            if (sourcePacketNode != node.getId()) {
-                if (isSelfishNode(sourcePacketNode)) {
-                    if (node.findNeighborById(sourcePacketNode)
-                            .get()
-                            .getDarwinI() >= randomGenerator.nextDouble())
-                        return null;
-                }
-            }
-
             nextNode = findNextNeighbor(packet);
             if (nextNode != null) {
                 packet.addPathlist(nextNode.getId());
@@ -48,17 +34,9 @@ public class RouterImpl implements Router {
             }
         } else {
             // ACK
-//            int nextNeighborIndex = -1;
-//
-//            for (int i = 0; i < packet.getPathlist().size(); i++) {
-//                long pathNode = packet.getPathlist().get(i);
-//                if (pathNode == node.getId()) {
-//                    nextNeighborIndex = i - 1;
-//                    break;
-//                }
-//            }
             int nextNeighborIndex = packet.getPathlist().indexOf(node.getId()) - 1;
-            if (nextNeighborIndex >= packet.getPathlist().size() || nextNeighborIndex < 0) { throw new RuntimeException("Index too high!"); }
+            if (nextNeighborIndex >= packet.getPathlist().size()
+                    || nextNeighborIndex < 0) { throw new RuntimeException("Index too high!"); }
 
             // next neighbor for an ack can be retrieved from the path list
             long nextNeighborID = packet.getPathlist().get(nextNeighborIndex);
@@ -90,7 +68,8 @@ public class RouterImpl implements Router {
         // or if path not specified by any old route then -->
         // nextNodeSpecifiedeByOldRoute = -2
         final boolean nextNodeSpecifiedByOldRoute = nextNodeId > -2;
-        if (nextNodeSpecifiedByOldRoute && !isSelfishNode(nextNodeId + 1) && !nodeExistsInPath(p, nextNodeId + 1)) {
+        if (nextNodeSpecifiedByOldRoute && !isSelfishNode(nextNodeId + 1)
+                && !nodeExistsInPacketPath(p, nextNodeId + 1)) {
             // send packet to next node
             possibleNextNode = node.findNeighborById(nextNodeId + 1);
         } else {
@@ -105,7 +84,7 @@ public class RouterImpl implements Router {
                 int neighborDistance = neighbor.getDistance();
 
                 // neighbor not selfish neither in existin path
-                if (!isSelfishNode(neighborId) && !nodeExistsInPath(p, neighborId)) {
+                if (!isSelfishNode(neighborId) && !nodeExistsInPacketPath(p, neighborId)) {
                     // ask neighbor for more details
                     RouteDetails routingInformation = service.exchangeRoutingInformationForNode(neighbor,
                                                                                                 destinationId);
@@ -116,7 +95,8 @@ public class RouterImpl implements Router {
                     long retrievedNeighborId = routingInformation.getNodeId();
 
                     // to get sure that will find a new route
-                    if (!newRouteToDstFound || retrievedHops + 1 < maxHops
+                    if (!newRouteToDstFound 
+                            || retrievedHops + 1 < maxHops
                             || (retrievedHops + 1 == maxHops && retrievedDistance + neighborDistance < maxDistance)) {
                         newRouteToDstFound = true;
                         newNextNodeId = retrievedNeighborId;
@@ -158,18 +138,16 @@ public class RouterImpl implements Router {
                     // destinationId + " through " + newNextNodeId);
                 }
             } else {
-                if (nextNodeSpecifiedByOldRoute && !nodeExistsInPath(p, nextNodeId + 1)) {
-                    // in this case we don't care if the next node is selfish
-                    // System.out.println(node + " sending packet to selfish " +
-                    // (nextNodeId + 1));
+                if (nextNodeSpecifiedByOldRoute && !nodeExistsInPacketPath(p, nextNodeId + 1)) {
                     possibleNextNode = node.findNeighborById(nextNodeId + 1);
                 } else {
                     for (Neighbor neighbor : node.getNeighbors()) {
-                        if (nodeExistsInPath(p, neighbor.getId())) continue;
+                        if (nodeExistsInPacketPath(p, neighbor.getId())) continue;
                         RouteDetails routingInformation = service.exchangeRoutingInformationForNode(neighbor,
                                                                                                     destinationId);
                         if (routingInformation != null && routingInformation.isFound()) return neighbor;
                     }
+                    System.out.println(node + " couldn't find next hop for " + p + " " + p.getPathlist());
                     return null;
                 }
             }
@@ -203,7 +181,11 @@ public class RouterImpl implements Router {
         return node.existsInSelfishNodeList(id);
     }
 
-    private boolean nodeExistsInPath(Packet p, long nodeId) {
+    private boolean isCpSelfishNode(long id) {
+        return node.existsInCpSelfishNodeList(id);
+    }
+
+    private boolean nodeExistsInPacketPath(Packet p, long nodeId) {
         return p.getPathlist().contains(nodeId);
     }
 

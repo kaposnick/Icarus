@@ -18,10 +18,11 @@ public class Packet {
     @SerializedName("ttl") @Expose private int hopsRemaining;
     @SerializedName("pathlist") @Expose private List<Long> pathlist;
     @SerializedName("data") @Expose private byte data;
-
     @SerializedName("ack") @Expose private boolean isAck = false;
+    @SerializedName("semiAck") @Expose private boolean isSemiAck = false;
+    @SerializedName("neighbor") @Expose private long neighbor;
 
-    private Packet() {
+    public Packet() {
     }
 
     public void addPathlist(Long id) {
@@ -59,20 +60,28 @@ public class Packet {
     public byte getData() {
         return data;
     }
-    
-    public static void incrementDroppedPackets(){
+
+    public void setMe(long neighbor) {
+        this.neighbor = neighbor;
+    }
+
+    public long getNeighborId() {
+        return neighbor;
+    }
+
+    public static void incrementDroppedPackets() {
         droppedPacketCounter.incrementAndGet();
     }
-    
-    public static void incrementDeliveredPackets(){
+
+    public static void incrementDeliveredPackets() {
         deliveredPacketCounter.incrementAndGet();
     }
-    
-    public static long getDroppedPackets(){
+
+    public static long getDroppedPackets() {
         return droppedPacketCounter.get();
     }
-    
-    public static long getDeliveredPackets(){
+
+    public static long getDeliveredPackets() {
         return deliveredPacketCounter.get();
     }
 
@@ -82,6 +91,14 @@ public class Packet {
 
     public boolean isAck() {
         return isAck;
+    }
+
+    public void setSemiAck(boolean isSemiAck) {
+        this.isSemiAck = isSemiAck;
+    }
+
+    public boolean isSemiAck() {
+        return isSemiAck;
     }
 
     public static class Builder {
@@ -127,5 +144,4 @@ public class Packet {
     public String toString() {
         return (!isAck ? "Packet [" : "Ack [") + id + "], [" + sourceNodeID + " -> " + destinationNodeID + "]";
     }
-
 }

@@ -12,7 +12,15 @@ public class InterCarrierImpl implements InterCarrier {
         Optional<Node> nextNode = NodeList.GetNodeById(id);
 
         if (nextNode.isPresent()) {
-            if (!packet.isAck()) {
+            if (packet.isSemiAck()) {
+                long neighborId = packet.getNeighborId();
+                Optional<Neighbor> neighbor = nextNode.get().findNeighborById(neighborId);
+                if (neighbor.isPresent()) {
+                    neighbor.get().getLink().addPacketToDownLink(nextNode.get(), packet);
+                } else {
+                    throw new RuntimeException(nextNode.get() + " throwed exception because neighbor was not present");
+                }
+            } else if (!packet.isAck()) {
                 // get the previous neighbor
                 int sizeOfPathList = packet.getPathlist().size();
                 Optional<Neighbor> neighbor = nextNode.get()
@@ -25,6 +33,7 @@ public class InterCarrierImpl implements InterCarrier {
                     throw new RuntimeException(nextNode.get() + " throwed exception because neighbor was not present");
                 }
             } else {
+                // packet is Ack
                 int sizeOfPathList = packet.getPathlist().size();
                 int thisNodeIndex = -1;
                 int nextNeighborIndex = -1;

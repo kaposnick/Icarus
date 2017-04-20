@@ -132,7 +132,7 @@ public class NeighborService extends CommunicationService implements NeighborRes
     @Override
     public RouteDetails exchangeRoutingInformationForNode(Neighbor neighbor, long nodeId) {
         Request request = new Request.Builder().url(NEIGHBOR_URL + ACTION_ROUTING_EXCHANGE_NODE + neighbor.getId() + "/"
-                + nodeId).build();
+                + nodeId + "/" + node.getId()).build();
         try {
             Response response = httpClient.newCall(request).execute();
             if (response.isSuccessful()) {
@@ -144,7 +144,7 @@ public class NeighborService extends CommunicationService implements NeighborRes
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         } 
         return null;
     }

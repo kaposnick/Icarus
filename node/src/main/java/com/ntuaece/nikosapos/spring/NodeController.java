@@ -103,8 +103,8 @@ public class NodeController {
 
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/routingnode/{id}/{dst}")
-    public ResponseEntity<?> onRouteHelp(@PathVariable("id") String nodeID, @PathVariable("dst") String wantedID) {
+    @RequestMapping(method = RequestMethod.GET, value = "/routingnode/{id}/{dst}/{src}")
+    public ResponseEntity<?> onRouteHelp(@PathVariable("id") String nodeID, @PathVariable("dst") String wantedID, @PathVariable("src") String sourceID) {
         Optional<Node> node = NodeList.GetNodeById(nodeID);
         // validate id
         if (!node.isPresent()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -125,7 +125,7 @@ public class NodeController {
         if (!isFound) {
             // if not neighbor then distant
             Optional<Distant> distant = node.get().findDistantById(Long.parseLong(wantedID));
-            if (distant.isPresent()) {
+            if (distant.isPresent() && distant.get().getRelayId() != Long.parseLong(sourceID)) {
                 // is distant node
                 isFound = true;
                 routeDetails.setNodeId(Long.parseLong(nodeID));

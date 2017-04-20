@@ -101,8 +101,6 @@ public class NodeEntity {
 
             if (totalNonSelfishNeighbors > 0) {
                 nodeConnectivityRatio = sum / totalNonSelfishNeighbors;
-            } else {
-                nodeConnectivityRatio = 1;
             }
             setSelfish();
             neighborConnectivityRatio.clear();
@@ -165,7 +163,7 @@ public class NodeEntity {
     public void updateNodeStatus() {
         if (tokens >= SimulationParameters.CREDIT_STATUS_THRESHOLD) {
             nodeStatus = NodeStatus.ANY_SEND;
-        } else if (tokens < SimulationParameters.CREDIT_STATUS_THRESHOLD && tokens >= 0) {
+        } else if (tokens >= 0) {
             nodeStatus = NodeStatus.NEIGHBOR_SEND;
         } else nodeStatus = NodeStatus.NO_SEND;
     }

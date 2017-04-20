@@ -11,8 +11,8 @@ public class Neighbor {
     private int y;
     private double connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
     private double meanConnectivityRatio;
-    private AtomicInteger packetsSent = new AtomicInteger();
-    private AtomicInteger packetsForwarded = new AtomicInteger();
+    private AtomicInteger packetsSent = new AtomicInteger(1);
+    private AtomicInteger packetsForwarded = new AtomicInteger(1);
     private int distance;
 
     private int totalPacketsSent;
@@ -31,8 +31,8 @@ public class Neighbor {
         neighbor.y = node.getY();
         neighbor.pMinusI = neighbor.pI = 0;
         neighbor.darwinI = neighbor.darwinMinusI = 0;
-        neighbor.packetsSent = new AtomicInteger();
-        neighbor.packetsForwarded = new AtomicInteger();
+        neighbor.packetsSent = new AtomicInteger(1);
+        neighbor.packetsForwarded = new AtomicInteger(1);
         neighbor.totalPacketsForwarded = neighbor.totalPacketsSent = 0;
         neighbor.connectivityRatio = CONNECTIVITY_RATIO_DEFAULT;
         return neighbor;
@@ -55,7 +55,7 @@ public class Neighbor {
         else connectivityRatio = (1.0f * packetsForwarded.get() / packetsSent.get());
     }
 
-    public void clearCounters() {
+    private void clearCounters() {
         packetsSent.set(0);
         packetsForwarded.set(0);
         updateConnectivityRatio();

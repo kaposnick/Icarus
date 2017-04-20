@@ -53,8 +53,10 @@ public final class SimulationParameters {
 	 * Maximum distance for two nodes to be considered as neighbors
 	 */
 	public static final int MAX_NEIGHBOR_DISTANCE = 60;
-	
+
 	/**
-	 * 
+	 * Threshold under which a node is considered as selfish
 	 */
+    public static final double CP_THRESHOLD = 0.4f;
+
 }

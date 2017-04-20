@@ -68,6 +68,10 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     }
 
     private void managePacket(Packet packet) {
+        if (packet.isSemiAck()) {
+            recorder.recordPacket(packet);
+            return;
+        }
         Neighbor nextNode = null;
         if (packet.isAck()) {
             // if it is the source of a packet sent
@@ -78,20 +82,28 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
                 return;
             } else {
                 nextNode = router.routePacket(packet);
-                recorder.recordPacket(packet);
+                if (nextNode != null) {
+                    recorder.recordPacket(packet);
+                }
             }
         } else {
             if (packet.getDestinationNodeID() == node.getId()) {
                 packet.setAck(true);
                 icasService.confirmSuccessfulDelivery(packet);
                 nextNode = router.routePacket(packet);
-                recorder.recordPacket(packet);
+                if (nextNode != null) {
+                    recorder.recordPacket(packet);
+                }
             } else {
                 if (dropBecauseAmCheater(packet)) {
                     System.out.println(packet + " dropped by cheater " + node + " " + packet.getPathlist());
                     dropPacket(packet);
                     return;
-                } else if (packet.getHopsRemaining() == 0) {
+                } else if (dropBecauseComingFromSelfishNode(packet)) {
+                    System.out.println(packet + " dropped by " + node + " " + packet.getPathlist());
+                    dropPacket(packet);
+                    return;
+                } else if (packet.getHopsRemaining() == Integer.MIN_VALUE) {
                     System.out.println(packet + " dropped for hops by " + node + " " + packet.getPathlist());
                     dropPacket(packet);
                     return;
@@ -107,11 +119,38 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
 
         if (nextNode != null) {
             nextNode.getLink().addPacketToUpLink(node, packet);
-        } else {
-            System.out.println(packet + " dropped by " + node + " " + packet.getPathlist());
-            packet.drop();
-            // Packet.incrementDroppedPackets();
+            if (!packet.isAck()) {
+                sendSemiAck(packet);
+            }
+        } else packet.drop();
+    }
+
+    private boolean dropBecauseComingFromSelfishNode(Packet packet) {
+        if (packet.getSourceNodeID() != node.getId()) {
+            int previousNodeIndex = packet.getPathlist().size() - 2;
+            long previousNode = packet.getPathlist().get(previousNodeIndex);
+            if (node.existsInSelfishNodeList(previousNode)) {
+                if (node.findNeighborById(previousNode).get().getDarwinI() >= randomGenerator.nextDouble()) {
+                    return true;
+                }
+            }
         }
+        return false;
+    }
+
+    private void sendSemiAck(Packet packet) {
+        if (packet.getSourceNodeID() == this.node.getId()) return;
+
+        int previousNodeIndex = packet.getPathlist().size() - 3;
+        long previousNodeId = packet.getPathlist().get(previousNodeIndex);
+        Optional<Neighbor> previousNode = node.findNeighborById(previousNodeId);
+        if (previousNode.isPresent()) {
+            Packet semiAck = new Packet();
+            semiAck.setSemiAck(true);
+            semiAck.setMe(this.node.getId());
+            previousNode.get().getLink().addPacketToUpLink(node, semiAck);
+        }
+
     }
 
     private void dropPacket(Packet packet) {
@@ -126,11 +165,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     }
 
     private boolean icasPermits(long id) {
-        try {
-            return icasService.askForSendPermission(id);
-        } catch (Exception e) {
-            return true;
-        }
+        return icasService.askForSendPermission(id);
     }
 
     private void setTimer() {

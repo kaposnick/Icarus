@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import darwin.Darwin;
 import darwin.DarwinPacket;
@@ -33,6 +34,7 @@ public class Node {
     private Map<Long, DarwinPacket> darwinPacketList = new ConcurrentHashMap<Long, DarwinPacket>();
     private Set<Long> darwinSelfishNodes = new HashSet<Long>();
     private Set<Long> icasSelfishNodes = new HashSet<Long>();
+    private Set<Long> cpSelfishNodes = new HashSet<Long>();
 
     public boolean isNeighborWith(long maybeNeighborID) {
         synchronized (this) {
@@ -76,6 +78,14 @@ public class Node {
 
     public void addDarwinPacket(DarwinPacket packet) {
         darwinPacketList.put(packet.getId(), packet);
+    }
+
+    public boolean addCpSelfishNode(Long nodeId) {
+        return cpSelfishNodes.add(nodeId);
+    }
+
+    public boolean removeCpSelfishNode(Long nodeId) {
+        return cpSelfishNodes.removeIf(id -> id == nodeId);
     }
 
     public boolean addDarwinSelfishNode(Long nodeId) {
@@ -269,6 +279,10 @@ public class Node {
         synchronized (this) {
             distants.add(distant);
         }
+    }
+
+    public boolean existsInCpSelfishNodeList(long neighborId) {
+        return cpSelfishNodes.contains(neighborId);
     }
 
 }

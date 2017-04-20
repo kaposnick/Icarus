@@ -16,19 +16,20 @@ public class NeighborStatsRecorderImpl implements NeighborStatsRecorder {
     @Override
     public void recordPacket(Packet packet) {
         // if packet has reached destination no action should be done
-        if (packet.getDestinationNodeID() != node.getId()) {
+        if (packet.isSemiAck()) {
+            long neighborId = packet.getNeighborId();
+            Optional<Neighbor> neighbor = node.findNeighborById(neighborId);
+            if (neighbor.isPresent()) {
+                neighbor.get().incrementForwardedPacketCounter();
+            } else {
+                throw new RuntimeException(node + " neighbor [" + neighborId + "] not found");
+            }
+            return;
+        }
 
-//            int myNodeIndex = 0;
-//            for (int i = 0; i < packet.getPathlist().size(); i++) {
-//                if (packet.getPathlist().get(i) == node.getId()) {
-//                    myNodeIndex = i;
-//                    break;
-//                }
-//            }
-//            int neighborIndex = myNodeIndex + 1;
-            
+        if (packet.getDestinationNodeID() != node.getId()) {
             int neighborIndex = packet.getPathlist().indexOf(node.getId()) + 1;
-            
+
             if (neighborIndex >= packet.getPathlist().size()) { throw new RuntimeException("HERE FOR NODE "
                     + node.getId() + " and packet " + packet.getId() + " pathlisth: " + packet.getPathlist()); }
             Optional<Neighbor> neighbor = node.findNeighborById(packet.getPathlist().get(neighborIndex));
@@ -36,9 +37,9 @@ public class NeighborStatsRecorderImpl implements NeighborStatsRecorder {
                 if (packet.isAck()) {
                     // packet not sent for forwarding so no counter should be
                     // incremented
-                    if (neighbor.get().getId() != packet.getDestinationNodeID()) {
-                        neighbor.get().incrementForwardedPacketCounter();
-                    }
+//                    if (neighbor.get().getId() != packet.getDestinationNodeID()) {
+//                        neighbor.get().incrementForwardedPacketCounter();
+//                    }
                     if (packet.getSourceNodeID() == node.getId()) {
                         node.incrementForwardedPacketCounter();
                     }
@@ -49,7 +50,7 @@ public class NeighborStatsRecorderImpl implements NeighborStatsRecorder {
                     if (neighbor.get().getId() != packet.getDestinationNodeID()) {
                         neighbor.get().incrementSentPacketCounter();
                     }
-                    
+
                     if (packet.getSourceNodeID() != node.getId()) {
                         node.incrementRelayedPacketCounter();
                     } else {
@@ -58,7 +59,7 @@ public class NeighborStatsRecorderImpl implements NeighborStatsRecorder {
                 }
             } else {
                 throw new RuntimeException(node + " neighbor [" + neighborIndex + "] not found");
-                
+
             }
         }
     }
