@@ -38,6 +38,12 @@ public class Link {
             n.bindLink(link);
             n.setDistance((int) distance);
         });
+        
+        if (node1.getNodeRoutingThread() != null && node1.getTotalPacketsSent() > 5) {
+            node1.getNodeRoutingThread().addNeighbor(node1.findNeighborById(node2.getId()).get());
+        } else if (node2.getNodeRoutingThread() != null && node2.getTotalPacketsSent() > 5 ) {
+            node2.getNodeRoutingThread().addNeighbor(node2.findNeighborById(node1.getId()).get());
+        }
 
         LinkList.add(link);
         // System.out.println("Created Link " + node1.getId() + " - " +
@@ -48,8 +54,8 @@ public class Link {
     private final static AtomicLong linkCounter = new AtomicLong();
 
     private final double distance;
-    private final Node firstEndPoint;
-    private final Node secondEndPoint;
+    private Node firstEndPoint;
+    private Node secondEndPoint;
 
     private PacketReceiver firstEndPointPacketReceiver;
     private PacketReceiver secondEndPointPacketReceiver;
@@ -92,7 +98,7 @@ public class Link {
     public void addPacketToUpLink(Node sender, Packet p) {
         if (willDrop(p)) {
             System.out.println("Oups... " + p + " dropped");
-            p.drop();
+//            p.drop();
             Packet.incrementDroppedPackets();
             return;
         }
@@ -102,7 +108,9 @@ public class Link {
         } else if (sender.equals(secondEndPoint)) {
             secondEndPointUpLink.offer(p);
             setTimer(2);
-        } else throw new IllegalArgumentException("Node " + sender.getId() + " is not an endpoint of Link " + id);
+        }
+        // else throw new IllegalArgumentException("Node " + sender.getId() + "
+        // is not an endpoint of Link " + id);
     }
 
     public synchronized void addPacketToDownLink(Node receiver, Packet p) {
@@ -138,12 +146,11 @@ public class Link {
      */
 
     private boolean willDrop(Packet packet) {
-        /*
-         * if (packet.isAck()) { return new Random().nextDouble() * 10000 < 2;
-         * // 0.02% } else { return new Random().nextDouble() * 10000 < 20; //
-         * 0.2% }
-         */
-        return false;
+        if (packet.isAck()) {
+            return new Random().nextDouble() * 10000 < 2;
+        } else {
+            return new Random().nextDouble() * 10000 < 20;
+        }
     }
 
     /**
@@ -172,7 +179,6 @@ public class Link {
     }
 
     private long calculateDeliveryTimerBasedOnDistance() {
-        // TODO: have to simulate the transfer delay
         return 50;
     }
 
@@ -201,18 +207,28 @@ public class Link {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Link link = (Link) obj;
-        if (link.firstEndPoint.getId() == firstEndPoint.getId()
-                && link.secondEndPoint.getId() == secondEndPoint.getId())
-            return true;
-        return false;
+
+        if (link.getId() == this.id) return true;
+        else return false;
     }
 
-    public void destroyLink() {
+    public void destroy() {
         timer.cancel();
+
+        // clear queues
         firstEndPointUpLink.clear();
         firstEndPointDownLink.clear();
         secondEndPointUpLink.clear();
         secondEndPointDownLink.clear();
+
+        /* set pointers to null */
+        firstEndPointUpLink = null;
+        firstEndPointDownLink = null;
+        secondEndPointDownLink = null;
+        secondEndPointUpLink = null;
+
+        firstEndPoint = null;
+        secondEndPoint = null;
         firstEndPointPacketReceiver = null;
         secondEndPointPacketReceiver = null;
     }

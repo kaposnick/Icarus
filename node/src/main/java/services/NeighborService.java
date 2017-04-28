@@ -15,6 +15,8 @@ import node.Link;
 import node.Neighbor;
 import node.Node;
 import node.RouteDetails;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -28,7 +30,8 @@ public class NeighborService extends CommunicationService implements NeighborRes
     private final static String ACTION_DARWIN = "darwin/";
     private final static String ACTION_ROUTING_EXCHANGE = "routing/";
     private final static String ACTION_ROUTING_EXCHANGE_NODE = "routingnode/";
-    
+    private final static String ACTION_UNREGISTER = "unregister/";
+
     private int round;
 
     public NeighborService(Node node, OkHttpClient client, Gson gson) {
@@ -68,16 +71,6 @@ public class NeighborService extends CommunicationService implements NeighborRes
                 e.printStackTrace();
             }
         }
-
-        // for discovering new neighbors
-        node.getNeighbors().stream().forEach(neighbor -> {
-            if (!discoveredIDs.contains(neighbor.getId())) {
-                neighbor.getLink().setPacketReceiver(node, null);
-                Link.LinkList.remove(neighbor.getLink());
-                node.getNeighbors().remove(neighbor);
-            }
-        });
-        discoveredIDs.clear();
     }
 
     @Override
@@ -144,9 +137,31 @@ public class NeighborService extends CommunicationService implements NeighborRes
             }
 
         } catch (Exception e) {
-//            e.printStackTrace();
-        } 
+            // e.printStackTrace();
+        }
         return null;
+    }
+
+    @Override
+    public void unregister() {
+        Request.Builder builder = new Request.Builder().post(RequestBody.create(JSON, String.valueOf(node.getId())));
+        for (Neighbor neighbor : node.getNeighbors()) {
+            Request request = builder.url(NEIGHBOR_URL + ACTION_UNREGISTER + neighbor.getId()).build();
+            httpClient.newCall(request).enqueue(new Callback() {
+                
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (!response.isSuccessful()) return;
+                    neighbor.removeLink();
+//                    node.getNeighbors().remove(neighbor);
+//                    System.out.println(node + " removed " + neighbor.getId() + " from neighbor list");
+                }
+                
+                @Override
+                public void onFailure(Call call, IOException e) {
+                }
+            });
+        }
     }
 
 }

@@ -1,5 +1,8 @@
 package com.ntuaece.nikosapos.spring;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
@@ -18,11 +21,16 @@ import darwin.DarwinPacket;
 import distance.DistanceCalculator;
 import distance.NeighborValidator;
 import distance.NeighborValidatorImpl;
+import input.NodeConfiguration;
+import mobilestatistics.DistantNode;
+import mobilestatistics.NeighborNode;
+import mobilestatistics.NodeInfo;
 import node.DiscoverPacket;
 import node.DiscoverResponse;
 import node.Distant;
 import node.InterCarrier;
 import node.InterCarrierImpl;
+import node.Link;
 import node.Neighbor;
 import node.Node;
 import node.NodeList;
@@ -98,13 +106,14 @@ public class NodeController {
             node.addDarwinPacket(packet);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/routingnode/{id}/{dst}/{src}")
-    public ResponseEntity<?> onRouteHelp(@PathVariable("id") String nodeID, @PathVariable("dst") String wantedID, @PathVariable("src") String sourceID) {
+    public ResponseEntity<?> onRouteHelp(@PathVariable("id") String nodeID, @PathVariable("dst") String wantedID,
+            @PathVariable("src") String sourceID) {
         Optional<Node> node = NodeList.GetNodeById(nodeID);
         // validate id
         if (!node.isPresent()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -162,8 +171,8 @@ public class NodeController {
                 Distant distant = maybeDistant.get();
                 Neighbor neighbor = maybeNeighbor.get();
                 if ((distant.getTotalHops() > nodeInfo.getHops() + 1)
-               || ((distant.getTotalHops() == (nodeInfo.getHops() + 1)
-               && (distant.getDistance() > neighbor.getDistance() + nodeInfo.getDistance())))) {
+                        || ((distant.getTotalHops() == (nodeInfo.getHops() + 1)
+                                && (distant.getDistance() > neighbor.getDistance() + nodeInfo.getDistance())))) {
                     distant.setRelayId(routingInfoPacket.getNodeId());
                     distant.setDistance(nodeInfo.getDistance() + neighbor.getDistance());
                     distant.setTotalHops(1 + nodeInfo.getHops());
@@ -189,5 +198,95 @@ public class NodeController {
             return new ResponseEntity<String>("Node " + nodeID + " not active", HttpStatus.BAD_REQUEST);
         node.get().updateSelfishNodeList(selfishNodes);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "configure" , method = RequestMethod.PUT)
+    public ResponseEntity<?> onConfigureNode(@RequestBody NodeConfiguration configuration) {
+        Optional<Node> maybeNode = NodeList.GetNodeById(configuration.getId());
+        if (!maybeNode.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        
+        // can configure ONLY NODE 6 !!
+        if (maybeNode.get().getId() != 6) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        
+        Node node = maybeNode.get();
+        node.setCheater(configuration.isCheater()); 
+        
+        // change configuration
+        if (node.isActive() && !configuration.isActive()) {
+            System.out.println("Stopping " + node);
+            node.stop();
+        } else if (!node.isActive() && configuration.isActive()) {
+            System.out.println("Starting " + node);
+            node.start();
+        }
+        
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "info/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> onUpdateNodeInfo(@PathVariable("id") Long id) {
+        Optional<Node> maybeNode = NodeList.GetNodeById(id);
+        if (!maybeNode.isPresent()) return null;
+        Node node = maybeNode.get();
+
+        NodeInfo nodeInfo = new NodeInfo();
+        nodeInfo.setId(node.getId());
+        nodeInfo.setX(node.getX());
+        nodeInfo.setY(node.getY());
+        nodeInfo.setCheater(node.isCheater());
+        nodeInfo.setActive(node.isActive());
+        nodeInfo.setDestinations(new HashSet<>(node.getDestinationList()));
+        nodeInfo.setTotalSentPackets(node.getTotalPacketsSent());
+        nodeInfo.setTotalSuccessfullySentPackets(node.getTotalPacketsForwarded());
+        nodeInfo.setTotalReceivedPackets(node.getTotalReceivedPackets());
+        nodeInfo.setTotalDroppedPackets(node.getTotalDroppedPackets());
+        nodeInfo.setTotalRelayedPackets(node.getRelayedPackets());
+
+        List<NeighborNode> neighbors = new ArrayList<>();
+        List<DistantNode> distants = new ArrayList<>();
+
+        for (Neighbor neighbor : node.getNeighbors()) {
+            NeighborNode neighborNode = new NeighborNode();
+            neighborNode.setId(neighbor.getId());
+            neighborNode.setX(neighbor.getX());
+            neighborNode.setY(neighbor.getY());
+            neighborNode.setDistance(neighbor.getDistance());
+            neighborNode.setTotalPacketsSent(neighbor.getPacketsSent());
+            neighborNode.setTotalPacketsForwarded(neighbor.getPacketsForwarded());
+            neighborNode.setMeanConnectivityRatio(neighbor.getMeanConnectivityRatio());
+            neighbors.add(neighborNode);
+        }
+        nodeInfo.setNeighbors(neighbors);
+
+        for (Distant distant : node.getDistantNodes()) {
+            DistantNode distantNode = new DistantNode();
+            distantNode.setId(distant.getId());
+            distantNode.setDistance(distant.getDistance());
+            distantNode.setHops(distant.getTotalHops());
+            distantNode.setRelayId(distant.getRelayId());
+            distants.add(distantNode);
+        }
+        nodeInfo.setDistants(distants);
+        return new ResponseEntity<NodeInfo>(nodeInfo, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/unregister/{neighborId}", method = RequestMethod.POST)
+    public ResponseEntity<?> onUnregister(@RequestBody Long unregisteringNodeId,
+            @PathVariable("neighborId") Long neighborId) {
+        Optional<Node> maybeNeighbor = NodeList.GetNodeById(neighborId);
+        if (!maybeNeighbor.isPresent()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+
+        Node neighborNode = maybeNeighbor.get();
+        Neighbor unregisteringNeighbor = neighborNode.findNeighborById(unregisteringNodeId).get();        
+        synchronized (neighborNode.getNeighbors()) {            
+            neighborNode.removeNeighbor(unregisteringNeighbor);
+        }
+        Link link = unregisteringNeighbor.getLink();
+        link.destroy();
+        unregisteringNeighbor.removeLink();
+        Link.LinkList.remove(link);
+        System.out.println(maybeNeighbor.get() + " deleted " + unregisteringNodeId + " from neighbor list");
+
+        return new ResponseEntity<String>("Success", HttpStatus.OK);
     }
 }

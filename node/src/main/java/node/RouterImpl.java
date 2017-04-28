@@ -45,8 +45,9 @@ public class RouterImpl implements Router {
 
             if (neighbor.isPresent()) {
                 nextNode = neighbor.get();
-            } else throw new RuntimeException("Ack " + packet.getId() + " Node " + node.getId()
-                    + " next neighbor cannot be null!");
+            } 
+//            else throw new RuntimeException("Ack " + packet.getId() + " Node " + node.getId()
+//                    + " next neighbor cannot be null!");
         }
 
         return nextNode;

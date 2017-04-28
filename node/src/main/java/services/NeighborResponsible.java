@@ -8,4 +8,5 @@ public interface NeighborResponsible {
     void exchangeDarwinInfo();
     void exchangeRoutingTables();
     RouteDetails exchangeRoutingInformationForNode(Neighbor neighbor, long nodeId);
+    void unregister();
 }

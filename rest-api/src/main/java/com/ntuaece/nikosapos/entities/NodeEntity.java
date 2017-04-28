@@ -40,6 +40,10 @@ public class NodeEntity {
     public synchronized static void AddNode(NodeEntity entity) {
         NodeEntityList.add(entity);
     }
+    
+    public synchronized static void RemoveNode(NodeEntity entity) {
+        NodeEntityList.remove(entity);
+    }
 
     public static class Builder {
         private long id;

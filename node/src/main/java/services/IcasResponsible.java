@@ -6,4 +6,5 @@ public interface IcasResponsible {
     void confirmSuccessfulDelivery(Packet packet);
     void registerToIcas();
     void updateNeighborBehavior();
+    void unregister();
 }

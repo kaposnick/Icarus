@@ -16,18 +16,19 @@ public class Node {
     private long id;
     private int x;
     private int y;
+    private List<Long> destinations = new ArrayList<Long>();
 
     private int totalPacketsSent;
     private int totalPacketsForwarded;
-    private int sentPackets;
-    private int forwardedPackets;
-    private int relayedPackets;
+    private int totalRelayedPackets;
+    private int totalDroppedPackets;
+    private int totalReceivedPackets;
 
     private Darwin darwin;
     private double ownDarwin;
     private boolean isCheater;
+    private boolean isActive = false;
 
-    private List<Long> destinations = new ArrayList<Long>();
     private List<Distant> distants = new ArrayList<Distant>();
     private List<Neighbor> neighbors = new ArrayList<Neighbor>();
 
@@ -43,7 +44,9 @@ public class Node {
     }
 
     public Optional<Neighbor> findNeighborById(long id) {
-        return neighbors.stream().filter(n -> n.getId() == id).findFirst();
+        synchronized (this) {
+            return neighbors.stream().filter(n -> n.getId() == id).findFirst();
+        }
     }
 
     public Optional<Distant> findDistantById(long id) {
@@ -56,6 +59,50 @@ public class Node {
                 }
             }
             return Optional.ofNullable(mDistant);
+        }
+    }
+    
+    private NodeRoutingThread nodeRoutingThread;
+    
+    public void setNodeRoutingThread(NodeRoutingThread nodeRoutingThread) {
+        this.nodeRoutingThread = nodeRoutingThread;
+    }
+    
+    public NodeRoutingThread getNodeRoutingThread() {
+        return nodeRoutingThread;
+    }
+
+    private NodeThread nodeThread;
+
+    public void start() {
+        if (!isActive) {
+            if (nodeThread == null) nodeThread = new NodeThread(this);
+            nodeThread.start();
+            isActive = true;
+        } else {
+            System.out.println(this + " is already active");
+        }
+    }
+
+    public void stop() {
+        if (isActive) {
+            if (nodeThread != null) nodeThread.kill();
+            nodeThread = null;
+            isActive = false;
+            
+            totalPacketsSent = 0;
+            totalPacketsForwarded = 0;
+            totalRelayedPackets = 0;
+            totalDroppedPackets = 0;
+            totalReceivedPackets = 0;
+            distants.clear();
+            neighbors.clear();
+            darwinPacketList.clear();
+            darwinSelfishNodes.clear();
+            icasSelfishNodes.clear();
+            cpSelfishNodes.clear();
+        } else {
+            System.out.println(this  + "is already inactive");
         }
     }
 
@@ -101,33 +148,47 @@ public class Node {
     }
 
     public void incrementSentPacketCounter() {
-        sentPackets++;
         totalPacketsSent++;
     }
 
     public void incrementForwardedPacketCounter() {
-        forwardedPackets++;
         totalPacketsForwarded++;
     }
 
-    public void clearSentPacketCounter() {
-        sentPackets = 0;
-    }
-
-    public void clearForwardedPacketCounter() {
-        forwardedPackets = 0;
-    }
-
     public void incrementRelayedPacketCounter() {
-        relayedPackets++;
+        totalRelayedPackets++;
+    }
+
+    public void incrementReceivedPacketCounter() {
+        totalReceivedPackets++;
+    }
+
+    public void incrementDroppedPacketCounter() {
+        totalDroppedPackets++;
+    }
+
+    public int getTotalDroppedPackets() {
+        return totalDroppedPackets;
+    }
+
+    public int getTotalReceivedPackets() {
+        return totalReceivedPackets;
     }
 
     public int getRelayedPackets() {
-        return relayedPackets;
+        return totalRelayedPackets;
+    }
+
+    public int getTotalPacketsForwarded() {
+        return totalPacketsForwarded;
+    }
+
+    public int getTotalPacketsSent() {
+        return totalPacketsSent;
     }
 
     public void clearRelayedPacketsCounter() {
-        relayedPackets = 0;
+        totalRelayedPackets = 0;
     }
 
     public Set<Long> getSelfishNodes() {
@@ -166,10 +227,6 @@ public class Node {
         return darwinPacketList;
     }
 
-    private void clearDarwinPacketList() {
-        darwinPacketList.clear();
-    }
-
     public boolean allDarwinPacketsArrived() {
         return darwinPacketList.size() == neighbors.size();
     }
@@ -194,20 +251,21 @@ public class Node {
         this.isCheater = isCheater;
     }
 
-    public int getTotalPacketsSent() {
-        return totalPacketsSent;
-    }
-
-    public int getTotalPacketsForwarded() {
-        return totalPacketsForwarded;
-    }
-
     public boolean isCheater() {
         return isCheater;
     }
 
     public List<Long> getDestinationList() {
         return destinations;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void updateDestinationList(Set<Long> destinations) {
+        this.destinations.clear();
+        this.destinations.addAll(destinations);
     }
 
     public static class Builder {
@@ -250,9 +308,8 @@ public class Node {
             node.x = x;
             node.y = y;
             node.isCheater = selfish;
-            node.sentPackets = 0;
-            node.forwardedPackets = 0;
-            node.relayedPackets = 0;
+            node.totalRelayedPackets = 0;
+            node.totalDroppedPackets = node.totalReceivedPackets = 0;
             node.totalPacketsSent = node.totalPacketsForwarded = 0;
             node.destinations.addAll(destinationIds);
             destinationIds.clear();
@@ -285,4 +342,8 @@ public class Node {
         return cpSelfishNodes.contains(neighborId);
     }
 
+    public void removeNeighbor(Neighbor unregisteringNeighbor) {
+        neighbors.remove(unregisteringNeighbor);
+        darwinPacketList.remove(unregisteringNeighbor.getId());
+    }
 }

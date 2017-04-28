@@ -88,6 +88,10 @@ public class Neighbor {
     public void bindLink(Link link) {
         this.link = link;
     }
+    
+    public void removeLink() {
+        this.link = null;
+    }
 
     public Link getLink() {
         return link;

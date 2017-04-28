@@ -27,7 +27,7 @@ public class NodeApplication {
                                           .setY(NodePosition.y[i])
                                           .setDestinationIds(NodePosition.destinationNodes[i % 13])
                                           .build();
-            if (i == 12  || i == 19  || i == 20 ) node.setCheater(true);
+            if (i == 12 || i == 19 || i == 20 || i == 10) node.setCheater(true);
             node.setDarwinImpl(new DarwinAlternativeCalculator(node));
             NodeList.GetInstance().add(node);
         }
@@ -38,11 +38,8 @@ public class NodeApplication {
 
         initializeNodes();
 
-        NodeThread threadArray[] = new NodeThread[NodePosition.x.length];
-
         for (int i = 0; i < NodePosition.x.length; i++) {
-            threadArray[i] = new NodeThread(NodeList.GetInstance().get(i));
-            threadArray[i].start();
+            NodeList.GetInstance().get(i).start();
         }
 
         Timer timer = new Timer("Kill Timer");
@@ -50,13 +47,7 @@ public class NodeApplication {
 
             @Override
             public void run() {
-                for (int i = 0; i < threadArray.length; i++) {
-                    threadArray[i].kill();
-                }
-
-                for (Link link : Link.LinkList) {
-                    link.destroyLink();
-                }
+                System.exit(0);
             }
         }, 400000);
 
@@ -68,8 +59,11 @@ public class NodeApplication {
                 if (mNode.isPresent()) {
                     Node node = mNode.get();
                     System.out.println(node + " darwinPackets: " + node.getDarwinPacketList().values().size());
+                    node.getDarwinPacketList().forEach((id, packet) -> {
+                        System.out.println("[" + id + "] Round: " + packet.getRound());
+                    });
                     node.getNeighbors().forEach(neigbor -> {
-                        
+
                         String outputString = String.format("Neighbor [%d]\tDarwinΙ: %.2f\tPMinusI: %.2f\tDarwinMinusI: %.2f\t Ratio: %.2f\t Forwarded :%d\t Sent :%d",
                                                             neigbor.getId(),
                                                             neigbor.getDarwinI(),

@@ -27,6 +27,7 @@ public class IcasService extends CommunicationService implements IcasResponsible
     private final static String ACTION_UPDATE = "neighborUpdate";
     private final static String ACTION_PERMISSION = "permission";
     private final static String ACTION_DELIVERY = "deliverysuccessful";
+    private final static String ACTION_UNREGISTER = "unregister";
 
     public IcasService(Node node, OkHttpClient client, Gson gson) {
         super(node, client, gson);
@@ -128,6 +129,25 @@ public class IcasService extends CommunicationService implements IcasResponsible
             }
         });
 
+    }
+
+    @Override
+    public void unregister() {
+        assertValidResources();
+        Request request = new Request.Builder().post(RequestBody.create(JSON, String.valueOf(node.getId())))
+                                               .url(URL_ICAS + ACTION_UNREGISTER)
+                                               .build();
+        httpClient.newCall(request).enqueue(new Callback() {
+            
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                
+            }
+            
+            @Override
+            public void onFailure(Call call, IOException e) {
+            }
+        });
     }
 
 }

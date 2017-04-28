@@ -69,6 +69,7 @@ public class NodeThread extends Thread {
                                                                      TimeUnit.MILLISECONDS);
 
         routingThread = new NodeRoutingThread(node, neighborService, icasService);
+        node.setNodeRoutingThread(routingThread);
         routingThread.start();
     }
 
@@ -85,29 +86,23 @@ public class NodeThread extends Thread {
             routingThread.stopThread();
             routingThread = null;
         }
+        neighborService.unregister();
+        icasService.unregister();
         scheduledExecutorService.shutdownNow();
     }
 
     private void scheduleExecuteDarwinAlgorithmTask() {
-        darwinComputation = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-
-            @Override
-            public void run() {
-                if (node.getId() == 0) {
-                    System.out.println("Executing Darwin Algorithm");
-                }
-                node.executeDarwinAlgorithm();
+        darwinComputation = scheduledExecutorService.scheduleAtFixedRate(() -> {
+            if (node.getId() == 0) {
+                System.out.println("Executing Darwin Algorithm");
             }
+            node.executeDarwinAlgorithm();
         }, 10500, 10500, TimeUnit.MILLISECONDS);
     }
 
     private void scheduleUpdateRoutingTablesTask() {
-        updateRoutingTablesTask = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-
-            @Override
-            public void run() {
-                neighborService.exchangeRoutingTables();
-            }
+        updateRoutingTablesTask = scheduledExecutorService.scheduleAtFixedRate(() -> {
+            neighborService.exchangeRoutingTables();
         }, 60, 60, TimeUnit.SECONDS);
     }
 
@@ -120,10 +115,9 @@ public class NodeThread extends Thread {
     }
 
     private void prepareResources() {
-        OkHttpClient httpClient = new OkHttpClient.Builder()
-                        .readTimeout(50, TimeUnit.SECONDS)
-                        .writeTimeout(30, TimeUnit.SECONDS)
-                        .build();
+        OkHttpClient httpClient = new OkHttpClient.Builder().readTimeout(50, TimeUnit.SECONDS)
+                                                            .writeTimeout(30, TimeUnit.SECONDS)
+                                                            .build();
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         // icasService = new IcasService(node, httpClient, gson);
         icasService = new MockIcasService();

@@ -74,8 +74,10 @@ public class IcasController {
                                 .containsKey(permissionPacket.getDestinationNodeId())) { return new ResponseEntity<>(HttpStatus.OK); }
                     case NO_SEND:
                     default:
+                        System.out.println("Node " + permissionPacket.getNodeId() + " not permitted for "
+                                + permissionPacket.getDestinationNodeId());
                         return new ResponseEntity<String>("Node " + permissionPacket.getNodeId() + " is not permitted ",
-                                                          HttpStatus.UNAUTHORIZED);
+                                                          HttpStatus.NOT_ACCEPTABLE);
 
                 }
             }
@@ -91,13 +93,11 @@ public class IcasController {
         if (nodeIdList.size() < 2) { return new ResponseEntity<String>("Should contain at least two ids",
                                                                        HttpStatus.BAD_REQUEST); }
 
-//        System.out.println("Successful delivery of packet");
-//        System.out.println(nodeIdList);
+        // System.out.println("Successful delivery of packet");
+        // System.out.println(nodeIdList);
 
         // no relays --> no rewards
-        if (nodeIdList.size() == 2) {
-            return new ResponseEntity<>(HttpStatus.OK); 
-        }
+        if (nodeIdList.size() == 2) { return new ResponseEntity<>(HttpStatus.OK); }
 
         int totalRelayRewards = 0;
 
@@ -108,7 +108,8 @@ public class IcasController {
             if (node.isPresent()) {
                 // reward relay nodes
                 totalRelayRewards += rewarder.rewardNode(node.get());
-//                System.out.println("Node " + node.get().getId() + " tokens " + node.get().getTokens());
+                // System.out.println("Node " + node.get().getId() + " tokens "
+                // + node.get().getTokens());
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
@@ -118,7 +119,8 @@ public class IcasController {
         Optional<NodeEntity> sourceNode = NodeEntity.GetNodeEntityById(nodeIdList.get(0));
         if (sourceNode.isPresent()) {
             rewarder.chargeNode(sourceNode.get(), totalRelayRewards);
-//            System.out.println("Node " + sourceNode.get().getId() + " tokens " + sourceNode.get().getTokens());
+            // System.out.println("Node " + sourceNode.get().getId() + " tokens
+            // " + sourceNode.get().getTokens());
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -157,5 +159,14 @@ public class IcasController {
             neighborNode.get().updateConnectivityRatioIfNecessary();
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/unregister")
+    public ResponseEntity<?> unregister(@RequestBody Long nodeId) {
+        Optional<NodeEntity> maybeNode = NodeEntity.GetNodeEntityById(nodeId);
+        if (!maybeNode.isPresent()) return null;
+        NodeEntity.RemoveNode(maybeNode.get());
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

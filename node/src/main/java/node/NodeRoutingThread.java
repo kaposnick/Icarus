@@ -16,6 +16,7 @@ import services.NeighborResponsible;
 
 public class NodeRoutingThread extends Thread implements PacketReceiver {
 
+    private volatile Thread thisThread;
     private final Node node;
     private final IcasResponsible icasService;
     private final Router router;
@@ -36,13 +37,20 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         this.timer = new Timer(node + " packet generator");
         this.router = new RouterImpl(node, nService);
         this.recorder = new NeighborStatsRecorderImpl(node);
+        this.randomGenerator = new Random();
+        this.thisThread = this;
         node.getNeighbors().stream().forEach(neighbor -> {
             idToLink.put(neighbor.getLink().getId(), neighbor.getLink());
             neighbor.getLink().setPacketReceiver(node, this);
         });
-        randomGenerator = new Random();
-        thisThread = this;
         if (node.getId() <= 50) setTimer();
+    }
+
+    public void addNeighbor(Neighbor neighbor) {
+        synchronized (idToLink) {
+            idToLink.put(neighbor.getLink().getId(), neighbor.getLink());
+            neighbor.getLink().setPacketReceiver(node, this);
+        }
     }
 
     private void checkLinks() {
@@ -89,6 +97,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         } else {
             if (packet.getDestinationNodeID() == node.getId()) {
                 packet.setAck(true);
+                node.incrementReceivedPacketCounter();
                 icasService.confirmSuccessfulDelivery(packet);
                 nextNode = router.routePacket(packet);
                 if (nextNode != null) {
@@ -130,9 +139,9 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             int previousNodeIndex = packet.getPathlist().size() - 2;
             long previousNode = packet.getPathlist().get(previousNodeIndex);
             if (node.existsInSelfishNodeList(previousNode)) {
-                if (node.findNeighborById(previousNode).get().getDarwinI() >= randomGenerator.nextDouble()) {
-                    return true;
-                }
+                if (node.findNeighborById(previousNode)
+                        .get()
+                        .getDarwinI() >= randomGenerator.nextDouble()) { return true; }
             }
         }
         return false;
@@ -154,10 +163,8 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     }
 
     private void dropPacket(Packet packet) {
-        // packet.addPathlist(node.getId());
-        // recorder.recordPacket(packet);
         packet.drop();
-        Packet.incrementDroppedPackets();
+        node.incrementDroppedPacketCounter();
     }
 
     private boolean dropBecauseAmCheater(Packet p) {
@@ -171,11 +178,11 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     private void setTimer() {
         timer.scheduleAtFixedRate(new TimerTask() {
 
-            final int size = node.getDestinationList().size();
             int i = 0;
 
             @Override
             public void run() {
+                int size = node.getDestinationList().size();
                 do {
                     i++;
                     i %= size;
@@ -188,8 +195,6 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             }
         }, NodeScheduledTask.PACKET_SENT_INITIAL_DELAY, NodeScheduledTask.PACKET_SENT_PERIOD);
     }
-
-    private volatile Thread thisThread;
 
     @Override
     public void run() {
