@@ -93,17 +93,15 @@ public class NodeThread extends Thread {
 
     private void scheduleExecuteDarwinAlgorithmTask() {
         darwinComputation = scheduledExecutorService.scheduleAtFixedRate(() -> {
-            if (node.getId() == 0) {
-                System.out.println("Executing Darwin Algorithm");
-            }
-            node.executeDarwinAlgorithm();
-        }, 10500, 10500, TimeUnit.MILLISECONDS);
+			if (node.getId() == 0) {
+				System.out.println("Executing Darwin Algorithm");
+			}
+			node.executeDarwinAlgorithm();
+		}, 10500, 10500, TimeUnit.MILLISECONDS);
     }
 
     private void scheduleUpdateRoutingTablesTask() {
-        updateRoutingTablesTask = scheduledExecutorService.scheduleAtFixedRate(() -> {
-            neighborService.exchangeRoutingTables();
-        }, 60, 60, TimeUnit.SECONDS);
+        updateRoutingTablesTask = scheduledExecutorService.scheduleAtFixedRate(() -> neighborService.exchangeRoutingTables(), 60, 60, TimeUnit.SECONDS);
     }
 
     private void scheduleUpdateIcasForNeighborBehaviorTask() {

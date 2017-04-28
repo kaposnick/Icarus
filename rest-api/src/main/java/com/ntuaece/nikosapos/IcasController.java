@@ -38,6 +38,11 @@ public class IcasController {
         };
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/hi")
+    public String hello() {
+        return "Hello World";
+    }
+
     // Tested
     @RequestMapping(method = RequestMethod.POST, value = "/register")
     public ResponseEntity<?> registerNode(@RequestBody RegisterPacket registerPacket) {
