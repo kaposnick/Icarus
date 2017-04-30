@@ -44,6 +44,7 @@ public class IcasService extends CommunicationService implements IcasResponsible
                                                .build();
         try {
             Response response = httpClient.newCall(request).execute();
+            response.body().close();
             return response.isSuccessful();
         } catch (Exception e) {
             return true;
