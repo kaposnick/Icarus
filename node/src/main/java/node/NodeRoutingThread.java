@@ -29,6 +29,8 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     private Timer timer;
 
     private Random randomGenerator;
+    
+    private int droppedCounter = 0;
 
     public NodeRoutingThread(Node node, NeighborResponsible nService, IcasResponsible iService) {
         super("Node routing " + node.getId());
@@ -168,7 +170,8 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     }
 
     private boolean dropBecauseAmCheater(Packet p) {
-        return node.isCheater() && p.getSourceNodeID() != node.getId();
+        if (!node.isCheater() || p.getSourceNodeID() == node.getId()) return false;
+        return (++droppedCounter) % 5 == 0;
     }
 
     private boolean icasPermits(long id) {
