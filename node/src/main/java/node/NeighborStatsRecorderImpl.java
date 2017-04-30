@@ -1,8 +1,6 @@
 package node;
 
 import java.util.Optional;
-
-import com.google.gson.Gson;
 import com.ntuaece.nikosapos.entities.Packet;
 
 public class NeighborStatsRecorderImpl implements NeighborStatsRecorder {
