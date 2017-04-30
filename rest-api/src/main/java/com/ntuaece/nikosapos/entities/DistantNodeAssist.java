@@ -13,8 +13,19 @@ public class DistantNodeAssist extends TimerTask {
 
         synchronized (NodeEntity.NodeEntityList) {
 
-            NodeEntity.NodeEntityList.stream().filter(node -> node.isDistant()).forEach(node -> {
+            NodeEntity.NodeEntityList.stream().forEach(node -> {
                 double cpi = node.getNodeConnectivityRatio();
+
+                // TODO: was included in Charisiadis code ( Css.extra2() ) and
+                // not in the paper
+                {
+                    if (!node.isSelfish()
+                            && node.getTokens() <= Math.pow(cpi, 2) * 2.5 * SimulationParameters.CREDITS_INITIAL) {
+                        int moreTokens = (int) Math.pow(cpi, 2) * SimulationParameters.CREDITS_EXTRA;
+                        node.setTokens(node.getTokens() + moreTokens);
+                    }
+                }
+
                 int me_th = (int) (SimulationParameters.CREDITS_INITIAL * Math.pow(cpi, 2));
                 if (!node.isSelfish() && node.getTokens() <= me_th
                         && node.getRelayedPackets() <= k * SimulationParameters.DISTANT_NODES_THRESOLD_SECOND * cpi
@@ -26,11 +37,10 @@ public class DistantNodeAssist extends TimerTask {
                     } else {
                         sintelestis = 2.0f;
                     }
-                    additionalTokens = (int) (sintelestis
-                            + SimulationParameters.CREDITS_DISTANT_INITIAL * Math.pow(cpi, 2));
+                    additionalTokens = (int) (sintelestis + SimulationParameters.CREDITS_EXTRA * Math.pow(cpi, 2));
                     node.setTokens(node.getTokens() + additionalTokens);
                 }
-                boolean isAllowedToSendFree = !node.isSelfish() && node.getStatus() == NodeStatus.ANY_SEND
+                boolean isAllowedToSendFree = !node.isSelfish() && node.getStatus() != NodeStatus.ANY_SEND
                         && node.getRelayedPackets() <= k * SimulationParameters.DISTANT_NODES_THRESOLD_SECOND * cpi
                         && node.getTokens() < 0;
 
