@@ -11,11 +11,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 
 import darwin.DarwinAlternativeCalculator;
-import node.Link;
 import node.Node;
 import node.NodeList;
 import node.NodePosition;
-import node.NodeThread;
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
@@ -58,10 +56,7 @@ public class NodeApplication {
                 Optional<Node> mNode = NodeList.GetNodeById(nodeId);
                 if (mNode.isPresent()) {
                     Node node = mNode.get();
-                    System.out.println(node + " darwinPackets: " + node.getDarwinPacketList().values().size());
-                    node.getDarwinPacketList().forEach((id, packet) -> {
-                        System.out.println("[" + id + "] Round: " + packet.getRound());
-                    });
+                    System.out.println(node + " Selfish Nodes: " + node.getSelfishNodes());
                     node.getNeighbors().forEach(neigbor -> {
 
                         String outputString = String.format("Neighbor [%d]\tDarwinΙ: %.2f\tPMinusI: %.2f\tDarwinMinusI: %.2f\t Ratio: %.2f\t Forwarded :%d\t Sent :%d",

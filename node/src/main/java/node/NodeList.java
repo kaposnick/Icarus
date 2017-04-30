@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class NodeList extends ArrayList<Node> {
-	private static NodeList instance;
+    private static final long serialVersionUID = 1L;
+    private static NodeList instance;
 	
 	private NodeList(){}
 	
