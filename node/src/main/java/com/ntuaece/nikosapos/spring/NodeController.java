@@ -274,7 +274,7 @@ public class NodeController {
     public ResponseEntity<?> onUnregister(@RequestBody Long unregisteringNodeId,
             @PathVariable("neighborId") Long neighborId) {
         Optional<Node> maybeNeighbor = NodeList.GetNodeById(neighborId);
-        if (!maybeNeighbor.isPresent()) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        if (!maybeNeighbor.isPresent()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         Node neighborNode = maybeNeighbor.get();
         Neighbor unregisteringNeighbor = neighborNode.findNeighborById(unregisteringNodeId).get();        
