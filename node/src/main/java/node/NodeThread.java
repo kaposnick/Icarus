@@ -60,7 +60,6 @@ public class NodeThread extends Thread {
         }
 
         scheduleUpdateIcasForNeighborBehaviorTask();
-        // scheduleUpdateRoutingTablesTask();
 
         if (node.getId() == 1)
             statsTask = scheduledExecutorService.scheduleAtFixedRate(new StatsTask(),
@@ -91,23 +90,33 @@ public class NodeThread extends Thread {
         scheduledExecutorService.shutdownNow();
     }
 
+    // darwin algorithm execution
     private void scheduleExecuteDarwinAlgorithmTask() {
         darwinComputation = scheduledExecutorService.scheduleAtFixedRate(() -> {
 			if (node.getId() == 0) {
 				System.out.println("Executing Darwin Algorithm");
 			}
 			node.executeDarwinAlgorithm();
-		}, 10500, 10500, TimeUnit.MILLISECONDS);
+		},
+        NodeScheduledTask.DARWIN_UPDATE_PERIOD + 1000,
+        NodeScheduledTask.DARWIN_UPDATE_PERIOD + 1000,
+        TimeUnit.MILLISECONDS);
+    }
+    
+    // darwin algorithm neighbor update 
+    private void scheduleDarwinTask() {
+        DarwinUpdateTask darwinUpdateTask = new DarwinUpdateTask(node, neighborService);
+        darwinPacketDeliveryTask = scheduledExecutorService.scheduleAtFixedRate(darwinUpdateTask,
+                                                                                NodeScheduledTask.DARWIN_UPDATE_PERIOD,
+                                                                                NodeScheduledTask.DARWIN_UPDATE_PERIOD,
+                                                                                TimeUnit.MILLISECONDS);
     }
 
-    private void scheduleUpdateRoutingTablesTask() {
-        updateRoutingTablesTask = scheduledExecutorService.scheduleAtFixedRate(() -> neighborService.exchangeRoutingTables(), 60, 60, TimeUnit.SECONDS);
-    }
-
+    // icas update
     private void scheduleUpdateIcasForNeighborBehaviorTask() {
         updateIcasNeighborTask = scheduledExecutorService.scheduleAtFixedRate(new UpdateBehaviorTask(node, icasService),
-                                                                              NodeScheduledTask.DARWIN_UPDATE_PERIOD,
-                                                                              NodeScheduledTask.DARWIN_UPDATE_PERIOD,
+                                                                              NodeScheduledTask.ICAS_UPDATE_PERIOD,
+                                                                              NodeScheduledTask.ICAS_UPDATE_PERIOD,
                                                                               TimeUnit.MILLISECONDS);
 
     }
@@ -117,19 +126,13 @@ public class NodeThread extends Thread {
                                                             .writeTimeout(30, TimeUnit.SECONDS)
                                                             .build();
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        // icasService = new IcasService(node, httpClient, gson);
-        icasService = new MockIcasService();
+         icasService = new IcasService(node, httpClient, gson);
+//        icasService = new MockIcasService();
         neighborService = new NeighborService(node, httpClient, gson);
         scheduledExecutorService = Executors.newScheduledThreadPool(2);
     }
 
-    private void scheduleDarwinTask() {
-        DarwinUpdateTask darwinUpdateTask = new DarwinUpdateTask(node, neighborService);
-        darwinPacketDeliveryTask = scheduledExecutorService.scheduleAtFixedRate(darwinUpdateTask,
-                                                                                NodeScheduledTask.DARWIN_UPDATE_PERIOD,
-                                                                                NodeScheduledTask.DARWIN_UPDATE_PERIOD,
-                                                                                TimeUnit.MILLISECONDS);
-    }
+   
 
     private void executeLinkTask() {
         LinkCreateTask linkTask = new LinkCreateTask(node);
@@ -149,12 +152,6 @@ public class NodeThread extends Thread {
         Future<?> discoveryFutureResult = scheduledExecutorService.submit(discoveryTask);
         // wait for the discovery task to get finished
         while (!discoveryFutureResult.isDone());
-
-        // Schedule discover neighbor task
-        // scheduledExecutorService.scheduleAtFixedRate(discoveryTask,
-        // NodeScheduledTask.DISCOVERY_PERIOD + node.getId() * 10,
-        // NodeScheduledTask.DISCOVERY_PERIOD,
-        // TimeUnit.MILLISECONDS);
     }
 
 }
