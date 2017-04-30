@@ -31,36 +31,33 @@ public class SelfishNodesPublish extends TimerTask {
     @Override
     public void run() {
         Set<Long> selfishList = new HashSet<Long>();
-        NodeEntity
-            .NodeEntityList
-            .stream()
-            .filter ( node -> node.isSelfish())
-            .forEach( node -> selfishList.add(node.getId()));
-
-        System.out.println("Publishing selfish nodes " + selfishList);
-        RequestBody body = RequestBody.create(mediaType, gson.toJson(selfishList));
         
-        NodeEntity
-            .NodeEntityList
-            .stream()
-            .forEach( node -> {
-                Request request = new Request.Builder()
-                  .url("http://localhost:8081/selfishBroadcast/" + node.getId())
-                  .post(body)
-                  .build();
+        synchronized (NodeEntity.NodeEntityList) {
+            NodeEntity.NodeEntityList.stream()
+                                     .filter(node -> node.isSelfish())
+                                     .forEach(node -> selfishList.add(node.getId()));
+
+            System.out.println("Publishing selfish nodes " + selfishList);
+            RequestBody body = RequestBody.create(mediaType, gson.toJson(selfishList));
+
+            NodeEntity.NodeEntityList.stream().forEach(node -> {
+                Request request = new Request.Builder().url("http://localhost:8081/selfishBroadcast/" + node.getId())
+                                                       .post(body)
+                                                       .build();
                 client.newCall(request).enqueue(new Callback() {
-                    
+
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        
+
                     }
-                    
+
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        
+
                     }
                 });
             });
+        }
         selfishList.clear();
     }
 
