@@ -2,6 +2,7 @@ package services;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 import com.google.gson.Gson;
@@ -101,13 +102,17 @@ public class NeighborService extends CommunicationService implements NeighborRes
             routingPacket.getNodeRoutingTable().add(nodeRoutingInfo);
         }
 
-        for (Iterator<Distant> iterator = node.getDistantNodes().iterator(); iterator.hasNext();) {
-            Distant distant = iterator.next();
-            NodeRoutingInfo nodeRoutingInfo = new NodeRoutingInfo();
-            nodeRoutingInfo.setId(distant.getId());
-            nodeRoutingInfo.setDistance(distant.getDistance());
-            nodeRoutingInfo.setHops(distant.getTotalHops());
-            routingPacket.getNodeRoutingTable().add(nodeRoutingInfo);
+        try {
+            for (Iterator<Distant> iterator = node.getDistantNodes().iterator(); iterator.hasNext();) {
+                Distant distant = iterator.next();
+                NodeRoutingInfo nodeRoutingInfo = new NodeRoutingInfo();
+                nodeRoutingInfo.setId(distant.getId());
+                nodeRoutingInfo.setDistance(distant.getDistance());
+                nodeRoutingInfo.setHops(distant.getTotalHops());
+                routingPacket.getNodeRoutingTable().add(nodeRoutingInfo);
+            }
+        } catch (ConcurrentModificationException ie) {
+            return;
         }
 
         String body = gson.toJson(routingPacket);
@@ -148,15 +153,16 @@ public class NeighborService extends CommunicationService implements NeighborRes
         for (Neighbor neighbor : node.getNeighbors()) {
             Request request = builder.url(NEIGHBOR_URL + ACTION_UNREGISTER + neighbor.getId()).build();
             httpClient.newCall(request).enqueue(new Callback() {
-                
+
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (!response.isSuccessful()) return;
                     neighbor.removeLink();
-//                    node.getNeighbors().remove(neighbor);
-//                    System.out.println(node + " removed " + neighbor.getId() + " from neighbor list");
+                    // node.getNeighbors().remove(neighbor);
+                    // System.out.println(node + " removed " + neighbor.getId()
+                    // + " from neighbor list");
                 }
-                
+
                 @Override
                 public void onFailure(Call call, IOException e) {
                 }
