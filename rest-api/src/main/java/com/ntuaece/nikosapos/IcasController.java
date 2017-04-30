@@ -68,6 +68,7 @@ public class IcasController {
         if (node.isPresent()) {
             NodeStatus status = node.get().getStatus();
             if (node.get().isAllowedToSendPacketsForFree()) {
+                System.out.println("Node [" + node.get().getId() + "] is allowed to sent packets for free");
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 switch (status) {
@@ -80,7 +81,8 @@ public class IcasController {
                     case NO_SEND:
                     default:
                         System.out.println("Node " + permissionPacket.getNodeId() + " not permitted for "
-                                + permissionPacket.getDestinationNodeId());
+                                + permissionPacket.getDestinationNodeId() + " \tTokens: " + node.get().getTokens() 
+                                + "\t CPi: " + node.get().getNodeConnectivityRatio());
                         return new ResponseEntity<String>("Node " + permissionPacket.getNodeId() + " is not permitted ",
                                                           HttpStatus.NOT_ACCEPTABLE);
 
