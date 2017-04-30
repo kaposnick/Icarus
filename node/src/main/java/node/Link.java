@@ -146,7 +146,9 @@ public class Link {
      */
 
     private boolean willDrop(Packet packet) {
-        if (packet.isAck()) {
+        if (packet.isSemiAck())
+            return false;
+        else if (packet.isAck()) {
             return new Random().nextDouble() * 10000 < 2;
         } else {
             return new Random().nextDouble() * 10000 < 20;
