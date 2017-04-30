@@ -171,7 +171,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
 
     private boolean dropBecauseAmCheater(Packet p) {
         if (!node.isCheater() || p.getSourceNodeID() == node.getId()) return false;
-        return (++droppedCounter) % 5 == 0;
+        return (++droppedCounter) % 10 != 0;
     }
 
     private boolean icasPermits(long id) {
