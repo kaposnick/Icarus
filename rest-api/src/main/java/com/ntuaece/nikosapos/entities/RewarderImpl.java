@@ -18,7 +18,7 @@ public class RewarderImpl implements Rewarder {
         if (!node.isAllowedToSendPacketsForFree()) {
             int initialTokens = node.getTokens();
             if (initialTokens > SimulationParameters.CREDITS_INITIAL * 5.7f) {
-                node.setTokens(initialTokens - (int) 4.6 * totalRelayCost);
+                node.setTokens(initialTokens - (int) 2.6 * totalRelayCost);
             } else if (initialTokens > SimulationParameters.CREDITS_INITIAL * 2.5f) {
                 node.setTokens(initialTokens - (int) 1.3 * totalRelayCost);
             } else node.setTokens(node.getTokens() - totalRelayCost);
