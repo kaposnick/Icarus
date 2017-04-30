@@ -42,7 +42,7 @@ public final class SimulationParameters {
 	/**
 	 * Initial amount of credits that are given to distant nodes
 	 */
-	public static final int CREDITS_DISTANT_INITIAL = 28;
+	public static final int CREDITS_EXTRA= 28;
 	
 	/**
 	 * Maximum number of hops allowed per packet
