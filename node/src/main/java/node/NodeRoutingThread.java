@@ -128,7 +128,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             }
         }
 
-        if (nextNode != null) {
+        if (nextNode != null && nextNode.getLink() != null) {            
             nextNode.getLink().addPacketToUpLink(node, packet);
             if (!packet.isAck()) {
                 sendSemiAck(packet);
