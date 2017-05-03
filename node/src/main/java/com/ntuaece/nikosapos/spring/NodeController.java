@@ -289,4 +289,9 @@ public class NodeController {
 
         return new ResponseEntity<String>("Success", HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/ping", method = RequestMethod.GET)
+    public ResponseEntity<?> ping() {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
