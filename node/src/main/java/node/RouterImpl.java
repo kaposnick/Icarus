@@ -69,7 +69,7 @@ public class RouterImpl implements Router {
         // or if path not specified by any old route then -->
         // nextNodeSpecifiedeByOldRoute = -2
         final boolean nextNodeSpecifiedByOldRoute = nextNodeId > -2;
-        if (nextNodeSpecifiedByOldRoute && !isSelfishNode(nextNodeId + 1)
+        if (nextNodeSpecifiedByOldRoute && !isCpSelfishNode(nextNodeId + 1)
                 && !nodeExistsInPacketPath(p, nextNodeId + 1)) {
             // send packet to next node
             possibleNextNode = node.findNeighborById(nextNodeId + 1);
@@ -85,7 +85,7 @@ public class RouterImpl implements Router {
                 int neighborDistance = neighbor.getDistance();
 
                 // neighbor not selfish neither in existin path
-                if (!isSelfishNode(neighborId) && !nodeExistsInPacketPath(p, neighborId)) {
+                if (!isCpSelfishNode(neighborId) && !nodeExistsInPacketPath(p, neighborId)) {
                     // ask neighbor for more details
                     RouteDetails routingInformation = service.exchangeRoutingInformationForNode(neighbor,
                                                                                                 destinationId);
@@ -115,7 +115,7 @@ public class RouterImpl implements Router {
 
                 // if the old next node is selfish then replace with the new
                 // route or if there is no old next route
-                if (!nextNodeSpecifiedByOldRoute || isSelfishNode(nextNodeId + 1)) {
+                if (!nextNodeSpecifiedByOldRoute || isCpSelfishNode(nextNodeId + 1)) {
                     Distant distantNode = null;
 
                     for (Distant maybeDistantNode : this.node.getDistantNodes()) {

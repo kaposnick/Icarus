@@ -38,8 +38,8 @@ public class DarwinAlternativeCalculator implements Darwin {
             p_NewDarwinI = DarwinUtils.normalizeValue(gamma * (q_minusI - q_I));
             neighbor.setDarwinI(p_NewDarwinI);
 
-            p_NewDarwinMinusI = DarwinUtils.normalizeValue(gamma * (q_I - q_minusI));
-            neighbor.setDarwinMinusI(p_NewDarwinMinusI);
+//            p_NewDarwinMinusI = DarwinUtils.normalizeValue(gamma * (q_I - q_minusI));
+//            neighbor.setDarwinMinusI(p_NewDarwinMinusI);
 
             if (neighbor.getDarwinI() >= SimulationParameters.EDP) {
                 node.addDarwinSelfishNode(neighbor.getId());
@@ -64,16 +64,16 @@ public class DarwinAlternativeCalculator implements Darwin {
             for (BehaviorUpdateEntity entity : packet.getNeighborRatioList()) {
                 if (entity.getNeighId() == node.getId()) {
                     // cii * cji
-                    numerator += entity.getRatio() * neighbor.getConnectivityRatio();
-                    denominator += neighbor.getConnectivityRatio();
-                    // numerator += entity.getΡForMe();
-                    // denominator++;
-                    // neighbor.setDarwinMinusI(entity.getNeighborDarwinForMe());
+//                    numerator += entity.getRatio() * neighbor.getConnectivityRatio();
+//                    denominator += neighbor.getConnectivityRatio();
+                     numerator += entity.getΡForMe();
+                     denominator++;
+                     neighbor.setDarwinMinusI(entity.getNeighborDarwinForMe());
                 }
             }
         }
-        // return (denominator > 0) ? numerator / denominator : 0;
-        return (denominator > 0) ? (double) (1 - numerator / denominator) : 0;
+         return (denominator > 0) ? numerator / denominator : 0;
+//        return (denominator > 0) ? (double) (1 - numerator / denominator) : 0;
     }
 
     private void calculatePMinusIForAllNeighbors(Map<Long, DarwinPacket> darwinPacketList) {
