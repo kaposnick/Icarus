@@ -19,13 +19,31 @@ import node.NodePosition;
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
 public class NodeApplication {
     private static void initializeNodes() {
-        for (int i = 0; i < NodePosition.x.length; i++) {
-            Node node = new Node.Builder().setId(i)
-                                          .setX(NodePosition.x[i])
-                                          .setY(NodePosition.y[i])
-                                          .setDestinationIds(NodePosition.destinationNodes[i % 13])
+        for (int nodeId = 0; nodeId < NodePosition.x.length; nodeId++) {
+            boolean isDistant = false;
+            boolean isCheater = false;
+
+            for (int index = 0; index < NodePosition.selfishNodes.length; index++) {
+                if (NodePosition.selfishNodes[index] == nodeId) {
+                    isCheater = true;
+                    break;
+                }
+            }
+
+            for (int index = 0; index < NodePosition.distantNodes.length; index++) {
+                if (NodePosition.distantNodes[index] == nodeId) {
+                    isDistant = true;
+                    break;
+                }
+            }
+
+            Node node = new Node.Builder().setId(nodeId)
+                                          .setX(NodePosition.x[nodeId])
+                                          .setY(NodePosition.y[nodeId])
+                                          .setDestinationIds(NodePosition.destinationNodes[nodeId % 13])
+                                          .setDistant(isDistant)
                                           .build();
-            if (i == 12 || i == 19 || i == 20 || i == 10) node.setCheater(true);
+            node.setCheater(isCheater);
             node.setDarwinImpl(new DarwinAlternativeCalculator(node));
             NodeList.GetInstance().add(node);
         }

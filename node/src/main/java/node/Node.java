@@ -27,6 +27,7 @@ public class Node {
     private Darwin darwin;
     private double ownDarwin;
     private boolean isCheater;
+    private boolean isDistant;
     private boolean isActive = false;
 
     private List<Distant> distants = new ArrayList<Distant>();
@@ -254,6 +255,10 @@ public class Node {
     public boolean isCheater() {
         return isCheater;
     }
+    
+    public boolean isDistant() {
+        return isDistant;
+    }
 
     public List<Long> getDestinationList() {
         return destinations;
@@ -273,6 +278,7 @@ public class Node {
         private int x;
         private int y;
         private boolean selfish = false;
+        private boolean distant = false;
         private List<Long> destinationIds = new ArrayList<>();
 
         public Builder setId(long id) {
@@ -301,6 +307,11 @@ public class Node {
             }
             return this;
         }
+        
+        public Builder setDistant(boolean distant) {
+            this.distant = distant;
+            return this;
+        }
 
         public Node build() {
             Node node = new Node();
@@ -308,6 +319,7 @@ public class Node {
             node.x = x;
             node.y = y;
             node.isCheater = selfish;
+            node.isDistant = distant;
             node.totalRelayedPackets = 0;
             node.totalDroppedPackets = node.totalReceivedPackets = 0;
             node.totalPacketsSent = node.totalPacketsForwarded = 0;
