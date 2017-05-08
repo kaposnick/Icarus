@@ -58,5 +58,10 @@ public final class SimulationParameters {
 	 * Threshold under which a node is considered as selfish
 	 */
     public static final double CP_THRESHOLD = 0.4f;
+    
+    /**
+     * Cheating probability
+     */
+    public static final double CHEATING_PROBABILITY = 0.2f;
 
 }

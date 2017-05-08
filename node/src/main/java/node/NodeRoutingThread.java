@@ -9,6 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.ntuaece.nikosapos.SimulationParameters;
 import com.ntuaece.nikosapos.entities.Packet;
 
 import services.IcasResponsible;
@@ -29,7 +30,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     private Timer timer;
 
     private Random randomGenerator;
-    
+
     private int droppedCounter = 0;
 
     public NodeRoutingThread(Node node, NeighborResponsible nService, IcasResponsible iService) {
@@ -128,7 +129,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             }
         }
 
-        if (nextNode != null && nextNode.getLink() != null) {            
+        if (nextNode != null && nextNode.getLink() != null) {
             nextNode.getLink().addPacketToUpLink(node, packet);
             if (!packet.isAck()) {
                 sendSemiAck(packet);
@@ -171,7 +172,8 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
 
     private boolean dropBecauseAmCheater(Packet p) {
         if (!node.isCheater() || p.getSourceNodeID() == node.getId()) return false;
-        return (++droppedCounter) % 10 != 0;
+        return (++droppedCounter) % 10 != 0
+                && randomGenerator.nextDouble() <= SimulationParameters.CHEATING_PROBABILITY;
     }
 
     private boolean icasPermits(long id) {
