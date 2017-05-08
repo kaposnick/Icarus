@@ -38,9 +38,11 @@ public class NodeEntity {
     private int totalNeighbors;
 
     public synchronized static void AddNode(NodeEntity entity) {
-        NodeEntityList.add(entity);
+        synchronized (NodeEntityList) {
+            NodeEntityList.add(entity);
+        }
     }
-    
+
     public synchronized static void RemoveNode(NodeEntity entity) {
         NodeEntityList.remove(entity);
     }
@@ -175,7 +177,7 @@ public class NodeEntity {
     private void setSelfish() {
         isSelfish = nodeConnectivityRatio < SimulationParameters.CONNECTIVITY_RATIO_ICAS_THRESHOLD;
     }
-    
+
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) return true;
@@ -185,7 +187,7 @@ public class NodeEntity {
         if (this.id == another.getId()) return true;
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return (int) this.id;
