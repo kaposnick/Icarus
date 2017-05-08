@@ -50,11 +50,9 @@ public final class NodePosition {
 			129, 333, 95, 162, 138	
 	};
 	
-	public final static long[] selfishNodes = new long[] {
-	  10,
-	  12, 
-	  19, 
-	  20      
+	public final static long[] cheatingNodes = new long[] {
+	  10, 12, 19, 20, 43, 6, 49, 26, 34, 23, 14, 13, 48, 38, 2,
+	  36, 40,  7, 45,  3, 5, 25, 22, 24, 32, 35, 42, 47, 30, 15
 	};
 	
 	public final static long[][] destinationNodes = new long[][]{

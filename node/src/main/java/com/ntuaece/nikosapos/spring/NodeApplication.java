@@ -1,7 +1,9 @@
 package com.ntuaece.nikosapos.spring;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -9,6 +11,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+
+import com.ntuaece.nikosapos.SimulationParameters;
 
 import darwin.DarwinAlternativeCalculator;
 import node.Node;
@@ -18,17 +22,14 @@ import node.NodePosition;
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = { JacksonAutoConfiguration.class })
 public class NodeApplication {
+    private static Set<Long> cheaters;
+
     private static void initializeNodes() {
         for (int nodeId = 0; nodeId < NodePosition.x.length; nodeId++) {
             boolean isDistant = false;
             boolean isCheater = false;
 
-            for (int index = 0; index < NodePosition.selfishNodes.length; index++) {
-                if (NodePosition.selfishNodes[index] == nodeId) {
-                    isCheater = true;
-                    break;
-                }
-            }
+            if (cheaters.contains((long)nodeId)) isCheater = true;
 
             for (int index = 0; index < NodePosition.distantNodes.length; index++) {
                 if (NodePosition.distantNodes[index] == nodeId) {
@@ -51,6 +52,11 @@ public class NodeApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NodeApplication.class, args);
+
+        cheaters = new HashSet<>(SimulationParameters.TOTAL_CHEATING_NODES);
+        for (int cnt = 0; cnt < SimulationParameters.TOTAL_CHEATING_NODES; cnt++) {
+            cheaters.add(NodePosition.cheatingNodes[cnt]);
+        }
 
         initializeNodes();
 
