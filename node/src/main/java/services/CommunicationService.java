@@ -19,7 +19,11 @@ public class CommunicationService {
     }
     
     protected void assertValidResources() {
-        if (httpClient == null) throw new RuntimeException("You should call setHttpClient first.");
-        if (gson == null) throw new RuntimeException("You should call setGson first.");
+        if (httpClient == null) throw new IllegalStateException("You should call setHttpClient first.");
+        if (gson == null) throw new IllegalStateException("You should call setGson first.");
+    }
+    
+    protected void increaseNodeByteStatistics(long bytes) {
+        node.increaseBytesSent(bytes);
     }
 }

@@ -20,25 +20,32 @@ public class StatsTask implements Runnable {
     File coopFile;
     File selfFile;
     File distantFile;
+    File bytesFile;
 
     public StatsTask() {
         coopFile = new File("/home/nickapostol/Desktop/darwin/coop.txt");
         selfFile = new File("/home/nickapostol/Desktop/darwin/self.txt");
         distantFile = new File("/home/nickapostol/Desktop/darwin/distant.txt");
+        bytesFile = new File("/home/nickapostol/Desktop/darwin/bytes.txt");
         if (coopFile.exists()) {
             coopFile.delete();
         }
         if (selfFile.exists()) {
             selfFile.delete();
         }
-        
+
         if (distantFile.exists()) {
             distantFile.delete();
+        }
+
+        if (bytesFile.exists()) {
+            bytesFile.delete();
         }
         try {
             coopFile.createNewFile();
             selfFile.createNewFile();
             distantFile.createNewFile();
+            bytesFile.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,7 +62,7 @@ public class StatsTask implements Runnable {
         try {
             FileWriter coopwriter = new FileWriter(coopFile, true);
             FileWriter selfwriter = new FileWriter(selfFile, true);
-            FileWriter distWriter = new FileWriter(distantFile,true);
+            FileWriter distWriter = new FileWriter(distantFile, true);
             int cooperativeNodesForwarded = 0;
             int selfishNodesForwarded = 0;
             int cooperativeNodesSent = 0;
@@ -70,10 +77,16 @@ public class StatsTask implements Runnable {
                     cooperativeNodesSent += node.getTotalPacketsSent();
                     cooperativeNodesForwarded += node.getTotalPacketsForwarded();
                 }
-                
+
                 if (node.isDistant()) {
                     distantNodesSent += node.getTotalPacketsSent();
                     distantNodesForwarded += node.getTotalPacketsForwarded();
+                }
+
+                if (node.getId() == 6) {
+                    FileWriter bytesWriter = new FileWriter(bytesFile, true);
+                    bytesWriter.write("" + node.getBytesSent() + "\n");
+                    bytesWriter.close();
                 }
             }
             coopwriter.write((float) cooperativeNodesForwarded / cooperativeNodesSent + "\n");

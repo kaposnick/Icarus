@@ -39,7 +39,9 @@ public class IcasService extends CommunicationService implements IcasResponsible
         PermissionPacket packet = new PermissionPacket();
         packet.setNodeId(node.getId());
         packet.setDstId(destinationNodeId);
-        Request request = new Request.Builder().post(RequestBody.create(JSON, gson.toJson(packet)))
+        String body = gson.toJson(packet);
+        increaseNodeByteStatistics(body.length());
+        Request request = new Request.Builder().post(RequestBody.create(JSON, body))
                                                .url(URL_ICAS + ACTION_PERMISSION)
                                                .build();
         try {
@@ -54,7 +56,9 @@ public class IcasService extends CommunicationService implements IcasResponsible
     @Override
     public void confirmSuccessfulDelivery(Packet packet) {
         assertValidResources();
-        Request request = new Request.Builder().post(RequestBody.create(JSON, gson.toJson(packet.getPathlist())))
+        String body = gson.toJson(packet.getPathlist());
+        increaseNodeByteStatistics(body.length());
+        Request request = new Request.Builder().post(RequestBody.create(JSON, body))
                                                .url(URL_ICAS + ACTION_DELIVERY)
                                                .build();
 
@@ -81,8 +85,9 @@ public class IcasService extends CommunicationService implements IcasResponsible
                                                             .setY(node.getY())
                                                             .setTotalNeighbors(node.getNeighbors().size())
                                                             .build();
-        String packetBody = gson.toJson(packet);
-        Request request = new Request.Builder().post(RequestBody.create(JSON, packetBody))
+        String body = gson.toJson(packet);
+        increaseNodeByteStatistics(body.length());
+        Request request = new Request.Builder().post(RequestBody.create(JSON, body))
                                                .url(URL_ICAS + ACTION_REGISTER)
                                                .build();
         httpClient.newCall(request).enqueue(new Callback() {
@@ -115,8 +120,9 @@ public class IcasService extends CommunicationService implements IcasResponsible
             mList.add(entity);
         }
         packet.setNeighborList(mList);
-        String packetBody = gson.toJson(packet);
-        Request request = new Request.Builder().post(RequestBody.create(JSON, packetBody))
+        String body = gson.toJson(packet);
+        increaseNodeByteStatistics(body.length());
+        Request request = new Request.Builder().post(RequestBody.create(JSON, body))
                                                .url(URL_ICAS + ACTION_UPDATE)
                                                .build();
         httpClient.newCall(request).enqueue(new Callback() {

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import darwin.Darwin;
@@ -29,6 +30,8 @@ public class Node {
     private boolean isCheater;
     private boolean isDistant;
     private boolean isActive = false;
+
+    private AtomicLong bytesSent = new AtomicLong();
 
     private List<Distant> distants = new ArrayList<Distant>();
     private List<Neighbor> neighbors = new ArrayList<Neighbor>();
@@ -62,13 +65,13 @@ public class Node {
             return Optional.ofNullable(mDistant);
         }
     }
-    
+
     private NodeRoutingThread nodeRoutingThread;
-    
+
     public void setNodeRoutingThread(NodeRoutingThread nodeRoutingThread) {
         this.nodeRoutingThread = nodeRoutingThread;
     }
-    
+
     public NodeRoutingThread getNodeRoutingThread() {
         return nodeRoutingThread;
     }
@@ -90,7 +93,7 @@ public class Node {
             if (nodeThread != null) nodeThread.kill();
             nodeThread = null;
             isActive = false;
-            
+
             totalPacketsSent = 0;
             totalPacketsForwarded = 0;
             totalRelayedPackets = 0;
@@ -103,7 +106,7 @@ public class Node {
             icasSelfishNodes.clear();
             cpSelfishNodes.clear();
         } else {
-            System.out.println(this  + "is already inactive");
+            System.out.println(this + "is already inactive");
         }
     }
 
@@ -255,7 +258,7 @@ public class Node {
     public boolean isCheater() {
         return isCheater;
     }
-    
+
     public boolean isDistant() {
         return isDistant;
     }
@@ -307,7 +310,7 @@ public class Node {
             }
             return this;
         }
-        
+
         public Builder setDistant(boolean distant) {
             this.distant = distant;
             return this;
@@ -357,5 +360,14 @@ public class Node {
     public void removeNeighbor(Neighbor unregisteringNeighbor) {
         neighbors.remove(unregisteringNeighbor);
         darwinPacketList.remove(unregisteringNeighbor.getId());
+    }
+
+    public long getBytesSent() {
+        return bytesSent.get();
+    }
+
+
+    public void increaseBytesSent(long value) {
+        bytesSent.addAndGet(value);
     }
 }

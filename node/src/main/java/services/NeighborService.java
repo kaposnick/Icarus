@@ -43,11 +43,13 @@ public class NeighborService extends CommunicationService implements NeighborRes
     @Override
     public void discoverNeigbors() {
         DiscoverPacket packet = DiscoverPacket.FromNode(node);
+        String body = gson.toJson(packet);
         ArrayList<Long> discoveredIDs = new ArrayList<>();
-        Request.Builder builder = new Request.Builder().post(RequestBody.create(JSON, gson.toJson(packet)));
+        Request.Builder builder = new Request.Builder().post(RequestBody.create(JSON, body));
         for (int id = 0; id < 256; id++) {
             if (id == node.getId()) continue;
             Request request = builder.url(NEIGHBOR_URL + ACTION_DISCOVER + id).build();
+            increaseNodeByteStatistics(body.length());
             try {
                 Response response = httpClient.newCall(request).execute();
                 if (response.isSuccessful()) {
@@ -80,6 +82,7 @@ public class NeighborService extends CommunicationService implements NeighborRes
         String body = gson.toJson(packet);
         Request.Builder builder = new Request.Builder().post(RequestBody.create(JSON, body));
         node.getNeighbors().stream().forEach(neighbor -> {
+            increaseNodeByteStatistics(body.length());
             Request request = builder.url(NEIGHBOR_URL + ACTION_DARWIN + neighbor.getId()).build();
             try {
                 httpClient.newCall(request).execute();
@@ -118,6 +121,7 @@ public class NeighborService extends CommunicationService implements NeighborRes
         String body = gson.toJson(routingPacket);
         Request.Builder builder = new Request.Builder().post(RequestBody.create(JSON, body));
         node.getNeighbors().stream().forEach(neighbor -> {
+            increaseNodeByteStatistics(body.length());
             Request request = builder.url(NEIGHBOR_URL + ACTION_ROUTING_EXCHANGE + neighbor.getId()).build();
             try {
                 httpClient.newCall(request).execute();
