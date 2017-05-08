@@ -62,6 +62,16 @@ public final class SimulationParameters {
     /**
      * Cheating probability
      */
-    public static final double CHEATING_PROBABILITY = 0.2f;
+    public static final double CHEATING_PROBABILITY = 1.0f;
+    
+    /**
+     * Total cheating nodes
+     */
+    public static final int TOTAL_CHEATING_NODES = 30;
+    
+    /**
+     * USES_ICARUS OR DARWIN
+     */
+    public static final boolean USES_ICARUS = false;
 
 }
