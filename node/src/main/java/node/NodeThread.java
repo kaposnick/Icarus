@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ntuaece.nikosapos.SimulationParameters;
 
 import okhttp3.OkHttpClient;
 import services.IcasResponsible;
@@ -93,17 +94,17 @@ public class NodeThread extends Thread {
     // darwin algorithm execution
     private void scheduleExecuteDarwinAlgorithmTask() {
         darwinComputation = scheduledExecutorService.scheduleAtFixedRate(() -> {
-			if (node.getId() == 0) {
-				System.out.println("Executing Darwin Algorithm");
-			}
-			node.executeDarwinAlgorithm();
-		},
-        NodeScheduledTask.DARWIN_UPDATE_PERIOD + 1000,
-        NodeScheduledTask.DARWIN_UPDATE_PERIOD + 1000,
-        TimeUnit.MILLISECONDS);
+            if (node.getId() == 0) {
+                System.out.println("Executing Darwin Algorithm");
+            }
+            node.executeDarwinAlgorithm();
+        },
+                                                                         NodeScheduledTask.DARWIN_UPDATE_PERIOD + 1000,
+                                                                         NodeScheduledTask.DARWIN_UPDATE_PERIOD + 1000,
+                                                                         TimeUnit.MILLISECONDS);
     }
-    
-    // darwin algorithm neighbor update 
+
+    // darwin algorithm neighbor update
     private void scheduleDarwinTask() {
         DarwinUpdateTask darwinUpdateTask = new DarwinUpdateTask(node, neighborService);
         darwinPacketDeliveryTask = scheduledExecutorService.scheduleAtFixedRate(darwinUpdateTask,
@@ -126,13 +127,14 @@ public class NodeThread extends Thread {
                                                             .writeTimeout(30, TimeUnit.SECONDS)
                                                             .build();
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-         icasService = new IcasService(node, httpClient, gson);
-//        icasService = new MockIcasService();
+        if (SimulationParameters.USES_ICARUS) {
+            icasService = new IcasService(node, httpClient, gson);
+        } else {
+            icasService = new MockIcasService();
+        }
         neighborService = new NeighborService(node, httpClient, gson);
         scheduledExecutorService = Executors.newScheduledThreadPool(2);
     }
-
-   
 
     private void executeLinkTask() {
         LinkCreateTask linkTask = new LinkCreateTask(node);
