@@ -81,7 +81,7 @@ public class IcasController {
                     case NO_SEND:
                     default:
                         System.out.println("Node " + permissionPacket.getNodeId() + " not permitted for "
-                                + permissionPacket.getDestinationNodeId() + " \tTokens: " + node.get().getTokens() 
+                                + permissionPacket.getDestinationNodeId() + " \tTokens: " + node.get().getTokens()
                                 + "\t CPi: " + node.get().getNodeConnectivityRatio());
                         return new ResponseEntity<String>("Node " + permissionPacket.getNodeId() + " is not permitted ",
                                                           HttpStatus.NOT_ACCEPTABLE);
