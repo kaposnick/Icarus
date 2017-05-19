@@ -9,6 +9,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ntuaece.nikosapos.SimulationParameters;
 import com.ntuaece.nikosapos.entities.Packet;
 
@@ -22,6 +24,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     private final IcasResponsible icasService;
     private final Router router;
     private final NeighborStatsRecorder recorder;
+    private final Gson gson;
 
     private Map<Long, Link> idToLink = new HashMap<>();
     private Queue<Long> incomingPacketQueue = new ConcurrentLinkedQueue<>();
@@ -31,7 +34,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
 
     private Random randomGenerator;
 
-    private int droppedCounter = 0;
+    private int icasRejectedCounter = 0;
 
     public NodeRoutingThread(Node node, NeighborResponsible nService, IcasResponsible iService) {
         super("Node routing " + node.getId());
@@ -41,6 +44,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         this.router = new RouterImpl(node, nService);
         this.recorder = new NeighborStatsRecorderImpl(node);
         this.randomGenerator = new Random();
+        this.gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         this.thisThread = this;
         node.getNeighbors().stream().forEach(neighbor -> {
             idToLink.put(neighbor.getLink().getId(), neighbor.getLink());
@@ -70,7 +74,11 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     }
 
     private void sendNewPacket() {
-        if (!icasPermits(nextPacketDestination)) return;
+        if (!icasPermits(nextPacketDestination)) {
+            icasRejectedCounter++;
+            return;
+        }
+        icasRejectedCounter = 0;
         Packet newPacket = new Packet.Builder().setSourceNodeId(node.getId())
                                                .setDestinationNodeId(nextPacketDestination)
                                                .setData((byte) 0x04)
@@ -130,6 +138,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         }
 
         if (nextNode != null && nextNode.getLink() != null) {
+//            node.increaseBytesSent(gson.toJson(packet).length());
             nextNode.getLink().addPacketToUpLink(node, packet);
             if (!packet.isAck()) {
                 sendSemiAck(packet);
@@ -160,6 +169,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             Packet semiAck = new Packet();
             semiAck.setSemiAck(true);
             semiAck.setMe(this.node.getId());
+//            node.increaseBytesSent(gson.toJson(packet).length());
             previousNode.get().getLink().addPacketToUpLink(node, semiAck);
         }
 
@@ -172,8 +182,11 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
 
     private boolean dropBecauseAmCheater(Packet p) {
         if (!node.isCheater() || p.getSourceNodeID() == node.getId()) return false;
-        return (++droppedCounter) % 10 != 0
-                && randomGenerator.nextDouble() <= SimulationParameters.CHEATING_PROBABILITY;
+        if (SimulationParameters.USES_ICARUS) {
+            return icasRejectedCounter < 5 && randomGenerator.nextDouble() <= SimulationParameters.CHEATING_PROBABILITY;
+        } else {
+            return randomGenerator.nextDouble() <= SimulationParameters.CHEATING_PROBABILITY;
+        }
     }
 
     private boolean icasPermits(long id) {
