@@ -1,7 +1,6 @@
 package node;
 
 import java.util.Optional;
-import java.util.Random;
 
 import com.ntuaece.nikosapos.SimulationParameters;
 import com.ntuaece.nikosapos.entities.Packet;

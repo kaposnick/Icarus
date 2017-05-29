@@ -12,30 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdate;
 import com.ntuaece.nikosapos.behaviorpacket.BehaviorUpdateEntity;
-import com.ntuaece.nikosapos.entities.DistantValidator;
 import com.ntuaece.nikosapos.entities.NodeEntity;
 import com.ntuaece.nikosapos.entities.NodeStatus;
 import com.ntuaece.nikosapos.entities.Rewarder;
-import com.ntuaece.nikosapos.entities.RewarderImpl;
-import com.ntuaece.nikosapos.permission.Permission;
 import com.ntuaece.nikosapos.permission.PermissionPacket;
+import com.ntuaece.nikosapos.entities.RewaderAnotherImpl;
 import com.ntuaece.nikosapos.registerpacket.RegisterPacket;
 
 @RestController
 public class IcasController {
 
     private Rewarder rewarder;
-    private DistantValidator distantValidator;
 
     public IcasController() {
-        rewarder = new RewarderImpl();
-        distantValidator = new DistantValidator() {
-
-            @Override
-            public boolean isDistant(int totalneighbors) {
-                return totalneighbors <= 2;
-            }
-        };
+        rewarder = new RewaderAnotherImpl();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/hi")

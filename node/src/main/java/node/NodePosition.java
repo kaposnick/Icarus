@@ -72,6 +72,6 @@ public final class NodePosition {
 	};
 	
 	public final static long[] distantNodes = new long[] {
-	        15, 26, 27, 3, 30, 13, 9, 27, 25, 46, 43, 36, 0, 24, 37
+	        0, 3, 4
 	};
 }
