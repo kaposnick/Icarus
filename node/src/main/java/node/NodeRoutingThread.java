@@ -141,7 +141,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
 //            node.increaseBytesSent(gson.toJson(packet).length());
             nextNode.getLink().addPacketToUpLink(node, packet);
             if (!packet.isAck()) {
-                sendSemiAck(packet);
+                // sendSemiAck(packet);
             }
         } else packet.drop();
     }
@@ -151,9 +151,10 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             int previousNodeIndex = packet.getPathlist().size() - 2;
             long previousNode = packet.getPathlist().get(previousNodeIndex);
             if (node.existsInSelfishNodeList(previousNode)) {
-                if (node.findNeighborById(previousNode)
-                        .get()
-                        .getDarwinI() >= randomGenerator.nextDouble()) { return true; }
+//                if (node.findNeighborById(previousNode)
+//                        .get()
+//                        .getDarwinI() >= randomGenerator.nextDouble()) 
+                { return true; }
             }
         }
         return false;

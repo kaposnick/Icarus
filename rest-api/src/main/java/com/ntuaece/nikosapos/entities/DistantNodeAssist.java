@@ -18,13 +18,12 @@ public class DistantNodeAssist extends TimerTask {
 
                 // TODO: was included in Charisiadis code ( Css.extra2() ) and
                 // not in the paper
-                {
-                    if (!node.isSelfish()
-                            && node.getTokens() <= Math.pow(cpi, 2) * 2.5 * SimulationParameters.CREDITS_INITIAL) {
-                        int moreTokens = (int) Math.pow(cpi, 2) * SimulationParameters.CREDITS_EXTRA;
-                        node.setTokens(node.getTokens() + moreTokens);
-                    }
-                }
+
+//                if (!node.isSelfish()
+//                        && node.getTokens() <= Math.pow(cpi, 2) * 2.5 * SimulationParameters.CREDITS_INITIAL) {
+//                    int moreTokens = (int) Math.pow(cpi, 2) * SimulationParameters.CREDITS_EXTRA;
+//                    node.setTokens(node.getTokens() + moreTokens);
+//                }
 
                 int me_th = (int) (SimulationParameters.CREDITS_INITIAL * Math.pow(cpi, 2));
                 if (!node.isSelfish() && node.getTokens() <= me_th

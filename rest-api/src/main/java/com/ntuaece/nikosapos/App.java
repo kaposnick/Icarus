@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 
 import com.ntuaece.nikosapos.entities.DistantNodeAssist;
+import com.ntuaece.nikosapos.entities.PrintAverage;
 import com.ntuaece.nikosapos.entities.SelfishNodesPublish;
 import com.ntuaece.nikosapos.entities.UpdateNodeStatus;
 
@@ -28,5 +29,6 @@ public class App {
         icasTimer.scheduleAtFixedRate(new DistantNodeAssist(),
                                       IcasConstants.DISTANT_ASSIST_INITIAL_DELAY,
                                       IcasConstants.DISTANT_ASSIST_PERIOD);
+        icasTimer.scheduleAtFixedRate(new PrintAverage(), 10000, 10000);
     }
 }

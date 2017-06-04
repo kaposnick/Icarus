@@ -67,7 +67,7 @@ public final class SimulationParameters {
     /**
      * Total cheating nodes
      */
-    public static final int TOTAL_CHEATING_NODES = 30;
+    public static final int TOTAL_CHEATING_NODES = 3;
     
     /**
      * USES_ICARUS OR DARWIN
