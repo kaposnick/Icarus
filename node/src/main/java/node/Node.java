@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.ntuaece.nikosapos.SimulationParameters;
+
 import darwin.Darwin;
 import darwin.DarwinPacket;
 
@@ -270,6 +272,10 @@ public class Node {
     public boolean isActive() {
         return isActive;
     }
+    
+    public boolean isMalicious() {
+        return false;
+    }
 
     public void updateDestinationList(Set<Long> destinations) {
         this.destinations.clear();
@@ -368,6 +374,6 @@ public class Node {
 
 
     public void increaseBytesSent(long value) {
-        bytesSent.addAndGet(value);
+        bytesSent.addAndGet(value + SimulationParameters.PACKET_HEADER_BYTES);
     }
 }

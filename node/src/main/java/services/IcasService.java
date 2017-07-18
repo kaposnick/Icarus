@@ -3,6 +3,7 @@ package services;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -54,9 +55,13 @@ public class IcasService extends CommunicationService implements IcasResponsible
     }
 
     @Override
-    public void confirmSuccessfulDelivery(Packet packet) {
+    public void confirmSuccessfulDelivery(Set<Packet> packetList) {
         assertValidResources();
-        String body = gson.toJson(packet.getPathlist());
+        List<List<Long>> packets = new ArrayList<>(packetList.size());
+        for(Packet p : packetList) {
+            packets.add(p.getPathlist());
+        }
+        String body = gson.toJson(packets);
         increaseNodeByteStatistics(body.length());
         Request request = new Request.Builder().post(RequestBody.create(JSON, body))
                                                .url(URL_ICAS + ACTION_DELIVERY)

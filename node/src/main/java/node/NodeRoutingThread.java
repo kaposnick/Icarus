@@ -1,10 +1,12 @@
 package node;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -24,8 +26,11 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
     private final IcasResponsible icasService;
     private final Router router;
     private final NeighborStatsRecorder recorder;
+    private final DropAckPolicy ackPolicy;
     private final Gson gson;
 
+    private Set<Packet> pendingPackets = new HashSet<>();
+    
     private Map<Long, Link> idToLink = new HashMap<>();
     private Queue<Long> incomingPacketQueue = new ConcurrentLinkedQueue<>();
     private long nextPacketDestination = 0;
@@ -42,6 +47,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         this.icasService = iService;
         this.timer = new Timer(node + " packet generator");
         this.router = new RouterImpl(node, nService);
+        this.ackPolicy = new DropAckPolicyImpl(node);
         this.recorder = new NeighborStatsRecorderImpl(node);
         this.randomGenerator = new Random();
         this.gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -99,6 +105,9 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
                 recorder.recordPacket(packet);
                 packet.drop();
                 return;
+            } else if (ackPolicy.drop(packet)) {
+                packet.drop();
+                return;
             } else {
                 nextNode = router.routePacket(packet);
                 if (nextNode != null) {
@@ -109,7 +118,8 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             if (packet.getDestinationNodeID() == node.getId()) {
                 packet.setAck(true);
                 node.incrementReceivedPacketCounter();
-                icasService.confirmSuccessfulDelivery(packet);
+                pendingPackets.add(packet);
+                sendPendingList();
                 nextNode = router.routePacket(packet);
                 if (nextNode != null) {
                     recorder.recordPacket(packet);
@@ -138,23 +148,38 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
         }
 
         if (nextNode != null && nextNode.getLink() != null) {
-//            node.increaseBytesSent(gson.toJson(packet).length());
+            // node.increaseBytesSent(gson.toJson(packet).length());
             nextNode.getLink().addPacketToUpLink(node, packet);
             if (!packet.isAck()) {
-                // sendSemiAck(packet);
+                // if ((++semiAckCounter) % 10 < 1)
+                sendSemiAck(packet);
             }
         } else packet.drop();
     }
+
+    private void sendPendingList() {
+        if (pendingPackets.size() == SimulationParameters.ICAS_RECEIPT_PACKET_SIZE) {
+            System.out.println(pendingPackets.size());
+            icasService.confirmSuccessfulDelivery(new HashSet<>(pendingPackets));
+            pendingPackets.clear();
+        } 
+    }
+
+    
+
+    private int semiAckCounter = 0;
 
     private boolean dropBecauseComingFromSelfishNode(Packet packet) {
         if (packet.getSourceNodeID() != node.getId()) {
             int previousNodeIndex = packet.getPathlist().size() - 2;
             long previousNode = packet.getPathlist().get(previousNodeIndex);
             if (node.existsInSelfishNodeList(previousNode)) {
-//                if (node.findNeighborById(previousNode)
-//                        .get()
-//                        .getDarwinI() >= randomGenerator.nextDouble()) 
-                { return true; }
+                // if (node.findNeighborById(previousNode)
+                // .get()
+                // .getDarwinI() >= randomGenerator.nextDouble())
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -170,7 +195,7 @@ public class NodeRoutingThread extends Thread implements PacketReceiver {
             Packet semiAck = new Packet();
             semiAck.setSemiAck(true);
             semiAck.setMe(this.node.getId());
-//            node.increaseBytesSent(gson.toJson(packet).length());
+            // node.increaseBytesSent(gson.toJson(packet).length());
             previousNode.get().getLink().addPacketToUpLink(node, semiAck);
         }
 

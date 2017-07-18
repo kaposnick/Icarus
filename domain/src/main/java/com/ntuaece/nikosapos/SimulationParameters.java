@@ -72,6 +72,10 @@ public final class SimulationParameters {
     /**
      * USES_ICARUS OR DARWIN
      */
-    public static final boolean USES_ICARUS = false;
+    public static final boolean USES_ICARUS = true;
+    
+    public static final int PACKET_HEADER_BYTES = 60;
+    
+    public static final int ICAS_RECEIPT_PACKET_SIZE = 50;
 
 }

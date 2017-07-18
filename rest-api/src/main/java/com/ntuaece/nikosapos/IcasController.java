@@ -85,41 +85,45 @@ public class IcasController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/deliverysuccessful")
-    public ResponseEntity<?> deliverySuccessful(@RequestBody List<Long> nodeIdList) {
+    public ResponseEntity<?> deliverySuccessful(@RequestBody List<List<Long>> packetList) {
 
-        if (nodeIdList.size() < 2) { return new ResponseEntity<String>("Should contain at least two ids",
-                                                                       HttpStatus.BAD_REQUEST); }
+        for (List<Long> nodeIdList : packetList) {
+            if (nodeIdList.size() < 2) { return new ResponseEntity<String>("Should contain at least two ids",
+                                                                           HttpStatus.BAD_REQUEST); }
 
-        // System.out.println("Successful delivery of packet");
-        // System.out.println(nodeIdList);
+            // System.out.println("Successful delivery of packet");
+            // System.out.println(nodeIdList);
 
-        // no relays --> no rewards
-        if (nodeIdList.size() == 2) { return new ResponseEntity<>(HttpStatus.OK); }
+            // no relays --> no rewards
+            if (nodeIdList.size() == 2) { return new ResponseEntity<>(HttpStatus.OK); }
 
-        int totalRelayRewards = 0;
+            int totalRelayRewards = 0;
 
-        // not take into account source and destination for relay cost
-        for (int index = 1; index < nodeIdList.size() - 1; index++) {
-            Long nodeId = nodeIdList.get(index);
-            Optional<NodeEntity> node = NodeEntity.GetNodeEntityById(nodeId);
-            if (node.isPresent()) {
-                // reward relay nodes
-                totalRelayRewards += rewarder.rewardNode(node.get());
-                // System.out.println("Node " + node.get().getId() + " tokens "
-                // + node.get().getTokens());
+            // not take into account source and destination for relay cost
+            for (int index = 1; index < nodeIdList.size() - 1; index++) {
+                Long nodeId = nodeIdList.get(index);
+                Optional<NodeEntity> node = NodeEntity.GetNodeEntityById(nodeId);
+                if (node.isPresent()) {
+                    // reward relay nodes
+                    totalRelayRewards += rewarder.rewardNode(node.get());
+                    // System.out.println("Node " + node.get().getId() + "
+                    // tokens "
+                    // + node.get().getTokens());
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            }
+
+            // charge source node
+            Optional<NodeEntity> sourceNode = NodeEntity.GetNodeEntityById(nodeIdList.get(0));
+            if (sourceNode.isPresent()) {
+                rewarder.chargeNode(sourceNode.get(), totalRelayRewards);
+                // System.out.println("Node " + sourceNode.get().getId() + "
+                // tokens
+                // " + sourceNode.get().getTokens());
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-        }
-
-        // charge source node
-        Optional<NodeEntity> sourceNode = NodeEntity.GetNodeEntityById(nodeIdList.get(0));
-        if (sourceNode.isPresent()) {
-            rewarder.chargeNode(sourceNode.get(), totalRelayRewards);
-            // System.out.println("Node " + sourceNode.get().getId() + " tokens
-            // " + sourceNode.get().getTokens());
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(HttpStatus.OK);

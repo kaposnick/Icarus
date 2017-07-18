@@ -1,5 +1,7 @@
 package services;
 
+import java.util.Set;
+
 import com.ntuaece.nikosapos.entities.Packet;
 
 public class MockIcasService implements IcasResponsible {
@@ -10,7 +12,7 @@ public class MockIcasService implements IcasResponsible {
     }
 
     @Override
-    public void confirmSuccessfulDelivery(Packet packet) {
+    public void confirmSuccessfulDelivery(Set<Packet> packet) {
         
     }
 

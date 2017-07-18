@@ -41,11 +41,12 @@ public class DarwinAlternativeCalculator implements Darwin {
 //            p_NewDarwinMinusI = DarwinUtils.normalizeValue(gamma * (q_I - q_minusI));
 //            neighbor.setDarwinMinusI(p_NewDarwinMinusI);
 
-            if (neighbor.getDarwinI() >= SimulationParameters.EDP) {
-                node.addDarwinSelfishNode(neighbor.getId());
-            } else {
-                node.removeDarwinSelfishNode(neighbor.getId());
-            }
+//            if (neighbor.getDarwinI() >= SimulationParameters.EDP) {
+//                node.addDarwinSelfishNode(neighbor.getId());
+//            } else {
+//                node.removeDarwinSelfishNode(neighbor.getId());
+//            }
+            DarwinUtils.DecideDarwinSelfishNode(node, neighbor);
 
             if (neighbor.getConnectivityRatio() <= SimulationParameters.CP_THRESHOLD) {
                 node.addCpSelfishNode(neighbor.getId());
