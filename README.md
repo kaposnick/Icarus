@@ -1,4 +1,5 @@
 # Nikolaos Apostolakis Thesis
+Master Thesis
 
 This repo stores all the files for my thesis. I have decided to put
 this work-in-progress in the public domain both to generate interest and
