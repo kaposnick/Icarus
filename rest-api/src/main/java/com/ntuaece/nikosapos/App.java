@@ -1,16 +1,5 @@
 package com.ntuaece.nikosapos;
-<<<<<<< HEAD
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
-public class App 
-{
-	
-    public static void main( String[] args )
-    { 
-        SpringApplication.run(App.class, args);
-=======
 
 import java.util.Timer;
 
@@ -42,6 +31,5 @@ public class App {
                                       IcasConstants.DISTANT_ASSIST_INITIAL_DELAY,
                                       IcasConstants.DISTANT_ASSIST_PERIOD);
         icasTimer.scheduleAtFixedRate(new PrintAverage(), 10000, 10000);
->>>>>>> refs/heads/nikos-branch
     }
 }
