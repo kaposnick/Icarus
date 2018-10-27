@@ -3,28 +3,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>com.ntuaece.nikosapos</groupId>
-    <artifactId>rest-api</artifactId>
-    <version>0.1.0</version>
-    <packaging>jar</packaging>
-    
     <parent>
-    	<groupId>org.springframework.cloud</groupId>
-    	<artifactId>spring-cloud-starter-parent</artifactId>
-    	<version>Brixton.BUILD-SNAPSHOT</version>
-        <relativePath/>
+    	<groupId>com.ntuaece.nikosapos</groupId>
+        <artifactId>icarus-thesis</artifactId>
+    	<version>1.0</version>
     </parent>
+    
+    <artifactId>rest-api</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0</version>
 
-    
-    
-    <!-- ############ -->
-    <!-- Properties   -->
-    <!-- ############ -->
-	<properties>
-		<spring-boot-version>1.5.1.RELEASE</spring-boot-version>
-		<java.version>1.8</java.version>
-	</properties>
-    
+    <name>Icas Module</name>    
     
     
     <!-- ############ -->
@@ -32,63 +21,34 @@
     <!-- ############ -->
     <dependencies>
 		<!-- Domain -->
-	<dependency>
-		<groupId>com.ntuaece.nikosapos</groupId>
-		<artifactId>domain</artifactId>
-		<version>0.1.0</version>
-	</dependency>
+	    <dependency>
+		    <groupId>com.ntuaece.nikosapos</groupId>
+		    <artifactId>domain</artifactId>
+		    <version>1.0</version>
+	    </dependency>
 		<!-- Spring-Boot -->
-	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
         <dependency>
-            	<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-test</artifactId>
-		<scope>test</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring.boot.version}</version>
+            <exclusions>
+		        <exclusion>
+    		        <artifactId>jackson-databind</artifactId>
+    		        <groupId>com.fasterxml.jackson.core</groupId>
+		        </exclusion>
+	        </exclusions>
         </dependency>
-	<dependency>
-		<groupId>com.google.code.gson</groupId>
-		<artifactId>gson</artifactId>
-		<version>2.8.0</version>
-	<exclusions>
-		<exclusion>
-    		<artifactId>jackson-databind</artifactId>
-    		<groupId>com.fasterxml.jackson.core</groupId>
-		</exclusion>
-	</exclusions>
-    	</dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>${spring.boot.version}</version>
         </dependency>  
-    	<dependency>
-  			<groupId>com.squareup.okhttp3</groupId>
-  			<artifactId>okhttp</artifactId>
-  			<version>3.8.0</version>
-		</dependency>  
-    </dependencies>  
-    
-	<!-- ##### -->
-    <!-- Build -->
-    <!-- ##### -->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+    </dependencies>
     
     <!-- ########     -->
     <!-- Repositories -->

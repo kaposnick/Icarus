@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 
 @Configuration
 @ConditionalOnClass(Gson.class)
-@ConditionalOnMissingClass(name = "com.fasterxml.jackson.core.JsonGenerator")
+@ConditionalOnMissingClass(value = "com.fasterxml.jackson.core.JsonGenerator")
 @ConditionalOnBean(Gson.class)
 public class GsonHttpMessageConverterConfiguration {
 
